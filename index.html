@@ -250,6 +250,10 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-ligne { display: grid; grid-template-columns: 3.4em minmax(0, 1fr) 3.4em 1.2em; gap: 6px 10px; align-items: center; font-size: 13.5px; }
 .lx-ligne .lx-crit { grid-column: 1 / -1; font-size: 12px; color: var(--lx-muted); text-align: center; margin-bottom: -4px; }
 .lx-ligne .lx-a { text-align: right; color: var(--lx-win); } .lx-ligne .lx-b { color: var(--lx-loss); }
+.lx-recap-groupe { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding-top: 16px; border-top: 1px solid var(--lx-line); font-family: var(--font-serif); font-size: 21px; color: #fff; }
+.lx-recap-groupe:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.lx-recap-groupe small { font-family: var(--font-anthropic-sans); font-size: 12px; color: var(--lx-muted); }
+.lx-ligne-info { opacity: .78; }
 .lx-duo-bar { display: flex; height: 6px; border-radius: 6px; overflow: hidden; background: rgba(255, 255, 255, 0.06); gap: 2px; }
 .lx-duo-bar .lx-ba { background: var(--lx-win); border-radius: 6px; } .lx-duo-bar .lx-bb { background: var(--lx-loss); border-radius: 6px; }
 
@@ -399,6 +403,11 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
       <h2>Les objectifs qui font gagner</h2>
       <p class="lx-sous">Winrate quand ton équipe obtient l'objectif, comparé aux parties où elle ne l'obtient pas.</p>
       <div class="lx-rows" data-draw="t_objectifs" data-source="c_objectifs"></div>
+    </section>
+    <section id="controle" class="lx-card">
+      <h2>Contrôle des objectifs neutres</h2>
+      <p class="lx-sous">Moyenne par partie, ton équipe à gauche, l'équipe adverse à droite. Avec le filtre Jungle, tes stats de jungler face au jungler adverse s'ajoutent en dessous.</p>
+      <div class="lx-recap" data-draw="controle" data-source="c_controle"></div>
     </section>
     <section id="avance" class="lx-card">
       <h2>Avance ou retard à 15 minutes</h2>
@@ -951,9 +960,30 @@ dash.calc('c_recap', {
       ['Dégâts aux champions', L.n(g.degats), L.n(g.adv_degats), 1],
       ['Score de vision', L.n(g.vision), L.n(g.adv_vision), 1],
       ['Niveau final', L.n(g.niveau), L.n(g.adv_niveau), 1],
-    ];
-    return crit.map(([critere, toi, adversaire, sens]) => ({
-      critere, toi, adversaire,
+    ].map((c) => c.concat(['Duel', true]));
+    const jungle = g.role === 'Jungle';
+    if (jungle && g.camps !== undefined) {
+      crit.push(
+        ['Camps de jungle', L.n(g.camps), L.n(g.adv_camps), 1, 'Jungle', true],
+        ['Camps volés chez l\'adversaire', L.n(g.contre_jungle), L.n(g.adv_contre_jungle), 1, 'Jungle', true],
+        ['Crabes', L.n(g.crabes), L.n(g.adv_crabes), 1, 'Jungle', true],
+        ['Participation aux dragons', L.n(g.dragons_part), L.n(g.adv_dragons_part), 1, 'Jungle', true],
+        ['Participation aux Nashors', L.n(g.barons_part), L.n(g.adv_barons_part), 1, 'Jungle', true],
+        ['Objectifs volés', L.n(g.vols), L.n(g.adv_vols), 1, 'Jungle', true],
+      );
+    }
+    if (g.adv_barons !== undefined) {
+      const eq = [
+        ['Dragons', L.n(g.dragons), L.n(g.adv_dragons)],
+        ['Larves du Néant', L.n(g.larves), L.n(g.adv_larves)],
+        ['Héraut', L.n(g.heraut), L.n(g.adv_heraut)],
+        ['Nashor', L.n(g.barons), L.n(g.adv_barons)],
+        ['Atakhan', L.n(g.atakhan), L.n(g.adv_atakhan)],
+      ].filter((c) => c[0] !== 'Atakhan' || c[1] + c[2] > 0);
+      for (const c of eq) crit.push([c[0], c[1], c[2], 1, 'Objectifs de l\'équipe', jungle]);
+    }
+    return crit.map(([critere, toi, adversaire, sens, groupe, compte]) => ({
+      critere, toi, adversaire, groupe, compte,
       resultat: toi === adversaire ? 'égal' : ((toi - adversaire) * sens > 0 ? 'devant' : 'derrière'),
     }));
   },
@@ -962,7 +992,7 @@ dash.calc('c_recap', {
 dash.calc('c_recap_bilan', {
   title: 'Critères gagnés sur la partie', inputs: ['c_recap'],
   fn: (recap) => {
-    const list = recap || [];
+    const list = (recap || []).filter((r) => r.compte !== false);
     return [{ devant: list.filter((r) => r.resultat === 'devant').length, egal: list.filter((r) => r.resultat === 'égal').length, derriere: list.filter((r) => r.resultat === 'derrière').length, total: list.length }];
   },
 });
@@ -1016,6 +1046,28 @@ dash.calc('c_objectifs', {
       const a = L.bilan(rows.filter(ok)), s = L.bilan(rows.filter((r) => !ok(r)));
       return { objectif, parties: a.parties, part: rows.length ? Math.round((100 * a.parties) / rows.length) : null, winrate: a.winrate, winrate_sans: s.winrate };
     });
+  },
+});
+
+dash.calc('c_controle', {
+  title: 'Contrôle des objectifs neutres', description: 'Moyenne par partie : ton équipe face à l\'équipe adverse, puis tes stats de jungler face au jungler adverse quand le filtre Jungle est actif.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, p = dash.params(), rows = L.filtre(parties, p).filter((r) => r.adv_barons !== undefined);
+    if (!rows.length) return [];
+    const moy = (f) => L.r1(L.moy(rows, (r) => L.n(r[f])));
+    const out = [
+      ['Dragons', 'dragons', 'adv_dragons'], ['Larves du Néant', 'larves', 'adv_larves'], ['Hérauts', 'heraut', 'adv_heraut'],
+      ['Nashors', 'barons', 'adv_barons'], ['Atakhan', 'atakhan', 'adv_atakhan'],
+    ].map(([critere, a, b]) => ({ groupe: 'equipe', critere, toi: moy(a), adversaire: moy(b) })).filter((r) => r.critere !== 'Atakhan' || r.toi + r.adversaire > 0);
+    if (p.role === 'Jungle') {
+      const j = rows.filter((r) => r.camps !== undefined);
+      const mj = (f) => L.r1(L.moy(j, (r) => L.n(r[f])));
+      for (const [critere, a, b] of [['Camps de jungle', 'camps', 'adv_camps'], ['Camps volés chez l\'adversaire', 'contre_jungle', 'adv_contre_jungle'], ['Crabes', 'crabes', 'adv_crabes'], ['Participation aux dragons', 'dragons_part', 'adv_dragons_part'], ['Participation aux Nashors', 'barons_part', 'adv_barons_part'], ['Objectifs volés', 'vols', 'adv_vols']]) {
+        out.push({ groupe: 'jungle', critere, toi: mj(a), adversaire: mj(b) });
+      }
+    }
+    return out;
   },
 });
 
@@ -1525,14 +1577,25 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     box.replaceChildren();
     if (d.status !== 'ok' || !d.data || !d.data.length) { box.textContent = d.status === 'loading' ? '—' : (d.status === 'ok' ? 'Aucune partie' : 'Échec du chargement'); return; }
     const dec = (r) => (r.critere === 'KDA' || r.critere === 'CS par minute' ? 1 : 0);
+    let groupe = null;
     for (const r of d.data) {
-      const ligne = el('div', 'lx-ligne');
+      if (r.groupe && r.groupe !== groupe) {
+        groupe = r.groupe;
+        if (groupe !== 'Duel') {
+          const t = el('div', 'lx-recap-groupe');
+          t.append(el('span', null, groupe === 'Jungle' ? 'Jungle, face au jungler adverse' : 'Objectifs de l\'équipe'));
+          if (r.compte === false) t.append(el('small', null, 'pas compté dans le score'));
+          box.appendChild(t);
+        }
+      }
+      const ligne = el('div', 'lx-ligne' + (r.compte === false ? ' lx-ligne-info' : ''));
       ligne.appendChild(el('span', 'lx-crit', r.critere + (r.critere === 'Morts' ? ' (moins = mieux)' : '')));
       const tot = Math.abs(r.toi) + Math.abs(r.adversaire);
       const p1 = tot ? (100 * Math.abs(r.toi)) / tot : 50;
       const barre = el('div', 'lx-duo-bar');
       const a = el('span', 'lx-ba'); a.style.width = p1 + '%';
       const b = el('span', 'lx-bb'); b.style.width = (100 - p1) + '%';
+      if (!tot) { a.style.background = b.style.background = 'rgba(255, 255, 255, 0.12)'; }
       barre.append(a, b);
       const res = el('span', null, r.resultat === 'devant' ? '✓' : r.resultat === 'égal' ? '=' : '✗');
       res.style.color = r.resultat === 'devant' ? 'var(--lx-win)' : r.resultat === 'égal' ? 'var(--lx-muted)' : 'var(--lx-loss)';
@@ -1686,6 +1749,27 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
       const d = document.createElement('div'); d.className = 'lx-hstat';
       const b = document.createElement('b'); b.textContent = val; if (col) b.style.color = col;
       const sp = document.createElement('span'); sp.textContent = lab; d.append(b, sp); box.appendChild(d);
+    }
+  });
+  dash.draw('controle', (box) => {
+    const d = dash.data('c_controle');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data || !d.data.length) { const v = document.createElement('p'); v.className = 'lx-vide'; v.textContent = 'Aucune partie avec ces filtres'; box.appendChild(v); return; }
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+    let g = null;
+    for (const r of d.data) {
+      if (r.groupe !== g) {
+        g = r.groupe;
+        const t = mk('div', 'lx-recap-groupe'); t.append(mk('span', null, g === 'jungle' ? 'Toi face au jungler adverse' : 'Ton équipe face à l\'équipe adverse')); box.appendChild(t);
+      }
+      const l = mk('div', 'lx-ligne');
+      l.appendChild(mk('span', 'lx-crit', r.critere));
+      const tot = r.toi + r.adversaire, p1 = tot ? (100 * r.toi) / tot : 50;
+      const bar = mk('div', 'lx-duo-bar'); const a = mk('span', 'lx-ba'); a.style.width = p1 + '%'; const b = mk('span', 'lx-bb'); b.style.width = (100 - p1) + '%'; if (!tot) { a.style.background = b.style.background = 'rgba(255, 255, 255, 0.12)'; } bar.append(a, b);
+      const res = mk('span', null, r.toi > r.adversaire ? '✓' : r.toi === r.adversaire ? '=' : '✗');
+      res.style.color = r.toi > r.adversaire ? 'var(--lx-win)' : r.toi === r.adversaire ? 'var(--lx-muted)' : 'var(--lx-loss)';
+      l.append(mk('span', 'lx-a', fr(r.toi)), bar, mk('span', 'lx-b', fr(r.adversaire)), res);
+      box.appendChild(l);
     }
   });
   dash.draw('serie', (box) => {

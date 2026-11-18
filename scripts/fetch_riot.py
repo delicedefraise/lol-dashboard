@@ -272,6 +272,7 @@ def ligne_partie(compte, puuids_suivis, m, tl, dd, rangs_de):
     objets = [dd.objet_final(moi.get("item%d" % i, 0)) for i in range(6)]
     or_total = sum(p["goldEarned"] for p in equipe)
     a = adv or {}
+    ach = a.get("challenges") or {}
 
     return {
         "compte": compte,
@@ -323,6 +324,18 @@ def ligne_partie(compte, puuids_suivis, m, tl, dd, rangs_de):
         "larves": s((obj.get("horde") or {}).get("kills", 0)),
         "heraut": "1" if (obj.get("riftHerald") or {}).get("kills", 0) else "0",
         "atakhan": s((obj.get("atakhan") or {}).get("kills", 0)),
+        # Objectifs pris par l'équipe adverse
+        "adv_barons": s(obj_adv["baron"]["kills"]),
+        "adv_larves": s((obj_adv.get("horde") or {}).get("kills", 0)),
+        "adv_heraut": "1" if (obj_adv.get("riftHerald") or {}).get("kills", 0) else "0",
+        "adv_atakhan": s((obj_adv.get("atakhan") or {}).get("kills", 0)),
+        # Jungle : toi et ton adversaire direct
+        "camps": s(moi.get("neutralMinionsKilled", 0)), "adv_camps": s(a.get("neutralMinionsKilled")),
+        "contre_jungle": s(ch.get("enemyJungleMonsterKills", 0)), "adv_contre_jungle": s(ach.get("enemyJungleMonsterKills")),
+        "crabes": s(ch.get("scuttleCrabKills", 0)), "adv_crabes": s(ach.get("scuttleCrabKills")),
+        "vols": s(ch.get("epicMonsterSteals", 0)), "adv_vols": s(ach.get("epicMonsterSteals")),
+        "dragons_part": s(ch.get("dragonTakedowns", 0)), "adv_dragons_part": s(ach.get("dragonTakedowns")),
+        "barons_part": s(ch.get("baronTakedowns", 0)), "adv_barons_part": s(ach.get("baronTakedowns")),
         "ecart_or_equipe_15": s(oe - oa) if oe is not None and oa is not None else None,
         "ff": "1" if moi.get("gameEndedInSurrender") else "0",
         "partenaire": nom_part,
@@ -384,6 +397,22 @@ def main():
     if args.verifier:
         verifier(data, args.verifier, puuids, charger, dd, rangs_de, api)
         return
+
+    # Complète les parties déjà connues avec les champs ajoutés depuis leur import
+    a_completer = [p for p in data["parties"] if any(k not in p for k in CHAMPS_AJOUTES)]
+    if a_completer:
+        print("%d parties à compléter avec les nouveaux champs" % len(a_completer))
+        parties_seules = {}
+        for p in a_completer:
+            mid = p["match_id"].rsplit("-", 1)[0]
+            if mid not in parties_seules:
+                parties_seules[mid] = cache_parties[mid][0] if mid in cache_parties else api.partie(mid)
+            m = parties_seules[mid]
+            if not m:
+                continue
+            ligne = ligne_partie(p["compte"], puuids, m, None, dd, lambda pu: [])
+            for k in CHAMPS_AJOUTES:
+                p[k] = ligne.get(k)
 
     connus = {p["match_id"] for p in data["parties"]}
     depuis = int(dt.datetime.fromisoformat(CONFIG["debut_saison"]).replace(tzinfo=dt.timezone.utc).timestamp())
@@ -457,6 +486,9 @@ def verifier(data, n, puuids, charger, dd, rangs_de, api):
 
 
 CONFIG = {}
+CHAMPS_AJOUTES = ["adv_barons", "adv_larves", "adv_heraut", "adv_atakhan", "camps", "adv_camps",
+                  "contre_jungle", "adv_contre_jungle", "crabes", "adv_crabes", "vols", "adv_vols",
+                  "dragons_part", "adv_dragons_part", "barons_part", "adv_barons_part"]
 
 if __name__ == "__main__":
     main()
