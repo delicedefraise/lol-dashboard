@@ -1,0 +1,9 @@
+{
+  "comptes": ["Caps75#EUW", "SPACFR#EUW"],
+  "plateforme": "euw1",
+  "region": "europe",
+  "debut_saison": "2026-01-08",
+  "files": {"420": "Solo/Duo", "440": "Flex"},
+  "fuseau": "Europe/Paris",
+  "seuil_smurf_niveau": 40
+}

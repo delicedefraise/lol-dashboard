@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analyse ranked</title>
+<style>
+:root { --font-anthropic-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --font-anthropic-serif: Georgia, "Times New Roman", serif; --cds-font-weight-medium: 600; --cds-chart-grid: rgba(139, 152, 166, 0.2); }
+html, body { margin: 0; background: #050b14; }
+.dash-select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 14px; padding: 6px 30px 6px 10px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c8aa6e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+</style>
+</head>
+<body>
+<div id="dash-root">
+<style>
+#dash-root { --dash-gutter: 0; }
+.lx {
+  --lx-bg: #050b14; --lx-panel: #0a1520; --lx-panel2: #0f1e2c; --lx-line: rgba(200, 170, 110, 0.28);
+  --lx-gold: #c8aa6e; --lx-gold2: #f0e6d2; --lx-text: #e6e0d2; --lx-muted: #8b98a6;
+  --lx-win: #0ac8b9; --lx-loss: #e84057; --lx-blue: #3a8dde; --lx-red: #d9455b;
+  font-family: var(--font-anthropic-sans); color: var(--lx-text);
+  background: radial-gradient(ellipse 120% 60% at 50% -10%, rgba(10, 200, 185, 0.14), transparent 60%), radial-gradient(ellipse 80% 50% at 100% 100%, rgba(200, 170, 110, 0.08), transparent 70%), var(--lx-bg);
+  display: flex; flex-direction: column; gap: 18px; padding: 16px 12px 28px; min-height: 100%;
+}
+@media (min-width: 720px) { .lx { padding: 28px 28px 40px; gap: 22px; } }
+.lx h1, .lx h2 { font-family: var(--font-anthropic-serif); font-weight: 400; color: var(--lx-gold2); margin: 0; }
+.lx h1 { font-size: clamp(1.7rem, 6vw, 2.5rem); line-height: 1.1; }
+.lx h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.lx h2::before { content: ""; width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid var(--lx-gold); background: rgba(200, 170, 110, 0.25); flex: none; }
+.lx-sous { color: var(--lx-muted); font-size: 13px; margin: 0 0 12px; }
+.lx-hero { display: flex; gap: 18px; align-items: center; padding: 18px; border: 1px solid var(--lx-line); border-radius: 4px; position: relative;
+  background: linear-gradient(135deg, rgba(15, 30, 44, 0.95), rgba(5, 11, 20, 0.95)); box-shadow: inset 0 1px 0 rgba(240, 230, 210, 0.06); }
+.lx-hero::before, .lx-hero::after { content: ""; position: absolute; width: 10px; height: 10px; border: 1px solid var(--lx-gold); background: var(--lx-bg); transform: rotate(45deg); top: -6px; }
+.lx-hero::before { left: 24px; } .lx-hero::after { right: 24px; }
+.lx-crest { flex: none; width: 104px; height: 104px; }
+.lx-crest svg { width: 100%; height: 100%; display: block; }
+.lx-kicker { color: var(--lx-gold); font-size: 13px; letter-spacing: 0.04em; margin: 0 0 4px; }
+.lx-lede { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--lx-text); }
+.lx-lede b { color: var(--lx-gold2); font-weight: var(--cds-font-weight-medium); }
+@media (max-width: 480px) { .lx-hero { flex-direction: column; text-align: center; } }
+.lx-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.lx-nav a { flex: none; font-size: 13px; color: var(--lx-gold2); text-decoration: none; padding: 6px 12px; border: 1px solid var(--lx-line); border-radius: 999px; background: rgba(10, 21, 32, 0.8); }
+.lx-filtres { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; align-items: end; position: sticky; top: 0; z-index: 3; padding: 10px; border: 1px solid var(--lx-line); border-radius: 4px; background: rgba(5, 11, 20, 0.92); backdrop-filter: blur(6px); }
+.lx-filtres label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--lx-muted); }
+.lx .dash-select { background-color: var(--lx-panel2); color: var(--lx-text); border: 1px solid var(--lx-line); border-radius: 3px; width: 100%; min-height: 36px; }
+.lx-btn { font: inherit; font-size: 13px; min-height: 36px; background: linear-gradient(180deg, #1e2328, #10151a); color: var(--lx-gold2); border: 1px solid var(--lx-gold); border-radius: 3px; padding: 6px 12px; cursor: pointer; }
+.lx-card { background: linear-gradient(180deg, var(--lx-panel2), var(--lx-panel)); border: 1px solid var(--lx-line); border-top: 2px solid var(--lx-gold); border-radius: 4px; padding: 16px 14px; min-width: 0; scroll-margin-top: 90px; }
+@media (min-width: 720px) { .lx-card { padding: 20px; } }
+.lx-tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 720px) { .lx-tuiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .lx-tuiles { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.lx-tuile { background: linear-gradient(180deg, var(--lx-panel2), var(--lx-panel)); border: 1px solid var(--lx-line); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.lx-tuile svg { width: 22px; height: 22px; fill: none; stroke: var(--lx-gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lx-lab { font-size: 12px; color: var(--lx-muted); }
+.lx-val { font-family: var(--font-anthropic-serif); font-size: 1.9rem; line-height: 1.1; color: var(--lx-gold2); font-variant-numeric: tabular-nums; }
+.lx-val.lx-win { color: var(--lx-win); } .lx-val.lx-loss { color: var(--lx-loss); }
+.lx-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.lx-rows { display: flex; flex-direction: column; gap: 6px; }
+.lx-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px; border-radius: 3px; background: rgba(5, 11, 20, 0.45); border: 1px solid rgba(200, 170, 110, 0.12); }
+.lx-main { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.lx-name { font-size: 14px; color: var(--lx-gold2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lx-np { font-size: 12px; color: var(--lx-muted); }
+.lx-bar { height: 5px; border-radius: 3px; background: rgba(139, 152, 166, 0.2); overflow: hidden; }
+.lx-bar span { display: block; height: 100%; border-radius: 3px; }
+.lx-bar .lx-w { background: linear-gradient(90deg, #0a7d76, var(--lx-win)); } .lx-bar .lx-l { background: linear-gradient(90deg, #8a2333, var(--lx-loss)); }
+.lx-sub { display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 12px; color: var(--lx-muted); }
+.lx-chip { padding: 1px 6px; border-radius: 3px; background: rgba(139, 152, 166, 0.12); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lx-chip.lx-up { color: var(--lx-win); background: rgba(10, 200, 185, 0.12); } .lx-chip.lx-down { color: var(--lx-loss); background: rgba(232, 64, 87, 0.12); }
+.lx-right { text-align: right; font-variant-numeric: tabular-nums; }
+.lx-wr { font-family: var(--font-anthropic-serif); font-size: 1.2rem; color: var(--lx-gold2); }
+.lx-wr.lx-good { color: var(--lx-win); } .lx-wr.lx-bad { color: var(--lx-loss); }
+.lx-vd { font-size: 12px; color: var(--lx-muted); white-space: nowrap; }
+.lx-vide { color: var(--lx-muted); font-size: 13px; margin: 8px 0; }
+.lx-hex { width: 40px; height: 44px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); background: linear-gradient(160deg, #f0e6d2, #785a28); display: grid; place-items: center; }
+.lx-hex span { width: 36px; height: 40px; clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-family: var(--font-anthropic-serif); color: #f0e6d2; }
+.lx-hex svg { width: 20px; height: 20px; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.lx-hex small { font-size: 11px; letter-spacing: 0.04em; }
+.lx-hex span.lx-img { padding: 0; overflow: hidden; }
+.lx-hex span.lx-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); display: block; }
+.lx-item.lx-img { padding: 0; overflow: hidden; }
+.lx-item.lx-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lx-legal { color: var(--lx-muted); font-size: 11px; line-height: 1.5; margin: 8px 0 0; }
+.lx-item svg { width: 18px; height: 18px; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.lx-los { width: 14px; height: 14px; transform: rotate(45deg); border: 1px solid var(--lx-gold); background: rgba(200, 170, 110, 0.2); justify-self: center; }
+.lx-av-duo { background: linear-gradient(135deg, rgba(10, 200, 185, 0.35), rgba(58, 141, 222, 0.35)); font-family: var(--font-anthropic-serif); }
+.lx-av { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--lx-gold); display: grid; place-items: center; font-size: 13px; color: var(--lx-gold2); justify-self: center; }
+.lx-ico { width: 36px; height: 36px; display: grid; place-items: center; justify-self: center; border: 1px solid var(--lx-line); transform: rotate(45deg); border-radius: 3px; background: rgba(200, 170, 110, 0.08); }
+.lx-ico svg { width: 20px; height: 20px; transform: rotate(-45deg); fill: none; stroke: var(--lx-gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lx-item { width: 34px; height: 34px; border-radius: 3px; border: 1px solid var(--lx-gold); display: grid; place-items: center; font-size: 12px; color: var(--lx-gold2); justify-self: center; box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6); }
+.lx-dot { width: 26px; height: 26px; border-radius: 50%; justify-self: center; border: 2px solid var(--lx-gold); }
+.lx-dot.lx-bleu { background: radial-gradient(circle at 35% 35%, #7fbfff, var(--lx-blue) 60%, #123a66); }
+.lx-dot.lx-rouge { background: radial-gradient(circle at 35% 35%, #ff9aa8, var(--lx-red) 60%, #5c1420); }
+.lx-heat { display: grid; grid-template-columns: 44px repeat(8, minmax(0, 1fr)); gap: 3px; font-variant-numeric: tabular-nums; }
+.lx-heat > div { border-radius: 3px; padding: 6px 0; text-align: center; font-size: 11px; min-width: 0; }
+.lx-heat .lx-h { color: var(--lx-gold); }
+.lx-heat .lx-r { color: var(--lx-muted); text-align: left; white-space: nowrap; }
+.lx-heat .lx-c { background: rgba(139, 152, 166, 0.08); }
+.lx-heat .lx-c b { display: block; font-weight: var(--cds-font-weight-medium); color: var(--lx-gold2); }
+.lx-heat .lx-c small { color: var(--lx-muted); font-size: 10px; }
+.lx-heat .lx-tot { box-shadow: inset 0 0 0 1px var(--lx-gold); }
+.lx-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.lx-cal > div { border-radius: 3px; padding: 4px; min-height: 46px; font-size: 11px; background: rgba(139, 152, 166, 0.07); min-width: 0; }
+.lx-cal .lx-h { background: none; min-height: 0; color: var(--lx-gold); text-align: center; }
+.lx-cal .lx-vid { background: none; }
+.lx-cal .lx-j { color: var(--lx-muted); }
+.lx-cal .lx-cvd { display: block; margin-top: 3px; color: var(--lx-gold2); font-weight: var(--cds-font-weight-medium); white-space: nowrap; overflow: hidden; }
+.lx-ctrl { margin: 6px 0 12px; }
+.lx-duel { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 14px 8px; border: 1px solid var(--lx-line); border-radius: 4px; background: linear-gradient(90deg, rgba(10, 200, 185, 0.12), rgba(5, 11, 20, 0.2) 45%, rgba(5, 11, 20, 0.2) 55%, rgba(232, 64, 87, 0.12)); margin-bottom: 12px; }
+.lx-duel-side { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; min-width: 0; }
+.lx-hex.lx-hex-g { width: 60px; height: 66px; } .lx-hex.lx-hex-g span { width: 56px; height: 62px; } .lx-hex.lx-hex-g svg { width: 26px; height: 26px; }
+.lx-duel-nom { font-size: 13px; color: var(--lx-gold2); }
+.lx-duel-qui { font-size: 11px; color: var(--lx-muted); }
+.lx-vs { font-family: var(--font-anthropic-serif); font-size: 1.6rem; color: var(--lx-gold); }
+.lx-res { text-align: center; font-family: var(--font-anthropic-serif); font-size: 1.6rem; margin: 2px 0; }
+.lx-res.lx-win { color: var(--lx-win); } .lx-res.lx-loss { color: var(--lx-loss); }
+.lx-meta { text-align: center; font-size: 12px; color: var(--lx-muted); margin: 0 0 12px; }
+.lx-score { text-align: center; font-size: 14px; margin: 0 0 14px; }
+.lx-score b { font-family: var(--font-anthropic-serif); font-size: 1.6rem; color: var(--lx-gold2); font-weight: 400; }
+.lx-recap { display: flex; flex-direction: column; gap: 10px; }
+.lx-ligne { display: grid; grid-template-columns: 3em minmax(0, 1fr) 3em 1.2em; gap: 6px 8px; align-items: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+.lx-ligne .lx-crit { grid-column: 1 / -1; font-size: 12px; color: var(--lx-muted); text-align: center; margin-bottom: -4px; }
+.lx-ligne .lx-a { text-align: right; color: var(--lx-win); } .lx-ligne .lx-b { color: var(--lx-loss); }
+.lx-duo-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: rgba(139, 152, 166, 0.2); }
+.lx-duo-bar .lx-ba { background: linear-gradient(90deg, #0a7d76, var(--lx-win)); } .lx-duo-bar .lx-bb { background: linear-gradient(90deg, var(--lx-loss), #8a2333); }
+.lx details { color: var(--lx-muted); font-size: 12px; }
+.lx details summary { color: var(--lx-gold); cursor: pointer; }
+.lx-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+.lx-ins { padding: 12px 14px; border-radius: 3px; background: rgba(5, 11, 20, 0.5); border: 1px solid rgba(200, 170, 110, 0.15); border-left: 3px solid var(--lx-gold); display: flex; flex-direction: column; gap: 6px; }
+.lx-ins.lx-alerte { border-left-color: var(--lx-loss); background: linear-gradient(90deg, rgba(232, 64, 87, 0.10), rgba(5, 11, 20, 0.5) 60%); }
+.lx-ins.lx-bon { border-left-color: var(--lx-win); background: linear-gradient(90deg, rgba(10, 200, 185, 0.10), rgba(5, 11, 20, 0.5) 60%); }
+.lx-ins-theme { font-size: 11px; color: var(--lx-gold); }
+.lx-ins-titre { font-family: var(--font-anthropic-serif); font-size: 1.05rem; color: var(--lx-gold2); }
+.lx-ins-constat { font-size: 13px; line-height: 1.45; color: var(--lx-text); }
+.lx-ins-conseil { font-size: 13px; line-height: 1.45; color: var(--lx-muted); padding-left: 16px; position: relative; }
+.lx-ins-conseil::before { content: ""; position: absolute; left: 2px; top: 6px; width: 6px; height: 6px; transform: rotate(45deg); background: var(--lx-gold); }
+.lx-res-v { color: var(--lx-win); } .lx-res-d { color: var(--lx-loss); }
+.lx-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; position: sticky; top: 0; z-index: 4; padding: 8px 0; background: linear-gradient(180deg, var(--lx-bg) 80%, transparent); scroll-margin-top: 0; }
+.lx-tab { flex: none; font: inherit; font-size: 14px; color: var(--lx-muted); background: rgba(10, 21, 32, 0.9); border: 1px solid var(--lx-line); border-radius: 3px; padding: 9px 14px; cursor: pointer; }
+.lx-tab.lx-tab-on { color: #050b14; background: linear-gradient(180deg, #f0e6d2, var(--lx-gold)); border-color: var(--lx-gold); font-weight: var(--cds-font-weight-medium); }
+.lx-panel { display: flex; flex-direction: column; gap: 18px; }
+.lx-panel[hidden] { display: none; }
+.lx-filtres { position: static; }
+.lx-rangs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.lx-rang { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border: 1px solid var(--lx-line); border-radius: 3px; background: rgba(5, 11, 20, 0.6); min-width: 140px; }
+.lx-rang-compte { font-size: 11px; color: var(--lx-muted); }
+.lx-rang-tier { font-family: var(--font-anthropic-serif); font-size: 1.15rem; color: var(--lx-gold2); }
+.lx-rang-det { font-size: 12px; color: var(--lx-text); font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .lx-rangs { justify-content: center; } }
+.lx-statut { font-size: 12px; padding: 3px 8px; border-radius: 3px; white-space: nowrap; text-align: center; }
+.lx-st-rouge { color: #fff; background: rgba(232, 64, 87, 0.75); } .lx-st-or { color: #050b14; background: var(--lx-gold); } .lx-st-gris { color: var(--lx-muted); background: rgba(139, 152, 166, 0.15); } .lx-st-vert { color: #050b14; background: var(--lx-win); }
+.lx-row-btn { font: inherit; color: inherit; text-align: left; width: 100%; cursor: pointer; }
+.lx-serie { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid rgba(200, 170, 110, 0.12); border-radius: 3px; margin-bottom: 6px; }
+.lx-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.lx-table th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--lx-gold); font-size: 12px; padding: 6px 4px; border-bottom: 1px solid var(--lx-line); }
+.lx-table td { padding: 7px 4px; border-bottom: 1px solid rgba(200, 170, 110, 0.1); }
+.lx-table .lx-num { text-align: right; }
+.lx-txt-v { color: var(--lx-win); } .lx-txt-d { color: var(--lx-loss); }
+.lx-legende { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--lx-muted); margin: 0 0 10px; }
+.lx-legende span { display: inline-flex; align-items: center; gap: 4px; }
+.lx-legende i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+</style>
+
+<div class="lx">
+  <header class="lx-hero" id="titre">
+    <div class="lx-crest" data-draw="crest" data-source="c_kpi" role="img" aria-label="Winrate global"></div>
+    <div>
+      <h1>Analyse ranked</h1>
+      <p class="lx-lede">Sur <b data-draw="l_parties" data-source="c_kpi" data-field="parties" data-row="0">—</b> parties, winrate de <b data-draw="l_wr" data-source="c_kpi" data-field="winrate" data-row="0">—</b>. Meilleur rôle : <b data-draw="l_role">—</b>. Meilleur champion : <b data-draw="l_champ">—</b> (10 parties minimum).</p>
+      <div class="lx-rangs" data-draw="rangs" data-source="c_rangs"></div>
+    </div>
+  </header>
+
+  <div class="lx-filtres" id="filtres">
+    <label>Compte
+      <select class="dash-select" id="f-compte" aria-label="Compte">
+        <option value="">Les deux comptes</option><option>Caps75#EUW</option><option>SPACFR#EUW</option>
+      </select>
+    </label>
+    <label>Rôle
+      <select class="dash-select" id="f-role" aria-label="Rôle">
+        <option value="">Tous les rôles</option><option>Haut</option><option>Jungle</option><option>Milieu</option><option>Bas</option><option>Support</option>
+      </select>
+    </label>
+    <label>File
+      <select class="dash-select" id="f-file" aria-label="File">
+        <option value="">Solo/Duo et Flex</option><option>Solo/Duo</option><option>Flex</option>
+      </select>
+    </label>
+    <label>Période
+      <select class="dash-select" id="f-periode" aria-label="Période">
+        <option value="">Toute la saison</option><option value="90">90 derniers jours</option><option value="30">30 derniers jours</option>
+      </select>
+    </label>
+    <button class="lx-btn" id="f-reset" type="button">Réinitialiser</button>
+  </div>
+
+  <nav class="lx-tabs" id="onglets" role="tablist" aria-label="Sujets">
+    <button class="lx-tab" type="button" role="tab" data-tab="resume">Résumé</button>
+    <button class="lx-tab" type="button" role="tab" data-tab="champs">Champions</button>
+    <button class="lx-tab" type="button" role="tab" data-tab="jeu">Jeu</button>
+    <button class="lx-tab" type="button" role="tab" data-tab="temps">Horaires</button>
+    <button class="lx-tab" type="button" role="tab" data-tab="joueurs">Joueurs</button>
+    <button class="lx-tab" type="button" role="tab" data-tab="parties">Parties</button>
+  </nav>
+
+  <div class="lx-panel" id="resume" role="tabpanel">
+    <section id="vue" class="lx-tuiles">
+      <div class="lx-tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3"/><path d="M17 6h3v1a3 3 0 0 1-3 3"/><path d="M12 14v4"/><path d="M8 20h8"/></svg><div class="lx-lab">Winrate</div><div class="lx-val" data-draw="k_wr" data-source="c_kpi" data-field="winrate" data-row="0">—</div></div>
+      <div class="lx-tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg><div class="lx-lab">Victoires</div><div class="lx-val lx-win" data-draw="k_v" data-source="c_kpi" data-field="victoires" data-row="0">—</div></div>
+      <div class="lx-tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></svg><div class="lx-lab">Défaites</div><div class="lx-val lx-loss" data-draw="k_d" data-source="c_kpi" data-field="defaites" data-row="0">—</div></div>
+      <div class="lx-tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l10 10M4 4h4M4 4v4"/><path d="M20 4L10 14M20 4h-4M20 4v4"/><path d="M7 15l2 2M17 15l-2 2M5 19l3-3M19 19l-3-3"/></svg><div class="lx-lab">KDA moyen</div><div class="lx-val" data-draw="k_kda" data-source="c_kpi" data-field="kda" data-row="0">—</div></div>
+      <div class="lx-tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/></svg><div class="lx-lab">CS par minute</div><div class="lx-val" data-draw="k_cs" data-source="c_kpi" data-field="cs_min" data-row="0">—</div></div>
+      <div class="lx-tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 15.5c.6-.3 1.3-.5 2-.5 2.2 0 4 1.8 4 4"/></svg><div class="lx-lab">Participation aux kills</div><div class="lx-val" data-draw="k_kp" data-source="c_kpi" data-field="kp" data-row="0">—</div></div>
+    </section>
+    <section id="analyses" class="lx-card">
+      <h2>Analyses et conseils</h2>
+      <p class="lx-sous">Calculées sur les parties filtrées. Rouge : à travailler. Turquoise : point fort.</p>
+      <div class="lx-insights" data-draw="analyses" data-source="c_analyses"></div>
+    </section>
+  </div>
+
+  <div class="lx-panel" id="champs" role="tabpanel" hidden>
+    <div class="lx-grille">
+      <section id="roles" class="lx-card">
+        <h2>Par rôle</h2>
+        <div class="lx-rows" data-draw="t_roles" data-source="c_roles"></div>
+      </section>
+      <section id="side" class="lx-card">
+        <h2>Par side</h2>
+        <div class="lx-rows" data-draw="t_side" data-source="c_side"></div>
+      </section>
+    </div>
+    <section id="champions" class="lx-card">
+      <h2>Champions</h2>
+      <p class="lx-sous">Les écarts comparent tes stats à celles de ton adversaire direct, à 10 et 15 minutes.</p>
+      <p class="lx-legende"><span><i style="background:#b45be0"></i>Assassin</span><span><i style="background:#e08a3c"></i>Combattant</span><span><i style="background:#4f9be8"></i>Mage</span><span><i style="background:#e5c24a"></i>Tireur</span><span><i style="background:#36c495"></i>Support</span><span><i style="background:#9fb0c0"></i>Tank</span></p>
+      <div class="lx-rows" data-draw="t_champs" data-source="c_champs catalogue"></div>
+    </section>
+    <section id="champion-detail" class="lx-card">
+      <h2>Matchups et objets</h2>
+      <select class="dash-select lx-ctrl" data-draw="sel_champ" aria-label="Champion"></select>
+      <div class="lx-grille">
+        <div id="matchups">
+          <p class="lx-sous">Face à quel adversaire direct</p>
+          <div class="lx-rows" data-draw="t_matchups" data-source="c_matchups catalogue"></div>
+        </div>
+        <div id="objets">
+          <p class="lx-sous">Winrate par objet terminé (bottes comprises)</p>
+          <div class="lx-rows" data-draw="t_items" data-source="c_items catalogue"></div>
+        </div>
+      </div>
+    </section>
+    <div class="lx-grille">
+      <section id="runes" class="lx-card">
+        <h2>Runes principales</h2>
+        <div class="lx-rows" data-draw="t_runes" data-source="c_runes"></div>
+      </section>
+      <section id="sorts" class="lx-card">
+        <h2>Sorts d'invocateur</h2>
+        <div class="lx-rows" data-draw="t_sorts" data-source="c_sorts"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="lx-panel" id="jeu" role="tabpanel" hidden>
+    <section id="objectifs" class="lx-card">
+      <h2>Les objectifs qui font gagner</h2>
+      <p class="lx-sous">Winrate quand ton équipe obtient l'objectif, comparé aux parties où elle ne l'obtient pas.</p>
+      <div class="lx-rows" data-draw="t_objectifs" data-source="c_objectifs"></div>
+    </section>
+    <section id="avance" class="lx-card">
+      <h2>Avance ou retard à 15 minutes</h2>
+      <p class="lx-sous">Écart d'or entre ton équipe et l'équipe adverse à 15 minutes. Montre si vous savez convertir une avance et revenir d'un retard.</p>
+      <div class="lx-rows" data-draw="t_avance" data-source="c_avance"></div>
+    </section>
+    <section id="apport" class="lx-card">
+      <h2>Ton apport en victoire et en défaite</h2>
+      <p class="lx-sous">Moyennes par partie.</p>
+      <table class="lx-table" data-source="c_contrib" data-row-key="stat">
+        <thead><tr><th data-field="stat">Stat</th><th data-field="victoire" class="lx-num">En victoire</th><th data-field="defaite" class="lx-num">En défaite</th></tr></thead>
+        <tbody data-draw="t_contrib"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="lx-panel" id="temps" role="tabpanel" hidden>
+    <section id="horaires" class="lx-card">
+      <h2>Quand tu gagnes le plus</h2>
+      <p class="lx-sous">Winrate par jour et par tranche horaire (heure de Paris). Turquoise au-dessus de 50 %, rouge en dessous, le petit chiffre est le nombre de parties.</p>
+      <div data-draw="heat" data-source="c_heat" role="img" aria-label="Winrate par jour de la semaine et par tranche horaire"></div>
+    </section>
+    <div class="lx-grille">
+      <section id="sessions" class="lx-card">
+        <h2>Partie après partie</h2>
+        <p class="lx-sous">Winrate selon la place de la partie dans la session (moins de 90 min entre deux parties).</p>
+        <div class="lx-rows" data-draw="t_sessions" data-source="c_sessions"></div>
+      </section>
+      <section id="series" class="lx-card">
+        <h2>Séries</h2>
+        <div data-draw="t_series" data-source="c_series"></div>
+        <h2 style="margin-top:14px">Par patch</h2>
+        <div class="lx-rows" data-draw="t_patch" data-source="c_patch"></div>
+      </section>
+    </div>
+    <section id="calendrier" class="lx-card">
+      <h2>Calendrier</h2>
+      <select class="dash-select lx-ctrl" data-draw="sel_mois" aria-label="Mois"></select>
+      <div data-draw="cal" data-source="c_cal" role="img" aria-label="Victoires et défaites par jour du mois"></div>
+    </section>
+  </div>
+
+  <div class="lx-panel" id="joueurs" role="tabpanel" hidden>
+    <section id="smurfs" class="lx-card">
+      <h2>Smurfs probables croisés</h2>
+      <p class="lx-sous">Adversaires avec un compte de niveau 40 ou moins, avec leur rang et leur winrate de saison au moment de l'import. Smurf probable : 58 % de winrate ou plus sur 10 parties minimum. À surveiller : entre 53 et 58 %, ou 70 % et plus sur moins de 10 parties.</p>
+      <div class="lx-rows" data-draw="t_smurfs" data-source="c_smurfs catalogue"></div>
+    </section>
+    <div class="lx-grille">
+      <section id="combos" class="lx-card">
+        <h2>Caps75 et SPACFR ensemble</h2>
+        <p class="lx-sous">Par paire de rôles, puis par paire de champions (2 parties minimum).</p>
+        <div class="lx-rows" data-draw="t_combos_roles" data-source="c_combos_roles"></div>
+        <div class="lx-rows" style="margin-top:10px" data-draw="t_combos" data-source="c_combos"></div>
+      </section>
+      <section id="duos" class="lx-card">
+        <h2>Alliés fréquents</h2>
+        <p class="lx-sous">Joueurs croisés au moins 3 fois dans ton équipe.</p>
+        <div class="lx-rows" data-draw="t_duos" data-source="c_duos"></div>
+        <h2 style="margin-top:14px">Rivaux</h2>
+        <p class="lx-sous">Joueurs croisés au moins 3 fois en face.</p>
+        <div class="lx-rows" data-draw="t_rivaux" data-source="c_rivaux"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="lx-panel" id="parties" role="tabpanel" hidden>
+    <section id="partie" class="lx-card">
+      <h2>Récap d'une partie</h2>
+      <select class="dash-select lx-ctrl" data-draw="sel_partie" aria-label="Partie"></select>
+      <div data-draw="duel" data-source="c_partie catalogue"></div>
+      <p class="lx-score">Devant sur <b data-draw="r_devant" data-source="c_recap_bilan" data-field="devant" data-row="0">—</b> critères sur <b data-draw="r_total" data-source="c_recap_bilan" data-field="total" data-row="0">—</b> face à l'adversaire direct</p>
+      <div class="lx-recap" data-draw="recap" data-source="c_recap" role="img" aria-label="Comparaison avec l'adversaire direct sur la partie choisie"></div>
+    </section>
+    <section id="historique" class="lx-card">
+      <h2>Dernières parties</h2>
+      <p class="lx-sous">Appuie sur une partie pour afficher son récap au-dessus.</p>
+      <div class="lx-rows" data-draw="t_historique" data-source="c_historique catalogue"></div>
+    </section>
+  </div>
+
+  <details>
+    <summary>Comment lire les chiffres</summary>
+    <p>Winrate : victoires divisées par parties. KDA : (éliminations + assistances) divisées par les morts. Participation aux kills : part des kills de ton équipe où tu as tué ou assisté. Écarts à 10 et 15 min : ta valeur moins celle de ton adversaire direct à ce moment de la partie, en moyenne. Session : parties d'un même compte espacées de moins de 90 minutes. Quand les deux comptes jouent la même partie, elle compte une fois pour chacun. Les icônes indiquent la classe du champion et le type d'objet. Rangs et winrates des adversaires relevés au moment de l'import.</p>
+  </details>
+  <p class="lx-legal" id="maj"></p>
+  <p class="lx-legal">Analyse ranked isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</p>
+</div>
+
+
+</div>
+<script src="data.js"></script>
+<script>
+const DATA = window.DATA;
+
+window.dash = (function () {
+  const sources = { parties: DATA.parties, rangs: DATA.rangs, catalogue: DATA.catalogue };
+  const calcs = [], vals = {}, draws = {};
+  let params = {};
+  function compute() {
+    for (const [id, o] of calcs) {
+      try { vals[id] = o.fn(...o.inputs.map((i) => (i in sources ? sources[i] : vals[i]))); }
+      catch (e) { console.error('Calcul ' + id, e); vals[id] = null; }
+    }
+  }
+  function run() {
+    compute();
+    for (const name in draws) {
+      document.querySelectorAll('[data-draw="' + name + '"]').forEach((el) => {
+        try { draws[name](el); } catch (e) { console.error('Dessin ' + name, e); }
+      });
+    }
+  }
+  return {
+    calc(id, o) { calcs.push([id, o]); },
+    loader() {},
+    data(id) { const d = id in sources ? sources[id] : vals[id]; return { status: 'ok', data: d === undefined ? [] : d, refreshing: false, truncated: false }; },
+    draw(name, fn) { draws[name] = typeof fn === 'function' ? fn : (el) => fn.update && fn.update(el); },
+    onData() {},
+    params() { return Object.assign({}, params); },
+    setParams(p) { for (const k in p) { if (p[k] === null || p[k] === undefined) delete params[k]; else params[k] = p[k]; } run(); },
+    resetParams() { params = {}; run(); },
+    setLink(id) { try { history.replaceState(null, '', '#' + id); } catch (e) {} },
+    refresh() {},
+    colors: ['#0ac8b9', '#e84057'],
+    _run: run,
+  };
+})();
+</script>
+<script>
+
+window.LOL = (function () {
+  const n = (v) => (v === null || v === undefined || v === '' ? 0 : +v);
+  const r1 = (x) => Math.round(x * 10) / 10;
+  const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  const TRANCHES = ['00h-06h', '06h-12h', '12h-18h', '18h-00h'];
+  function filtre(rows, p) {
+    let min = null;
+    if (p.periode === '30' || p.periode === '90') {
+      const d = new Date();
+      d.setDate(d.getDate() - Number(p.periode));
+      min = d.toISOString().slice(0, 10);
+    }
+    return (rows || []).filter((r) => (!p.compte || r.compte === p.compte) && (!p.role || r.role === p.role) && (!p.file || r.file === p.file) && (!min || r.date >= min));
+  }
+  function bilan(list) {
+    const v = list.filter((r) => r.resultat === 'V').length;
+    const t = list.length;
+    return { parties: t, winrate: t ? r1((100 * v) / t) : null, victoires: v, defaites: t - v };
+  }
+  function grouper(list, keyFn) {
+    const m = new Map();
+    for (const r of list) for (const k of [].concat(keyFn(r))) {
+      if (k === null || k === undefined || k === '') continue;
+      if (!m.has(k)) m.set(k, []);
+      m.get(k).push(r);
+    }
+    return m;
+  }
+  const moy = (list, f) => (list.length ? list.reduce((s, r) => s + f(r), 0) / list.length : null);
+  function ordre(r) { return r.date + String(n(r.heure)).padStart(2, '0') + r.match_id; }
+  return { n, r1, JOURS, TRANCHES, filtre, bilan, grouper, moy, ordre };
+})();
+
+window.LOL.f1 = (v, d) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toLocaleString('fr-FR', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }));
+window.LOL.sessions = function (rows) {
+  // Regroupe les parties d'un même compte en sessions : moins de 90 min entre la fin d'une partie et le début de la suivante.
+  const L = window.LOL, out = [];
+  const parCompte = L.grouper(rows, (r) => r.compte || 'x');
+  for (const [, list] of parCompte) {
+    const tri = list.slice().sort((a, b) => (a.debut < b.debut ? -1 : 1));
+    let rang = 0, prevFin = null, serieD = 0;
+    for (const r of tri) {
+      const t = Date.parse(r.debut + ':00');
+      if (prevFin === null || t - prevFin > 90 * 60000) { rang = 0; serieD = 0; }
+      rang += 1;
+      out.push({ r, rang, defaitesAvant: serieD });
+      serieD = r.resultat === 'D' ? serieD + 1 : 0;
+      prevFin = t + L.n(r.duree_min) * 60000;
+    }
+  }
+  return out;
+};
+
+window.LOL.TIERS = { Iron: 'Fer', Bronze: 'Bronze', Silver: 'Argent', Gold: 'Or', Platinum: 'Platine', Emerald: 'Émeraude', Diamond: 'Diamant', Master: 'Maître', Grandmaster: 'Grand maître', Challenger: 'Challenger' };
+window.LOL.smurfs = function (r) {
+  // Adversaires de niveau 40 ou moins, avec leur rang et leur bilan de saison au moment de l'import.
+  return String(r.smurfs_detail || '').split('|').filter(Boolean).map((s) => {
+    const [joueur, champion, niveau, kda, role, rang, w, l] = s.split('~');
+    const v = Number(w) || 0, d = Number(l) || 0, n = v + d;
+    const wr = n ? Math.round((1000 * v) / n) / 10 : null;
+    const [k, m, a] = String(kda).split('/').map(Number);
+    const ratio = Math.round(((k + a) / Math.max(1, m)) * 10) / 10;
+    let statut = 'Compte récent';
+    if (n >= 10 && wr >= 58) statut = 'Smurf probable';
+    else if ((n >= 10 && wr >= 53) || (n > 0 && n < 10 && wr >= 70)) statut = 'À surveiller';
+    const [t, div] = String(rang || '').split(' ');
+    const rangFr = t ? (window.LOL.TIERS[t] || t) + (div ? ' ' + div : '') : 'Non classé';
+    return { joueur, champion, niveau: Number(niveau), kda, ratio, role, rang: rangFr, wr, parties_saison: n, statut };
+  });
+};
+
+dash.calc('c_analyses', {
+  title: 'Analyses automatiques', description: 'Constats et conseils tirés des parties filtrées : tilt, smurfs, rôles, champions, matchups, early game, morts, vision, durée et horaires.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, f = L.f1, rows = L.filtre(parties, dash.params());
+    const out = [];
+    if (rows.length < 10) return [{ id: 'peu', theme: 'Données', ton: 'info', titre: 'Pas assez de parties', constat: 'Il faut au moins 10 parties avec ces filtres pour sortir des analyses fiables.', conseil: 'Élargis les filtres (compte, rôle ou période).' }];
+    const g = L.bilan(rows), wr = g.winrate;
+    const add = (id, theme, ton, titre, constat, conseil) => out.push({ id, theme, ton, titre, constat, conseil });
+    const pt = (a, b) => (a - b > 0 ? '+' : '−') + f(Math.abs(a - b)) + ' pts';
+
+    // Forme récente
+    const recent = rows.slice().sort((a, b) => (a.debut < b.debut ? 1 : -1)).slice(0, 20);
+    const br = L.bilan(recent);
+    if (rows.length >= 30) {
+      const ecart = br.winrate - wr;
+      add('forme', 'Forme', ecart <= -6 ? 'alerte' : ecart >= 6 ? 'bon' : 'info', ecart <= -6 ? 'Mauvaise passe en ce moment' : ecart >= 6 ? 'Tu es en forme' : 'Forme stable',
+        'Sur tes 20 dernières parties : ' + f(br.winrate, 1) + ' % de winrate (' + br.victoires + 'V ' + br.defaites + 'D), contre ' + f(wr, 1) + ' % sur toute la période.',
+        ecart <= -6 ? 'Réduis le volume quelques jours et rejoue tes champions les plus sûrs plutôt que de forcer.' : 'Continue sur la même routine, c\'est elle qui marche.');
+    }
+
+    // Tilt : partie jouée après 2 défaites d'affilée dans la même session
+    const S = L.sessions(rows);
+    const apres2 = S.filter((s) => s.defaitesAvant >= 2).map((s) => s.r);
+    if (apres2.length >= 5) {
+      const b = L.bilan(apres2);
+      const mauvais = b.winrate <= wr - 5;
+      add('tilt', 'Tilt', mauvais ? 'alerte' : 'bon', mauvais ? 'Les séries de défaites te coûtent cher' : 'Tu encaisses bien les défaites',
+        'Après 2 défaites d\'affilée dans la même session, tu gagnes ' + f(b.winrate, 1) + ' % de la partie suivante (' + b.parties + ' parties), soit ' + pt(b.winrate, wr) + ' par rapport à ta moyenne.',
+        mauvais ? 'Règle simple : 2 défaites de suite, tu coupes. Pause, ou tu reprends le lendemain.' : 'Pas de tilt visible dans les chiffres, garde ce mental.');
+    }
+    const longues = S.filter((s) => s.rang >= 4).map((s) => s.r), courtes = S.filter((s) => s.rang <= 3).map((s) => s.r);
+    if (longues.length >= 8 && courtes.length >= 8) {
+      const bl = L.bilan(longues), bc = L.bilan(courtes);
+      const mauvais = bl.winrate <= bc.winrate - 5;
+      add('session', 'Sessions', mauvais ? 'alerte' : 'info', mauvais ? 'Tes longues sessions font baisser ton winrate' : 'Tes longues sessions tiennent la route',
+        'Parties 1 à 3 d\'une session : ' + f(bc.winrate, 1) + ' % de winrate. À partir de la 4e : ' + f(bl.winrate, 1) + ' % (' + bl.parties + ' parties).',
+        mauvais ? 'Fixe-toi un maximum de 3 parties par session.' : 'Pas besoin de limiter tes sessions pour l\'instant.');
+    }
+
+    // Smurfs : compte de niveau 40 ou moins ET winrate de saison élevé
+    const avecSmurf = rows.filter((r) => L.smurfs(r).some((x) => x.statut === 'Smurf probable'));
+    const sansSmurf = rows.filter((r) => !L.smurfs(r).some((x) => x.statut === 'Smurf probable'));
+    if (avecSmurf.length >= 3) {
+      const bs = L.bilan(avecSmurf), bn = L.bilan(sansSmurf);
+      const part = Math.round((100 * avecSmurf.length) / rows.length);
+      const gene = bs.winrate < bn.winrate - 5;
+      add('smurfs', 'Smurfs', gene ? 'alerte' : 'info', 'Smurf probable en face dans ' + part + ' % de tes parties',
+        avecSmurf.length + ' parties contre au moins un compte de niveau 40 ou moins qui tourne à 58 % de winrate ou plus cette saison (10 parties minimum). Ton winrate dans ces parties : ' + f(bs.winrate, 1) + ' %, contre ' + f(bn.winrate, 1) + ' % sans.',
+        gene ? 'Ils te coûtent des parties, mais c\'est hors de ton contrôle : ne les laisse pas jouer sur ton mental.' : 'Ils ne t\'empêchent pas de gagner : ne mets pas tes défaites sur leur dos.');
+    }
+
+    // Rôles
+    const roles = [...L.grouper(rows, (r) => r.role)].map(([role, l]) => Object.assign({ role }, L.bilan(l))).filter((r) => r.parties >= 8).sort((a, b) => b.winrate - a.winrate);
+    if (roles.length >= 2) {
+      const best = roles[0], worst = roles[roles.length - 1];
+      add('roles', 'Rôles', 'bon', 'Ta meilleure lane : ' + best.role,
+        best.role + ' : ' + f(best.winrate, 1) + ' % sur ' + best.parties + ' parties. Ta lane la plus faible : ' + worst.role + ' (' + f(worst.winrate, 1) + ' % sur ' + worst.parties + ').',
+        worst.winrate < 48 ? 'Évite de remplir en ' + worst.role + ' en ranked, ou passe-le en normale pour progresser.' : 'Tu tiens sur plusieurs rôles, garde ' + best.role + ' en priorité.');
+    }
+
+    // Champions
+    const ch = [...L.grouper(rows, (r) => r.champion)].map(([champion, l]) => Object.assign({ champion }, L.bilan(l)));
+    const fiables = ch.filter((c) => c.parties >= 6).sort((a, b) => b.winrate - a.winrate);
+    if (fiables.length && fiables[0].winrate >= 50) {
+      const top = fiables[0];
+      add('champ_top', 'Champions', 'bon', 'Ton champion le plus rentable : ' + top.champion, f(top.winrate, 1) + ' % de winrate sur ' + top.parties + ' parties.', 'C\'est ton pick à sortir quand tu veux sécuriser une partie.');
+    }
+    if (fiables.length) {
+      const flop = fiables.filter((c) => c.winrate < 47).sort((a, b) => b.parties - a.parties)[0];
+      if (flop) add('champ_flop', 'Champions', 'alerte', 'Champion qui te coûte des LP : ' + flop.champion, f(flop.winrate, 1) + ' % sur ' + flop.parties + ' parties.', 'Mets-le de côté en ranked le temps de le retravailler en normale.');
+    }
+    const tri = ch.slice().sort((a, b) => b.parties - a.parties);
+    if (tri.length >= 5) {
+      const top3 = tri.slice(0, 3), noms = new Set(top3.map((c) => c.champion));
+      const part = Math.round((100 * top3.reduce((s, c) => s + c.parties, 0)) / rows.length);
+      const b3 = L.bilan(rows.filter((r) => noms.has(r.champion))), bo = L.bilan(rows.filter((r) => !noms.has(r.champion)));
+      const large = part < 60;
+      add('pool', 'Champion pool', large && b3.winrate > bo.winrate ? 'alerte' : 'info', tri.length + ' champions joués',
+        'Tes 3 champions principaux (' + top3.map((c) => c.champion).join(', ') + ') représentent ' + part + ' % de tes parties, à ' + f(b3.winrate, 1) + ' % de winrate. Les autres : ' + f(bo.winrate, 1) + ' %.',
+        large ? 'Resserre ton pool à 3 champions sur ton rôle principal : c\'est le conseil numéro un des coachs pour monter.' : 'Ton pool est déjà resserré, c\'est bien.');
+    }
+
+    // Matchups
+    const mu = [...L.grouper(rows, (r) => r.champion + ' contre ' + r.adv_champion)].map(([k, l]) => Object.assign({ k }, L.bilan(l))).filter((m) => m.parties >= 3);
+    if (mu.length >= 2) {
+      const best = mu.slice().sort((a, b) => b.winrate - a.winrate || b.parties - a.parties)[0];
+      const worst = mu.slice().sort((a, b) => a.winrate - b.winrate || b.parties - a.parties)[0];
+      add('matchup_top', 'Matchups', 'bon', 'Matchup où tu domines', best.k + ' : ' + best.victoires + 'V ' + best.defaites + 'D.', 'Quand ce matchup tombe, joue agressif en lane.');
+      if (worst.winrate < 50) add('matchup_flop', 'Matchups', 'alerte', 'Matchup qui te pose problème', worst.k + ' : ' + worst.victoires + 'V ' + worst.defaites + 'D.', 'Ban ' + worst.k.split(' contre ')[1] + ' ou choisis un autre champion quand il est en face.');
+    }
+
+    // Early game
+    const e15 = rows.filter((r) => r.ecart_or_15 !== null && r.ecart_or_15 !== '');
+    if (e15.length >= 10) {
+      const devant = e15.filter((r) => L.n(r.ecart_or_15) > 0), derriere = e15.filter((r) => L.n(r.ecart_or_15) <= 0);
+      const bd = L.bilan(devant), bder = L.bilan(derriere);
+      const cs10 = L.moy(e15, (r) => L.n(r.cs_10) - L.n(r.adv_cs_10));
+      const partDevant = Math.round((100 * devant.length) / e15.length);
+      add('early', 'Early game', partDevant < 45 ? 'alerte' : partDevant >= 55 ? 'bon' : 'info', partDevant < 45 ? 'Tu sors souvent de lane en retard' : partDevant >= 55 ? 'Tu gagnes souvent ta lane' : 'Tes lanes sont équilibrées',
+        'Devant ton adversaire direct à 15 min dans ' + partDevant + ' % des parties. Winrate quand tu es devant : ' + f(bd.winrate, 1) + ' %, derrière : ' + f(bder.winrate, 1) + ' %. Écart moyen de CS à 10 min : ' + (cs10 >= 0 ? '+' : '−') + f(Math.abs(cs10), 1) + '.',
+        cs10 < 0 ? 'Travaille le farm des 10 premières minutes : vise 70 CS à 10 min en outil d\'entraînement.' : 'Ton early est solide, le levier est plutôt dans la conversion en objectifs.');
+    }
+
+    // Morts
+    const v = rows.filter((r) => r.resultat === 'V'), d = rows.filter((r) => r.resultat === 'D');
+    if (v.length >= 5 && d.length >= 5) {
+      const mv = L.moy(v, (r) => L.n(r.deaths)), md = L.moy(d, (r) => L.n(r.deaths)), madv = L.moy(rows, (r) => L.n(r.adv_deaths)), mm = L.moy(rows, (r) => L.n(r.deaths));
+      add('morts', 'Morts', md - mv >= 2.5 ? 'alerte' : 'info', 'Tu meurs ' + f(md, 1) + ' fois par défaite',
+        'Contre ' + f(mv, 1) + ' en victoire. En moyenne tu meurs ' + f(mm, 1) + ' fois par partie, ton adversaire direct ' + f(madv, 1) + '.',
+        md - mv >= 2.5 ? 'Les défaites se jouent sur les morts évitables : avant chaque fight, regarde la mini-map et compte les ennemis visibles.' : 'Tes morts restent stables, pas d\'alerte particulière.');
+    }
+
+    // Vision
+    const vis = L.moy(rows, (r) => L.n(r.vision) / Math.max(1, L.n(r.duree_min))), avis = L.moy(rows, (r) => L.n(r.adv_vision) / Math.max(1, L.n(r.duree_min)));
+    const pinks = L.moy(rows, (r) => L.n(r.pinks));
+    add('vision', 'Vision', vis < avis - 0.1 ? 'alerte' : 'bon', vis < avis - 0.1 ? 'Ta vision est en dessous de ton vis-à-vis' : 'Bonne vision',
+      'Score de vision : ' + f(vis, 2) + ' par minute, contre ' + f(avis, 2) + ' pour ton adversaire direct. Balises de contrôle posées : ' + f(pinks, 1) + ' par partie.',
+      pinks < 1.5 ? 'Achète une balise de contrôle à chaque retour en base, c\'est 75 PO qui sauvent des morts.' : 'Continue à poser tes balises de contrôle.');
+
+    // Durée
+    const courtesP = rows.filter((r) => L.n(r.duree_min) < 25), longuesP = rows.filter((r) => L.n(r.duree_min) >= 32);
+    if (courtesP.length >= 8 && longuesP.length >= 8) {
+      const bc = L.bilan(courtesP), bl = L.bilan(longuesP);
+      const lateFaible = bl.winrate < bc.winrate - 8;
+      add('duree', 'Durée', lateFaible ? 'alerte' : 'info', lateFaible ? 'Tu perds les parties qui traînent' : 'Tu tiens les parties longues',
+        'Parties de moins de 25 min : ' + f(bc.winrate, 1) + ' % de winrate. Parties de 32 min et plus : ' + f(bl.winrate, 1) + ' %.',
+        lateFaible ? 'Quand tu as l\'avantage, force les objectifs (Nashor, inhibiteurs) au lieu de farmer : finis la partie avant que l\'équipe adverse scale.' : 'Pas de faiblesse en fin de partie.');
+    }
+
+    // Horaires
+    const tr = [...L.grouper(rows, (r) => L.TRANCHES[Math.floor(L.n(r.heure) / 6)])].map(([t, l]) => Object.assign({ t }, L.bilan(l))).filter((x) => x.parties >= 8).sort((a, b) => b.winrate - a.winrate);
+    if (tr.length >= 2) {
+      const best = tr[0], worst = tr[tr.length - 1];
+      add('horaires', 'Horaires', worst.winrate < 48 ? 'alerte' : 'info', 'Ton meilleur créneau : ' + best.t,
+        f(best.winrate, 1) + ' % de winrate sur ' + best.parties + ' parties. Ton pire : ' + worst.t + ' (' + f(worst.winrate, 1) + ' % sur ' + worst.parties + ').',
+        worst.winrate < 48 ? 'Évite de lancer des ranked sur le créneau ' + worst.t + '.' : 'Pas de créneau à bannir.');
+    }
+
+    // Ensemble ou séparés
+    const base = (r) => String(r.match_id).split('-')[0];
+    const tous = (parties || []);
+    const compteur = new Map();
+    for (const r of tous) compteur.set(base(r), (compteur.get(base(r)) || 0) + 1);
+    const ensemble = rows.filter((r) => compteur.get(base(r)) > 1), seul = rows.filter((r) => compteur.get(base(r)) === 1);
+    if (ensemble.length >= 5 && seul.length >= 5) {
+      const be = L.bilan(ensemble), bs = L.bilan(seul);
+      const ecartDuo = be.winrate - bs.winrate;
+      add('ensemble', 'Duo', ecartDuo >= 3 ? 'bon' : ecartDuo <= -3 ? 'alerte' : 'info', ecartDuo >= 3 ? 'Caps75 et SPACFR gagnent plus ensemble' : ecartDuo <= -3 ? 'Vous gagnez moins quand vous jouez ensemble' : 'Ensemble ou séparés, ça ne change presque rien',
+        'Quand les deux comptes jouent ensemble : ' + f(be.winrate, 1) + ' % de winrate (' + new Set(ensemble.map(base)).size + ' parties). Chacun de son côté : ' + f(bs.winrate, 1) + ' % (' + seul.length + ' parties).',
+        ecartDuo >= 3 ? 'Privilégiez le duo pour vos ranked.' : ecartDuo <= -3 ? 'Jouez plutôt vos ranked séparément et gardez le duo pour le fun.' : 'Choisissez selon l\'envie, le duo ne fait pas la différence.');
+    }
+
+    // Avance d'équipe à 15 min : parties jetées et remontées
+    const t15 = rows.filter((r) => r.ecart_or_equipe_15 !== null && r.ecart_or_equipe_15 !== '');
+    const devant15 = t15.filter((r) => L.n(r.ecart_or_equipe_15) >= 1500), derriere15 = t15.filter((r) => L.n(r.ecart_or_equipe_15) <= -1500);
+    if (devant15.length >= 5 && derriere15.length >= 5) {
+      const jetees = devant15.filter((r) => r.resultat === 'D').length, remontees = derriere15.filter((r) => r.resultat === 'V').length;
+      const pJ = Math.round((100 * jetees) / devant15.length), pR = Math.round((100 * remontees) / derriere15.length);
+      add('throws', 'Fin de partie', pJ >= 30 ? 'alerte' : 'bon', pJ >= 30 ? 'Trop de parties gagnées qui finissent en défaite' : 'Tu convertis bien tes avances',
+        'Avec 1 500 PO d\'avance d\'équipe à 15 min, tu perds quand même ' + pJ + ' % du temps (' + jetees + ' sur ' + devant15.length + '). Avec 1 500 PO de retard, ton équipe revient dans ' + pR + ' % des cas (' + remontees + ' sur ' + derriere15.length + ').',
+        pJ >= 30 ? 'Quand vous êtes devant, groupez pour les objectifs et évitez les fights sans vision : c\'est là que les parties se jettent.' : 'Garde le réflexe de jouer les objectifs quand vous êtes devant.');
+    }
+
+    // Objectif qui pèse le plus
+    const objs = [['le premier sang', (r) => L.n(r.premier_sang) === 1], ['la première tour', (r) => L.n(r.premiere_tour) === 1], ['le premier dragon', (r) => L.n(r.premier_dragon) === 1], ['au moins 2 larves du Néant', (r) => L.n(r.larves) >= 2], ['le Héraut', (r) => L.n(r.heraut) > 0]];
+    const ecarts = objs.map(([nom, ok]) => { const a = rows.filter(ok), s2 = rows.filter((r) => !ok(r)); return { nom, a, s2, ba: L.bilan(a), bs: L.bilan(s2) }; }).filter((o) => o.a.length >= 8 && o.s2.length >= 8);
+    if (ecarts.length) {
+      const top = ecarts.sort((x, y) => (y.ba.winrate - y.bs.winrate) - (x.ba.winrate - x.bs.winrate))[0];
+      add('objectifs', 'Objectifs', 'info', 'L\'objectif qui change tout : ' + top.nom,
+        'Quand ton équipe prend ' + top.nom + ', tu gagnes ' + f(top.ba.winrate, 1) + ' % de tes parties (' + top.a.length + '). Sinon : ' + f(top.bs.winrate, 1) + ' %.',
+        'Priorise-le en début de partie : le détail des objectifs est dans l\'onglet Jeu.');
+    }
+
+    const ordre = { alerte: 0, bon: 1, info: 2 };
+    return out.sort((a, b) => ordre[a.ton] - ordre[b.ton]);
+  },
+});
+
+dash.calc('c_kpi', {
+  title: 'Chiffres clés', description: 'Winrate, bilan, KDA, CS/min et participation sur les parties filtrées.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const sum = (f) => rows.reduce((s, r) => s + L.n(r[f]), 0);
+    const duree = sum('duree_min');
+    return [Object.assign(L.bilan(rows), {
+      kda: rows.length ? L.r1((sum('kills') + sum('assists')) / Math.max(1, sum('deaths'))) : null,
+      cs_min: duree ? L.r1(sum('cs') / duree) : null,
+      kp: rows.length ? Math.round(100 * L.moy(rows, (r) => L.n(r.kp))) : null,
+    })];
+  },
+});
+
+dash.calc('c_heat', {
+  title: 'Winrate par jour et tranche horaire', description: 'Une ligne par tranche de 6 h et par jour de la semaine, plus le total de la tranche.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const out = [];
+    L.TRANCHES.forEach((t, ti) => {
+      const inT = rows.filter((r) => Math.floor(L.n(r.heure) / 6) === ti);
+      [...L.JOURS, 'Tous'].forEach((j, ji) => {
+        const sub = j === 'Tous' ? inT : inT.filter((r) => (new Date(r.date + 'T12:00:00Z').getUTCDay() + 6) % 7 === ji);
+        out.push(Object.assign({ tranche: t, jour: j }, L.bilan(sub)));
+      });
+    });
+    return out;
+  },
+});
+
+dash.calc('c_roles', {
+  title: 'Winrate par rôle', inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    return ['Haut', 'Jungle', 'Milieu', 'Bas', 'Support'].map((role) => Object.assign({ role }, L.bilan(rows.filter((r) => r.role === role)))).filter((r) => r.parties > 0);
+  },
+});
+
+dash.calc('c_side', {
+  title: 'Winrate par side', inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    return ['Bleu', 'Rouge'].map((side) => Object.assign({ side }, L.bilan(rows.filter((r) => r.side === side))));
+  },
+});
+
+dash.calc('c_champs', {
+  title: 'Stats par champion', description: 'Bilan, KDA, CS/min et écarts moyens avec l\'adversaire direct, par champion joué.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const out = [];
+    for (const [champion, list] of L.grouper(rows, (r) => r.champion)) {
+      const k = list.reduce((s, r) => s + L.n(r.kills) + L.n(r.assists), 0), d = list.reduce((s, r) => s + L.n(r.deaths), 0);
+      const cs = list.reduce((s, r) => s + L.n(r.cs), 0), du = list.reduce((s, r) => s + L.n(r.duree_min), 0);
+      out.push(Object.assign({ champion }, L.bilan(list), {
+        kda: L.r1(k / Math.max(1, d)),
+        cs_min: du ? L.r1(cs / du) : null,
+        ecart_cs_10: L.r1(L.moy(list, (r) => L.n(r.cs_10) - L.n(r.adv_cs_10))),
+        ecart_or_15: Math.round(L.moy(list, (r) => L.n(r.ecart_or_15))),
+        ecart_niv_10: L.r1(L.moy(list, (r) => L.n(r.ecart_niv_10))),
+      }));
+    }
+    return out.sort((a, b) => b.parties - a.parties);
+  },
+});
+
+dash.calc('c_duos', {
+  title: 'Alliés fréquents', description: 'Joueurs vus au moins 3 fois dans ton équipe.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    return [...L.grouper(rows, (r) => (r.allies || '').split('|'))].map(([joueur, list]) => Object.assign({ joueur }, L.bilan(list)))
+      .filter((r) => r.parties >= 3).sort((a, b) => b.parties - a.parties).slice(0, 8);
+  },
+});
+
+dash.calc('c_rivaux', {
+  title: 'Adversaires fréquents', description: 'Joueurs vus au moins 3 fois dans l\'équipe adverse.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    return [...L.grouper(rows, (r) => (r.adversaires || '').split('|'))].map(([joueur, list]) => Object.assign({ joueur }, L.bilan(list)))
+      .filter((r) => r.parties >= 3).sort((a, b) => b.parties - a.parties).slice(0, 8);
+  },
+});
+
+dash.calc('c_champ_choisi', {
+  title: 'Champion choisi', description: 'Le champion choisi dans la liste, sinon le plus joué.',
+  inputs: ['c_champs'],
+  fn: (champs) => {
+    const p = dash.params(), list = champs || [];
+    const ok = list.find((c) => c.champion === p.champ);
+    return ok ? ok.champion : (list[0] ? list[0].champion : null);
+  },
+});
+
+dash.calc('c_matchups', {
+  title: 'Matchups du champion choisi', inputs: ['parties', 'c_champ_choisi'],
+  fn: (parties, champion) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params()).filter((r) => r.champion === champion);
+    return [...L.grouper(rows, (r) => r.adv_champion)].map(([adversaire, list]) => Object.assign({ adversaire }, L.bilan(list)))
+      .sort((a, b) => b.parties - a.parties || b.winrate - a.winrate);
+  },
+});
+
+dash.calc('c_items', {
+  title: 'Winrate par objet du champion choisi', description: 'Objets achetés au moins 3 fois sur ce champion.',
+  inputs: ['parties', 'c_champ_choisi'],
+  fn: (parties, champion) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params()).filter((r) => r.champion === champion);
+    return [...L.grouper(rows, (r) => [...new Set((r.objets || '').split('|'))])].map(([objet, list]) => Object.assign({ objet }, L.bilan(list)))
+      .filter((r) => r.parties >= 3).sort((a, b) => b.parties - a.parties);
+  },
+});
+
+dash.calc('c_cal', {
+  title: 'Calendrier du mois', description: 'Victoires et défaites pour chaque jour du mois choisi (le dernier mois joué par défaut).',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, p = dash.params(), rows = L.filtre(parties, p);
+    const mois = p.mois || (parties || []).reduce((m, r) => (r.date > m ? r.date : m), '').slice(0, 7);
+    if (!mois) return [];
+    const [y, m] = mois.split('-').map(Number);
+    const nb = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const out = [];
+    for (let d = 1; d <= nb; d++) {
+      const date = mois + '-' + String(d).padStart(2, '0');
+      const b = L.bilan(rows.filter((r) => r.date === date));
+      out.push({ date, parties: b.parties, victoires: b.victoires, defaites: b.defaites });
+    }
+    return out;
+  },
+});
+
+dash.calc('c_partie', {
+  title: 'Partie choisie', description: 'La partie choisie dans la liste, sinon la plus récente.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, p = dash.params(), rows = L.filtre(parties, p);
+    const choisie = rows.find((r) => r.match_id === p.partie);
+    if (choisie) return [choisie];
+    const last = rows.slice().sort((a, b) => (L.ordre(a) < L.ordre(b) ? 1 : -1))[0];
+    return last ? [last] : [];
+  },
+});
+
+dash.calc('c_recap', {
+  title: 'Comparaison avec l\'adversaire direct', description: 'Tes stats et celles de ton adversaire direct sur la partie choisie.',
+  inputs: ['c_partie'],
+  fn: (partie) => {
+    const L = window.LOL, g = (partie || [])[0];
+    if (!g) return [];
+    const kda = (k, d, a) => L.r1((L.n(k) + L.n(a)) / Math.max(1, L.n(d)));
+    const crit = [
+      ['Éliminations', L.n(g.kills), L.n(g.adv_kills), 1],
+      ['Morts', L.n(g.deaths), L.n(g.adv_deaths), -1],
+      ['Assistances', L.n(g.assists), L.n(g.adv_assists), 1],
+      ['KDA', kda(g.kills, g.deaths, g.assists), kda(g.adv_kills, g.adv_deaths, g.adv_assists), 1],
+      ['CS', L.n(g.cs), L.n(g.adv_cs), 1],
+      ['CS à 10 min', L.n(g.cs_10), L.n(g.adv_cs_10), 1],
+      ['CS par minute', L.r1(L.n(g.cs) / Math.max(1, L.n(g.duree_min))), L.r1(L.n(g.adv_cs) / Math.max(1, L.n(g.duree_min))), 1],
+      ['Or', L.n(g.gold), L.n(g.adv_gold), 1],
+      ['Dégâts aux champions', L.n(g.degats), L.n(g.adv_degats), 1],
+      ['Score de vision', L.n(g.vision), L.n(g.adv_vision), 1],
+      ['Niveau final', L.n(g.niveau), L.n(g.adv_niveau), 1],
+    ];
+    return crit.map(([critere, toi, adversaire, sens]) => ({
+      critere, toi, adversaire,
+      resultat: toi === adversaire ? 'égal' : ((toi - adversaire) * sens > 0 ? 'devant' : 'derrière'),
+    }));
+  },
+});
+
+dash.calc('c_recap_bilan', {
+  title: 'Critères gagnés sur la partie', inputs: ['c_recap'],
+  fn: (recap) => {
+    const list = recap || [];
+    return [{ devant: list.filter((r) => r.resultat === 'devant').length, egal: list.filter((r) => r.resultat === 'égal').length, derriere: list.filter((r) => r.resultat === 'derrière').length, total: list.length }];
+  },
+});
+
+</script>
+<script>
+dash.calc('c_rangs', {
+  title: 'Rang actuel des comptes', description: 'Rang, LP et bilan de la saison en cours, au moment de l\'import.',
+  inputs: ['rangs'],
+  fn: (rangs) => (rangs || []).map((r) => {
+    const v = Number(r.victoires) || 0, d = Number(r.defaites) || 0;
+    return { cle: r.compte + ' ' + r.file, compte: r.compte, file: r.file, rang: r.tier + ' ' + r.division, lp: Number(r.lp), victoires: v, defaites: d, winrate: v + d ? Math.round((1000 * v) / (v + d)) / 10 : null };
+  }),
+});
+
+dash.calc('c_smurfs', {
+  title: 'Smurfs probables croisés', description: 'Adversaires de niveau 40 ou moins, avec leur rang et leur winrate de saison : « Smurf probable » à 58 % ou plus sur 10 parties minimum.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const par = new Map();
+    for (const r of rows) {
+      for (const s of L.smurfs(r)) {
+        const cur = par.get(s.joueur) || Object.assign({ cle: s.joueur, rencontres: 0, gagnees: 0, date: '' }, s);
+        cur.rencontres += 1;
+        if (r.resultat === 'V') cur.gagnees += 1;
+        if (r.date >= cur.date) Object.assign(cur, s, { date: r.date, compte: r.compte });
+        par.set(s.joueur, cur);
+      }
+    }
+    const prio = { 'Smurf probable': 0, 'À surveiller': 1, 'Compte récent': 2 };
+    return [...par.values()].sort((a, b) => prio[a.statut] - prio[b.statut] || (b.wr || 0) - (a.wr || 0)).slice(0, 20);
+  },
+});
+
+dash.calc('c_objectifs', {
+  title: 'Winrate selon les objectifs', description: 'Winrate quand ton équipe prend l\'objectif, et quand elle ne le prend pas.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const liste = [
+      ['Premier sang', (r) => L.n(r.premier_sang) === 1],
+      ['Première tour', (r) => L.n(r.premiere_tour) === 1],
+      ['Premier dragon', (r) => L.n(r.premier_dragon) === 1],
+      ['Plus de dragons que l\'adversaire', (r) => L.n(r.dragons) > L.n(r.adv_dragons)],
+      ['Au moins 2 larves du Néant sur 3', (r) => L.n(r.larves) >= 2],
+      ['Héraut pris', (r) => L.n(r.heraut) > 0],
+      ['Nashor pris', (r) => L.n(r.barons) > 0],
+    ];
+    return liste.map(([objectif, ok]) => {
+      const a = L.bilan(rows.filter(ok)), s = L.bilan(rows.filter((r) => !ok(r)));
+      return { objectif, parties: a.parties, part: rows.length ? Math.round((100 * a.parties) / rows.length) : null, winrate: a.winrate, winrate_sans: s.winrate };
+    });
+  },
+});
+
+dash.calc('c_avance', {
+  title: 'Winrate selon l\'or d\'équipe à 15 min', description: 'Écart d\'or entre ton équipe et l\'équipe adverse à 15 minutes, par tranche.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params()).filter((r) => r.ecart_or_equipe_15 !== null && r.ecart_or_equipe_15 !== '');
+    const tr = [['Avance de 3 000 PO ou plus', 3000, Infinity], ['Avance de 1 000 à 3 000', 1000, 3000], ['Partie serrée (± 1 000)', -1000, 1000], ['Retard de 1 000 à 3 000', -3000, -1000], ['Retard de 3 000 PO ou plus', -Infinity, -3000]];
+    return tr.map(([tranche, min, max]) => Object.assign({ tranche }, L.bilan(rows.filter((r) => L.n(r.ecart_or_equipe_15) >= min && L.n(r.ecart_or_equipe_15) < max))));
+  },
+});
+
+dash.calc('c_contrib', {
+  title: 'Ton apport en victoire et en défaite', description: 'Moyennes par partie, en victoire puis en défaite.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const v = rows.filter((r) => r.resultat === 'V'), d = rows.filter((r) => r.resultat === 'D');
+    const m = (l, fn) => (l.length ? L.moy(l, fn) : null);
+    const st = [
+      ['Part des dégâts de l\'équipe', '%', (r) => 100 * L.n(r.part_degats), 1],
+      ['Part de l\'or de l\'équipe', '%', (r) => 100 * L.n(r.part_or), 1],
+      ['Participation aux kills', '%', (r) => 100 * L.n(r.kp), 1],
+      ['Temps passé mort', '%', (r) => 100 * L.n(r.temps_mort_pct), 1],
+      ['Morts', '', (r) => L.n(r.deaths), 1],
+      ['Kills en solo', '', (r) => L.n(r.solo_kills), 1],
+      ['Plaques de tour', '', (r) => L.n(r.plaques), 1],
+      ['CS par minute', '', (r) => L.n(r.cs) / Math.max(1, L.n(r.duree_min)), 1],
+      ['Vision par minute', '', (r) => L.n(r.vision) / Math.max(1, L.n(r.duree_min)), 2],
+      ['Balises de contrôle', '', (r) => L.n(r.pinks), 1],
+    ];
+    const rd = (x, k) => (x === null ? null : Math.round(x * Math.pow(10, k)) / Math.pow(10, k));
+    return st.map(([stat, unite, fn, k]) => ({ stat, unite, victoire: rd(m(v, fn), k), defaite: rd(m(d, fn), k) }));
+  },
+});
+
+function lolGroupe(id, title, key, min) {
+  dash.calc(id, {
+    title, inputs: ['parties'],
+    fn: (parties) => {
+      const L = window.LOL, rows = L.filtre(parties, dash.params());
+      return [...L.grouper(rows, (r) => r[key])].map(([k, l]) => Object.assign({ [key]: k }, L.bilan(l))).filter((r) => r.parties >= min).sort((a, b) => b.parties - a.parties);
+    },
+  });
+}
+lolGroupe('c_runes', 'Winrate par rune principale', 'rune', 2);
+lolGroupe('c_sorts', 'Winrate par sorts d\'invocateur', 'sorts', 2);
+
+dash.calc('c_patch', {
+  title: 'Winrate par patch', inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    const num = (p) => p.split('.').map(Number);
+    return [...L.grouper(rows, (r) => r.patch)].map(([patch, l]) => Object.assign({ patch }, L.bilan(l)))
+      .sort((a, b) => { const x = num(a.patch), y = num(b.patch); return y[0] - x[0] || y[1] - x[1]; });
+  },
+});
+
+dash.calc('c_sessions', {
+  title: 'Winrate selon la place dans la session', description: 'Session : parties d\'un même compte espacées de moins de 90 minutes.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, S = L.sessions(L.filtre(parties, dash.params()));
+    const lab = ['1re partie', '2e partie', '3e partie', '4e partie', '5e partie et plus'];
+    return lab.map((rang, i) => Object.assign({ rang }, L.bilan(S.filter((s) => (i === 4 ? s.rang >= 5 : s.rang === i + 1)).map((s) => s.r))));
+  },
+});
+
+dash.calc('c_series', {
+  title: 'Séries de victoires et de défaites', description: 'Par compte, sur les parties filtrées.',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    return [...L.grouper(rows, (r) => r.compte)].map(([compte, l]) => {
+      const tri = l.slice().sort((a, b) => (a.debut < b.debut ? -1 : 1));
+      let maxV = 0, maxD = 0, cur = 0, res = null;
+      for (const r of tri) {
+        cur = r.resultat === res ? cur + 1 : 1; res = r.resultat;
+        if (res === 'V') maxV = Math.max(maxV, cur); else maxD = Math.max(maxD, cur);
+      }
+      return { compte, plus_longue_victoires: maxV, plus_longue_defaites: maxD, serie_actuelle: res ? cur + (res === 'V' ? ' victoire' : ' défaite') + (cur > 1 ? 's' : '') : '' };
+    });
+  },
+});
+
+dash.calc('c_combos', {
+  title: 'Combos Caps75 + SPACFR', description: 'Parties jouées ensemble, par paire de champions (2 parties minimum).',
+  inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params()).filter((r) => r.partenaire);
+    const vus = new Set(), out = new Map();
+    for (const r of rows) {
+      const base = String(r.match_id).split('-')[0];
+      if (vus.has(base)) continue;
+      vus.add(base);
+      const a = { c: r.compte, ch: r.champion, ro: r.role }, b = { c: r.partenaire, ch: r.partenaire_champion, ro: r.partenaire_role };
+      const [x, y] = a.c < b.c ? [a, b] : [b, a];
+      const combo = x.c.split('#')[0] + ' ' + x.ch + ' (' + x.ro + ') + ' + y.c.split('#')[0] + ' ' + y.ch + ' (' + y.ro + ')';
+      if (!out.has(combo)) out.set(combo, []);
+      out.get(combo).push(r);
+    }
+    return [...out].map(([combo, l]) => Object.assign({ combo }, L.bilan(l))).filter((c) => c.parties >= 2).sort((a, b) => b.parties - a.parties || b.winrate - a.winrate).slice(0, 10);
+  },
+});
+
+dash.calc('c_combos_roles', {
+  title: 'Duo par paire de rôles', inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params()).filter((r) => r.partenaire);
+    const vus = new Set(), out = new Map();
+    for (const r of rows) {
+      const base = String(r.match_id).split('-')[0];
+      if (vus.has(base)) continue;
+      vus.add(base);
+      const a = [r.compte, r.role], b = [r.partenaire, r.partenaire_role];
+      const [x, y] = a[0] < b[0] ? [a, b] : [b, a];
+      const roles = x[0].split('#')[0] + ' ' + x[1] + ' + ' + y[0].split('#')[0] + ' ' + y[1];
+      if (!out.has(roles)) out.set(roles, []);
+      out.get(roles).push(r);
+    }
+    return [...out].map(([roles, l]) => Object.assign({ roles }, L.bilan(l))).filter((r) => r.parties >= 2).sort((a, b) => b.parties - a.parties);
+  },
+});
+
+dash.calc('c_historique', {
+  title: 'Dernières parties', inputs: ['parties'],
+  fn: (parties) => {
+    const L = window.LOL, rows = L.filtre(parties, dash.params());
+    return rows.slice().sort((a, b) => (L.ordre(a) < L.ordre(b) ? 1 : -1)).slice(0, 25).map((r) => ({
+      match_id: r.match_id, date: r.date, heure: L.n(r.heure), compte: r.compte, role: r.role, champion: r.champion, adv_champion: r.adv_champion,
+      resultat: r.resultat, kda: r.kills + '/' + r.deaths + '/' + r.assists, cs: L.n(r.cs), duree: Math.round(L.n(r.duree_min)),
+    }));
+  },
+});
+
+</script>
+<script>
+/* Icônes officielles Riot via Data Dragon (chargées depuis le CDN de Riot) */
+window.DD = { v: null, champ: {}, item: {} };
+(function () {
+  const norm = (t) => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'`.\s-]/g, '');
+  window.DD.norm = norm;
+  const base = 'https://ddragon.leagueoflegends.com';
+  window.DD_ready = fetch(base + '/api/versions.json').then((r) => r.json()).then((vs) => {
+    const v = vs[0]; window.DD.v = v;
+    return Promise.all([
+      fetch(base + '/cdn/' + v + '/data/fr_FR/champion.json').then((r) => r.json()),
+      fetch(base + '/cdn/' + v + '/data/fr_FR/item.json').then((r) => r.json()),
+    ]).then(([c, it]) => {
+      for (const k in c.data) {
+        const ch = c.data[k], url = base + '/cdn/' + v + '/img/champion/' + ch.image.full;
+        window.DD.champ[norm(ch.name)] = url; window.DD.champ[norm(ch.id)] = url;
+      }
+      for (const id in it.data) {
+        const o = it.data[id], key = norm(o.name);
+        const faillible = !(o.maps && o.maps['11']) || o.requiredAlly || Number(id) > 100000;
+        if (window.DD.item[key] && faillible) continue;
+        window.DD.item[key] = base + '/cdn/' + v + '/img/item/' + o.image.full;
+      }
+    });
+  }).catch((e) => console.warn('Data Dragon indisponible, emblèmes de secours', e));
+})();
+</script>
+<script>
+
+(function () {
+  const L = window.LOL;
+  const NS = 'http://www.w3.org/2000/svg';
+  const fr = (v, dec) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toLocaleString('fr-FR', { minimumFractionDigits: dec || 0, maximumFractionDigits: dec || 0 }));
+  const pct = (v) => (v === null || v === undefined ? '—' : fr(v, 1) + ' %');
+  const signe = (v, dec) => (v === null || v === undefined ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + fr(Math.abs(v), dec));
+  const wrCls = (v, n) => (v === null || v === undefined || n < 3 ? '' : v >= 55 ? 'lx-good' : v <= 45 ? 'lx-bad' : '');
+  const enc = (s) => String(s).replace(/%/g, '%25').replace(/&/g, '%26').replace(/=/g, '%3D');
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+  const mark = (e, src, field, key, val) => { e.setAttribute('data-source', src); e.setAttribute('data-field', field); if (key) e.setAttribute('data-where', enc(key) + '=' + enc(val)); return e; };
+  const hue = (s) => { let h = 7; for (const c of String(s)) h = (h * 31 + c.codePointAt(0)) % 360; return h; };
+  const initiales = (s) => {
+    const t = String(s).replace(/#.*/, '').replace(/[^\p{L}\p{N} ]/gu, '').trim();
+    const p = t.split(/\s+/).filter(Boolean);
+    return (p.length > 1 ? p[0][0] + p[1][0] : t.slice(0, 2)).toUpperCase();
+  };
+  const ROLES = {
+    Haut: ['M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z'],
+    Jungle: ['M5 19c0-8 6-14 14-14 0 8-6 14-14 14z', 'M5 19l8-8'],
+    Milieu: ['M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z'],
+    Bas: ['M12 4a8 8 0 1 0 0.01 0z', 'M12 8a4 4 0 1 0 0.01 0z', 'M12 11.5v1'],
+    Support: ['M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z'],
+  };
+  const CLASSES = {
+    Assassin: { c: '#b45be0', d: ['M15 3h6v6l-8 8-3-3z', 'M7 14l3 3', 'M4 20l4-4'] },
+    Combattant: { c: '#e08a3c', d: ['M9 13l8-8 3-1-1 3-8 8', 'M7 15l2 2', 'M5 21l4-4', 'M14 7l3 3'] },
+    Mage: { c: '#4f9be8', d: ['M5 20L15 10', 'M16 3l1.2 2.8L20 7l-2.8 1.2L16 11l-1.2-2.8L12 7l2.8-1.2z'] },
+    Tireur: { c: '#e5c24a', d: ['M5 19L19 5', 'M14 5h5v5', 'M6 5c7 1 12 6 13 13'] },
+    Support: { c: '#36c495', d: ['M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z', 'M12 9v5', 'M9.5 11.5h5'] },
+    Tank: { c: '#9fb0c0', d: ['M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z', 'M12 3v18'] },
+  };
+  const OBJETS = {
+    Bottes: { c: '#c8aa6e', d: ['M9 3v9l-5 4v4h15v-2c0-2-2-3-5-3l-1-12z'] },
+    Magie: { c: '#4f9be8', d: ['M12 4a8 8 0 1 0 0.01 0z', 'M12 8l1 3 3 1-3 1-1 3-1-3-3-1 3-1z'] },
+    Attaque: { c: '#e08a3c', d: ['M9 13l8-8 3-1-1 3-8 8', 'M7 15l2 2', 'M5 21l4-4'] },
+    'Défense': { c: '#9fb0c0', d: ['M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z'] },
+    Utilitaire: { c: '#36c495', d: ['M7 3h10', 'M7 21h10', 'M8 3c0 5 8 5 8 9s-8 4-8 9', 'M16 3c0 5-8 5-8 9s8 4 8 9'] },
+  };
+  function svgIcon(paths, color) {
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+    if (color) s.style.stroke = color;
+    for (const d of paths) { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); s.appendChild(p); }
+    return s;
+  }
+  const cat = () => { const d = dash.data('catalogue'); return d.status === 'ok' && d.data && d.data.champions ? d.data : { champions: {}, objets: {} }; };
+  function hex(name, grand) {
+    const cl = CLASSES[cat().champions[name]] || { c: '#c8aa6e', d: ['M12 6a6 6 0 1 0 0.01 0z'] };
+    const o = el('div', 'lx-hex' + (grand ? ' lx-hex-g' : ''));
+    o.title = name;
+    const i = el('span');
+    i.style.background = 'radial-gradient(circle at 50% 35%, ' + cl.c + '55, #0a1520 75%)';
+    const src = window.DD && window.DD.champ[window.DD.norm(name)];
+    const secours = () => { i.className = ''; i.textContent = ''; i.appendChild(svgIcon(cl.d, cl.c)); if (grand) i.appendChild(el('small', null, initiales(name))); };
+    if (src) { const im = el('img'); im.src = src; im.alt = name; im.loading = 'lazy'; im.onerror = secours; i.className = 'lx-img'; i.appendChild(im); }
+    else secours();
+    o.appendChild(i);
+    return o;
+  }
+  function badge(kind, name) {
+    if (kind === 'champ') return hex(name);
+    if (kind === 'role') { const b = el('div', 'lx-ico'); b.appendChild(svgIcon(ROLES[name] || ROLES.Milieu)); return b; }
+    if (kind === 'side') return el('div', 'lx-dot ' + (name === 'Rouge' ? 'lx-rouge' : 'lx-bleu'));
+    if (kind === 'objet') {
+      const o = OBJETS[cat().objets[name]] || OBJETS.Utilitaire;
+      const b = el('div', 'lx-item'); b.title = name;
+      b.style.background = 'radial-gradient(circle at 30% 30%, ' + o.c + '40, #0a1520 80%)';
+      const src = window.DD && window.DD.item[window.DD.norm(name)];
+      const secours = () => { b.classList.remove('lx-img'); b.textContent = ''; b.appendChild(svgIcon(o.d, o.c)); };
+      if (src) { const im = el('img'); im.src = src; im.alt = name; im.loading = 'lazy'; im.onerror = secours; b.classList.add('lx-img'); b.appendChild(im); }
+      else secours();
+      return b;
+    }
+    if (kind === 'duo') { const b = el('div', 'lx-av lx-av-duo', '2'); return b; }
+    if (kind === 'losange') return el('div', 'lx-los');
+    const b = el('div', 'lx-av', initiales(name));
+    b.style.background = 'hsl(' + hue(name) + ' 35% 20%)';
+    return b;
+  }
+  const num = (src, field, key, val, txt, cls) => mark(el('span', cls || null, txt), src, field, key, val);
+
+  // Filtres de la page
+  const filtres = [['f-compte', 'compte'], ['f-role', 'role'], ['f-file', 'file'], ['f-periode', 'periode']];
+  for (const [id, key] of filtres) {
+    document.querySelectorAll('#' + id).forEach((sel) => {
+      sel.value = dash.params()[key] ?? '';
+      sel.addEventListener('change', () => dash.setParams({ [key]: sel.value || null }));
+    });
+  }
+  document.querySelectorAll('#f-reset').forEach((b) => b.addEventListener('click', () => {
+    dash.resetParams();
+    for (const [id] of filtres) document.querySelectorAll('#' + id).forEach((sel) => { sel.value = ''; });
+  }));
+
+  // Blason : jauge de winrate
+  dash.draw('crest', (box) => {
+    const d = dash.data('c_kpi');
+    const row = d.status === 'ok' && d.data && d.data[0];
+    const wr = row && row.winrate !== null ? row.winrate : null;
+    box.replaceChildren();
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('viewBox', '0 0 120 120');
+    const add = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); s.appendChild(e); return e; };
+    const defs = add('defs', {});
+    const g = document.createElementNS(NS, 'linearGradient');
+    g.setAttribute('id', 'lx-or'); g.setAttribute('x1', '0'); g.setAttribute('y1', '0'); g.setAttribute('x2', '1'); g.setAttribute('y2', '1');
+    [['0', '#f0e6d2'], ['1', '#785a28']].forEach(([o, c]) => { const st = document.createElementNS(NS, 'stop'); st.setAttribute('offset', o); st.setAttribute('stop-color', c); g.appendChild(st); });
+    defs.appendChild(g);
+    add('polygon', { points: '60,4 108,32 108,88 60,116 12,88 12,32', fill: '#0a1520', stroke: 'url(#lx-or)', 'stroke-width': '2' });
+    add('circle', { cx: 60, cy: 60, r: 40, fill: 'none', stroke: 'rgba(139,152,166,0.25)', 'stroke-width': 7 });
+    const c = 2 * Math.PI * 40;
+    add('circle', { cx: 60, cy: 60, r: 40, fill: 'none', stroke: wr !== null && wr < 50 ? '#e84057' : '#0ac8b9', 'stroke-width': 7, 'stroke-linecap': 'round', 'stroke-dasharray': (wr !== null ? (c * wr) / 100 : 0) + ' ' + c, transform: 'rotate(-90 60 60)' });
+    const t = add('text', { x: 60, y: 64, 'text-anchor': 'middle', fill: '#f0e6d2', 'font-size': '20' });
+    t.style.fontFamily = 'var(--font-anthropic-serif)';
+    t.textContent = wr !== null ? fr(wr, 1) + '%' : '—';
+    const t2 = add('text', { x: 60, y: 80, 'text-anchor': 'middle', fill: '#c8aa6e', 'font-size': '9' });
+    t2.textContent = 'winrate';
+    box.appendChild(s);
+  });
+
+  // Analyses
+  dash.draw('analyses', (box) => {
+    const d = dash.data('c_analyses');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data) { box.appendChild(el('p', 'lx-vide', d.status === 'loading' ? '—' : 'Échec du chargement')); return; }
+    for (const a of d.data) {
+      const c = el('div', 'lx-ins lx-' + a.ton);
+      c.setAttribute('id', 'analyse-' + a.id);
+      c.append(el('span', 'lx-ins-theme', a.theme), mark(el('span', 'lx-ins-titre', a.titre), 'c_analyses', 'titre', 'id', a.id), mark(el('span', 'lx-ins-constat', a.constat), 'c_analyses', 'constat', 'id', a.id), mark(el('span', 'lx-ins-conseil', a.conseil), 'c_analyses', 'conseil', 'id', a.id));
+      box.appendChild(c);
+    }
+  });
+
+  // Smurfs
+  dash.draw('t_smurfs', (box) => {
+    const d = dash.data('c_smurfs');
+    box.replaceChildren();
+    if (d.status !== 'ok') { box.appendChild(el('p', 'lx-vide', d.status === 'loading' ? '—' : 'Échec du chargement')); return; }
+    if (!d.data || !d.data.length) { box.appendChild(el('p', 'lx-vide', 'Aucun compte récent croisé avec ces filtres')); return; }
+    for (const s of d.data) {
+      const row = el('div', 'lx-row');
+      row.appendChild(hex(s.champion));
+      const main = el('div', 'lx-main');
+      main.appendChild(mark(el('span', 'lx-name', s.joueur), 'c_smurfs', 'joueur', 'cle', s.cle));
+      const sub = el('div', 'lx-sub');
+      const chip = (field, label, txt, cls) => { const c = el('span', 'lx-chip' + (cls ? ' ' + cls : '')); if (label) c.appendChild(document.createTextNode(label)); c.appendChild(field ? mark(el('span', null, txt), 'c_smurfs', field, 'cle', s.cle) : document.createTextNode(txt)); sub.appendChild(c); return c; };
+      chip('niveau', 'Niveau ', String(s.niveau));
+      chip('rang', '', s.rang);
+      if (s.parties_saison) { const c = chip('wr', '', pct(s.wr), s.wr >= 58 ? 'lx-down' : ''); c.appendChild(document.createTextNode(' sur ')); c.appendChild(mark(el('span', null, String(s.parties_saison)), 'c_smurfs', 'parties_saison', 'cle', s.cle)); c.appendChild(document.createTextNode(' parties')); }
+      chip(null, '', s.champion + ' · ' + s.role + ' · ' + s.kda);
+      const r2 = chip('rencontres', 'Croisé ', String(s.rencontres)); r2.appendChild(document.createTextNode(' fois, ' + s.gagnees + ' gagnée' + (s.gagnees > 1 ? 's' : '')));
+      main.appendChild(sub);
+      row.appendChild(main);
+      const tag = mark(el('div', 'lx-statut ' + (s.statut === 'Smurf probable' ? 'lx-st-rouge' : s.statut === 'À surveiller' ? 'lx-st-or' : 'lx-st-gris'), s.statut), 'c_smurfs', 'statut', 'cle', s.cle);
+      row.appendChild(tag);
+      box.appendChild(row);
+    }
+  });
+
+  // Phrase et tuiles
+  const kpi = (field, fmt) => (e) => {
+    const d = dash.data('c_kpi');
+    const row = d.status === 'ok' && d.data && d.data[0];
+    e.textContent = row && row[field] !== null && row[field] !== undefined ? fmt(row[field]) : '—';
+  };
+  dash.draw('l_parties', kpi('parties', (v) => fr(v)));
+  dash.draw('l_wr', kpi('winrate', pct));
+  dash.draw('k_wr', kpi('winrate', pct));
+  dash.draw('k_v', kpi('victoires', (v) => fr(v)));
+  dash.draw('k_d', kpi('defaites', (v) => fr(v)));
+  dash.draw('k_kda', kpi('kda', (v) => fr(v, 1)));
+  dash.draw('k_cs', kpi('cs_min', (v) => fr(v, 1)));
+  dash.draw('k_kp', kpi('kp', (v) => fr(v) + ' %'));
+  const meilleur = (calc, key) => (e) => {
+    const d = dash.data(calc);
+    const list = d.status === 'ok' ? (d.data || []).filter((r) => r.parties >= 10) : [];
+    const best = list.slice().sort((a, b) => b.winrate - a.winrate)[0];
+    e.textContent = best ? best[key] + ' (' + pct(best.winrate) + ')' : '—';
+  };
+  dash.draw('l_role', meilleur('c_roles', 'role'));
+  dash.draw('l_champ', meilleur('c_champs', 'champion'));
+
+  // Listes façon tableau des scores
+  function liste(name, calc, cfg) {
+    dash.draw(name, (box) => {
+      const d = dash.data(calc);
+      box.replaceChildren();
+      if (d.status === 'loading') { box.appendChild(el('p', 'lx-vide', '—')); return; }
+      if (d.status !== 'ok') { box.appendChild(el('p', 'lx-vide', 'Échec du chargement')); return; }
+      const list = d.data || [];
+      if (!list.length) { box.appendChild(el('p', 'lx-vide', cfg.vide || 'Pas assez de parties')); return; }
+      for (const r of list) {
+        const k = r[cfg.key];
+        const row = el('div', 'lx-row');
+        row.appendChild(badge(cfg.kind, k));
+        const main = el('div', 'lx-main');
+        main.appendChild(num(calc, cfg.key, cfg.key, k, k, 'lx-name'));
+        const bar = el('div', 'lx-bar');
+        const fill = el('span', r.winrate >= 50 ? 'lx-w' : 'lx-l');
+        fill.style.width = Math.max(2, r.winrate || 0) + '%';
+        bar.appendChild(fill);
+        main.appendChild(bar);
+        if (cfg.sub) { const sub = el('div', 'lx-sub'); cfg.sub(r, sub, calc, k); main.appendChild(sub); }
+        row.appendChild(main);
+        const right = el('div', 'lx-right');
+        right.appendChild(num(calc, 'winrate', cfg.key, k, pct(r.winrate), 'lx-wr ' + wrCls(r.winrate, r.parties)));
+        const vd = el('div', 'lx-vd');
+        vd.append(num(calc, 'victoires', cfg.key, k, fr(r.victoires)), document.createTextNode('V · '), num(calc, 'defaites', cfg.key, k, fr(r.defaites)), document.createTextNode('D'));
+        right.appendChild(vd);
+        const np = el('div', 'lx-np');
+        np.append(num(calc, 'parties', cfg.key, k, fr(r.parties)), document.createTextNode(' parties'));
+        right.appendChild(np);
+        row.appendChild(right);
+        box.appendChild(row);
+      }
+    });
+  }
+  liste('t_roles', 'c_roles', { key: 'role', kind: 'role' });
+  liste('t_side', 'c_side', { key: 'side', kind: 'side' });
+  liste('t_duos', 'c_duos', { key: 'joueur', kind: 'joueur', vide: 'Aucun allié croisé 3 fois' });
+  liste('t_rivaux', 'c_rivaux', { key: 'joueur', kind: 'joueur', vide: 'Aucun adversaire croisé 3 fois' });
+  liste('t_matchups', 'c_matchups', { key: 'adversaire', kind: 'champ' });
+  liste('t_items', 'c_items', { key: 'objet', kind: 'objet', vide: 'Aucun objet acheté 3 fois' });
+  liste('t_champs', 'c_champs', {
+    key: 'champion', kind: 'champ',
+    sub: (r, sub, calc, k) => {
+      const chip = (label, field, v, txt, cls) => { const c = el('span', 'lx-chip' + (cls ? ' ' + cls : '')); c.append(document.createTextNode(label + ' '), num(calc, field, 'champion', k, txt)); sub.appendChild(c); };
+      const sens = (v) => (v > 0 ? 'lx-up' : v < 0 ? 'lx-down' : '');
+      chip('KDA', 'kda', r.kda, fr(r.kda, 1));
+      chip('CS/min', 'cs_min', r.cs_min, fr(r.cs_min, 1));
+      chip('CS à 10 min', 'ecart_cs_10', r.ecart_cs_10, signe(r.ecart_cs_10, 1), sens(r.ecart_cs_10));
+      chip('Or à 15 min', 'ecart_or_15', r.ecart_or_15, signe(r.ecart_or_15), sens(r.ecart_or_15));
+      chip('Niveau à 10 min', 'ecart_niv_10', r.ecart_niv_10, signe(r.ecart_niv_10, 1), sens(r.ecart_niv_10));
+    },
+  });
+
+  // Couleur selon le winrate
+  function fond(wr, parties) {
+    if (!parties) return '';
+    const a = (0.15 + Math.min(1, Math.abs(wr - 50) / 25) * 0.55).toFixed(2);
+    return wr >= 50 ? 'rgba(10, 200, 185, ' + a + ')' : 'rgba(232, 64, 87, ' + a + ')';
+  }
+
+  // Heatmap
+  const COURT = { '00h-06h': '0-6h', '06h-12h': '6-12h', '12h-18h': '12-18h', '18h-00h': '18-24h' };
+  dash.draw('heat', (box) => {
+    const d = dash.data('c_heat');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data) { box.textContent = d.status === 'loading' ? '—' : 'Échec du chargement'; return; }
+    const grid = el('div', 'lx-heat');
+    const add = (cls, txt) => { const c = el('div', cls, txt); grid.appendChild(c); return c; };
+    add('lx-h');
+    [...L.JOURS, 'Tous'].forEach((j) => add('lx-h', j));
+    for (const t of L.TRANCHES) {
+      add('lx-r', COURT[t] || t);
+      for (const j of [...L.JOURS, 'Tous']) {
+        const r = d.data.find((x) => x.tranche === t && x.jour === j) || { parties: 0 };
+        const c = add('lx-c' + (j === 'Tous' ? ' lx-tot' : ''));
+        const f = fond(r.winrate, r.parties);
+        if (f) c.style.background = f;
+        c.append(el('b', null, r.parties ? fr(r.winrate) + '%' : '·'), el('small', null, r.parties ? fr(r.parties) : ''));
+      }
+    }
+    box.appendChild(grid);
+  });
+
+  // Choix du champion
+  dash.draw('sel_champ', (sel) => {
+    const d = dash.data('c_champs'), cur = dash.data('c_champ_choisi');
+    const list = d.status === 'ok' ? d.data || [] : [];
+    sel.replaceChildren(...list.map((c) => new Option(c.champion + ' (' + c.parties + ' parties)', c.champion)));
+    if (cur.status === 'ok' && cur.data) sel.value = cur.data;
+    sel.onchange = () => dash.setParams({ champ: sel.value || null });
+  });
+
+  // Choix du mois
+  dash.draw('sel_mois', (sel) => {
+    const d = dash.data('parties'), cal = dash.data('c_cal');
+    const mois = d.status === 'ok' ? [...new Set((d.data || []).map((r) => (r.date || '').slice(0, 7)))].filter(Boolean).sort().reverse() : [];
+    const nom = (m) => { const s = new Date(m + '-15T12:00:00Z').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric', timeZone: 'UTC' }); return s.charAt(0).toUpperCase() + s.slice(1); };
+    sel.replaceChildren(...mois.map((m) => new Option(nom(m), m)));
+    if (cal.status === 'ok' && cal.data && cal.data[0]) sel.value = cal.data[0].date.slice(0, 7);
+    sel.onchange = () => dash.setParams({ mois: sel.value || null });
+  });
+
+  // Calendrier
+  dash.draw('cal', (box) => {
+    const d = dash.data('c_cal');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data || !d.data.length) { box.textContent = d.status === 'loading' ? '—' : (d.status === 'ok' ? 'Aucune partie' : 'Échec du chargement'); return; }
+    const grid = el('div', 'lx-cal');
+    L.JOURS.forEach((j) => grid.appendChild(el('div', 'lx-h', j)));
+    const first = (new Date(d.data[0].date + 'T12:00:00Z').getUTCDay() + 6) % 7;
+    for (let i = 0; i < first; i++) grid.appendChild(el('div', 'lx-vid'));
+    for (const r of d.data) {
+      const c = el('div');
+      c.appendChild(el('span', 'lx-j', String(Number(r.date.slice(8)))));
+      if (r.parties) {
+        c.style.background = fond((100 * r.victoires) / r.parties, r.parties);
+        c.appendChild(el('span', 'lx-cvd', r.victoires + 'V ' + r.defaites + 'D'));
+      }
+      grid.appendChild(c);
+    }
+    box.appendChild(grid);
+  });
+
+  // Choix de la partie
+  dash.draw('sel_partie', (sel) => {
+    const d = dash.data('parties'), cur = dash.data('c_partie');
+    const rows = d.status === 'ok' ? L.filtre(d.data, dash.params()).sort((a, b) => (L.ordre(a) < L.ordre(b) ? 1 : -1)).slice(0, 40) : [];
+    const lab = (r) => new Date(r.date + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', timeZone: 'UTC' }) + ' · ' + r.champion + ' contre ' + r.adv_champion + ' · ' + (r.resultat === 'V' ? 'Victoire' : 'Défaite');
+    sel.replaceChildren(...rows.map((r) => new Option(lab(r), r.match_id)));
+    if (cur.status === 'ok' && cur.data && cur.data[0]) sel.value = cur.data[0].match_id;
+    sel.onchange = () => dash.setParams({ partie: sel.value || null });
+  });
+
+  // Duel
+  dash.draw('duel', (box) => {
+    const d = dash.data('c_partie');
+    const g = d.status === 'ok' && d.data && d.data[0];
+    box.replaceChildren();
+    if (!g) { box.appendChild(el('p', 'lx-vide', d.status === 'ok' ? 'Aucune partie avec ces filtres' : '—')); return; }
+    const win = g.resultat === 'V';
+    box.appendChild(el('p', 'lx-res ' + (win ? 'lx-win' : 'lx-loss'), win ? 'Victoire' : 'Défaite'));
+    const date = new Date(g.date + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+    box.appendChild(el('p', 'lx-meta', date + ' vers ' + L.n(g.heure) + ' h · ' + g.role + ' · side ' + String(g.side).toLowerCase() + ' · ' + fr(L.n(g.duree_min), 0) + ' min'));
+    const duel = el('div', 'lx-duel');
+    const cote = (nom, qui) => { const s = el('div', 'lx-duel-side'); s.append(hex(nom, true), el('span', 'lx-duel-nom', nom), el('span', 'lx-duel-qui', qui)); return s; };
+    const coteG = cote;
+    duel.append(coteG(g.champion, 'Toi'), el('span', 'lx-vs', 'VS'), cote(g.adv_champion, 'Adversaire direct'));
+    box.appendChild(duel);
+  });
+
+  dash.draw('r_devant', (e) => { const d = dash.data('c_recap_bilan'); e.textContent = d.status === 'ok' && d.data && d.data[0] && d.data[0].total ? String(d.data[0].devant) : '—'; });
+  dash.draw('r_total', (e) => { const d = dash.data('c_recap_bilan'); e.textContent = d.status === 'ok' && d.data && d.data[0] && d.data[0].total ? String(d.data[0].total) : '—'; });
+
+  // Récap critère par critère
+  dash.draw('recap', (box) => {
+    const d = dash.data('c_recap');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data || !d.data.length) { box.textContent = d.status === 'loading' ? '—' : (d.status === 'ok' ? 'Aucune partie' : 'Échec du chargement'); return; }
+    const dec = (r) => (r.critere === 'KDA' || r.critere === 'CS par minute' ? 1 : 0);
+    for (const r of d.data) {
+      const ligne = el('div', 'lx-ligne');
+      ligne.appendChild(el('span', 'lx-crit', r.critere + (r.critere === 'Morts' ? ' (moins = mieux)' : '')));
+      const tot = Math.abs(r.toi) + Math.abs(r.adversaire);
+      const p1 = tot ? (100 * Math.abs(r.toi)) / tot : 50;
+      const barre = el('div', 'lx-duo-bar');
+      const a = el('span', 'lx-ba'); a.style.width = p1 + '%';
+      const b = el('span', 'lx-bb'); b.style.width = (100 - p1) + '%';
+      barre.append(a, b);
+      const res = el('span', null, r.resultat === 'devant' ? '✓' : r.resultat === 'égal' ? '=' : '✗');
+      res.style.color = r.resultat === 'devant' ? 'var(--lx-win)' : r.resultat === 'égal' ? 'var(--lx-muted)' : 'var(--lx-loss)';
+      res.setAttribute('aria-label', r.resultat);
+      ligne.append(num('c_recap', 'toi', 'critere', r.critere, fr(r.toi, dec(r)), 'lx-a'), barre, num('c_recap', 'adversaire', 'critere', r.critere, fr(r.adversaire, dec(r)), 'lx-b'), res);
+      box.appendChild(ligne);
+    }
+  });
+  // Rangs dans l'en-tête
+  dash.draw('rangs', (box) => {
+    const d = dash.data('c_rangs');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data) return;
+    for (const r of d.data) {
+      const c = el('div', 'lx-rang');
+      c.append(el('span', 'lx-rang-compte', r.compte.split('#')[0] + ' · ' + r.file), mark(el('span', 'lx-rang-tier', r.rang), 'c_rangs', 'rang', 'cle', r.cle));
+      const l2 = el('span', 'lx-rang-det');
+      l2.append(mark(el('span', null, String(r.lp)), 'c_rangs', 'lp', 'cle', r.cle), document.createTextNode(' LP · '), mark(el('span', null, pct(r.winrate)), 'c_rangs', 'winrate', 'cle', r.cle), document.createTextNode(' (' + r.victoires + 'V ' + r.defaites + 'D)'));
+      c.appendChild(l2);
+      box.appendChild(c);
+    }
+  });
+
+  liste('t_runes', 'c_runes', { key: 'rune', kind: 'losange', vide: 'Pas assez de parties' });
+  liste('t_sorts', 'c_sorts', { key: 'sorts', kind: 'losange', vide: 'Pas assez de parties' });
+  liste('t_patch', 'c_patch', { key: 'patch', kind: 'losange' });
+  liste('t_sessions', 'c_sessions', { key: 'rang', kind: 'losange' });
+  liste('t_avance', 'c_avance', { key: 'tranche', kind: 'losange' });
+  liste('t_combos', 'c_combos', { key: 'combo', kind: 'duo', vide: 'Pas encore 2 parties ensemble sur le même duo de champions' });
+  liste('t_combos_roles', 'c_combos_roles', { key: 'roles', kind: 'duo', vide: 'Aucune partie ensemble avec ces filtres' });
+
+  // Objectifs : winrate avec et sans
+  dash.draw('t_objectifs', (box) => {
+    const d = dash.data('c_objectifs');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data) { box.appendChild(el('p', 'lx-vide', d.status === 'loading' ? '—' : 'Échec du chargement')); return; }
+    for (const r of d.data) {
+      const row = el('div', 'lx-row');
+      row.appendChild(badge('losange'));
+      const main = el('div', 'lx-main');
+      main.appendChild(mark(el('span', 'lx-name', r.objectif), 'c_objectifs', 'objectif', 'objectif', r.objectif));
+      const bar = el('div', 'lx-bar'); const f = el('span', (r.winrate || 0) >= 50 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(2, r.winrate || 0) + '%'; bar.appendChild(f); main.appendChild(bar);
+      const sub = el('div', 'lx-sub');
+      const c1 = el('span', 'lx-chip'); c1.append(document.createTextNode('Obtenu dans '), mark(el('span', null, r.part === null ? '—' : r.part + ' %'), 'c_objectifs', 'part', 'objectif', r.objectif), document.createTextNode(' des parties'));
+      const c2 = el('span', 'lx-chip'); c2.append(document.createTextNode('Sans : '), mark(el('span', null, pct(r.winrate_sans)), 'c_objectifs', 'winrate_sans', 'objectif', r.objectif));
+      sub.append(c1, c2); main.appendChild(sub);
+      row.appendChild(main);
+      const right = el('div', 'lx-right');
+      right.append(mark(el('div', 'lx-wr ' + wrCls(r.winrate, r.parties), pct(r.winrate)), 'c_objectifs', 'winrate', 'objectif', r.objectif), el('div', 'lx-np', 'quand obtenu'));
+      row.appendChild(right);
+      box.appendChild(row);
+    }
+  });
+
+  // Apport en victoire et en défaite
+  dash.draw('t_contrib', (tb) => {
+    const d = dash.data('c_contrib');
+    tb.replaceChildren();
+    if (d.status !== 'ok' || !d.data) return;
+    for (const r of d.data) {
+      const tr = el('tr');
+      const dec = r.stat === 'Vision par minute' ? 2 : 1;
+      const fmt = (v) => (v === null ? '—' : fr(v, dec) + (r.unite ? ' ' + r.unite : ''));
+      tr.append(el('td', null, r.stat), el('td', 'lx-num lx-txt-v', fmt(r.victoire)), el('td', 'lx-num lx-txt-d', fmt(r.defaite)));
+      tb.appendChild(tr);
+    }
+  });
+
+  // Séries
+  dash.draw('t_series', (box) => {
+    const d = dash.data('c_series');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data || !d.data.length) { box.appendChild(el('p', 'lx-vide', d.status === 'loading' ? '—' : 'Aucune partie')); return; }
+    for (const r of d.data) {
+      const c = el('div', 'lx-serie');
+      c.appendChild(el('span', 'lx-rang-compte', r.compte.split('#')[0]));
+      const l = el('div', 'lx-sub');
+      const ch = (label, field, txt, cls) => { const x = el('span', 'lx-chip' + (cls ? ' ' + cls : '')); x.append(document.createTextNode(label), mark(el('span', null, txt), 'c_series', field, 'compte', r.compte)); l.appendChild(x); };
+      ch('Record de victoires : ', 'plus_longue_victoires', String(r.plus_longue_victoires), 'lx-up');
+      ch('Pire série : ', 'plus_longue_defaites', String(r.plus_longue_defaites), 'lx-down');
+      ch('En cours : ', 'serie_actuelle', r.serie_actuelle);
+      c.appendChild(l);
+      box.appendChild(c);
+    }
+  });
+
+  // Historique : un appui affiche le récap de la partie
+  dash.draw('t_historique', (box) => {
+    const d = dash.data('c_historique');
+    box.replaceChildren();
+    if (d.status !== 'ok' || !d.data || !d.data.length) { box.appendChild(el('p', 'lx-vide', d.status === 'loading' ? '—' : 'Aucune partie')); return; }
+    for (const r of d.data) {
+      const row = el('button', 'lx-row lx-row-btn');
+      row.type = 'button';
+      row.appendChild(hex(r.champion));
+      const main = el('div', 'lx-main');
+      main.appendChild(el('span', 'lx-name', r.champion + ' contre ' + r.adv_champion));
+      const sub = el('div', 'lx-sub');
+      const date = new Date(r.date + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+      sub.append(el('span', 'lx-chip', date + ' · ' + r.heure + ' h'), el('span', 'lx-chip', r.compte.split('#')[0] + ' · ' + r.role), mark(el('span', 'lx-chip', r.kda), 'c_historique', 'kda', 'match_id', r.match_id), el('span', 'lx-chip', r.cs + ' CS · ' + r.duree + ' min'));
+      main.appendChild(sub);
+      row.appendChild(main);
+      row.appendChild(el('div', 'lx-statut ' + (r.resultat === 'V' ? 'lx-st-vert' : 'lx-st-rouge'), r.resultat === 'V' ? 'Victoire' : 'Défaite'));
+      row.onclick = () => {
+        dash.setParams({ partie: r.match_id });
+        document.querySelectorAll('#partie').forEach((s) => { if (s.scrollIntoView) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      };
+      box.appendChild(row);
+    }
+  });
+
+  // Onglets
+  const onglets = () => [...document.querySelectorAll('.lx-tab')];
+  const panneaux = () => [...document.querySelectorAll('.lx-panel')];
+  function ouvrir(id, lien) {
+    if (!panneaux().some((p) => p.id === id)) id = 'resume';
+    panneaux().forEach((p) => { p.hidden = p.id !== id; });
+    onglets().forEach((t) => { const on = t.getAttribute('data-tab') === id; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.classList.toggle('lx-tab-on', on); });
+    if (lien) dash.setLink(id);
+  }
+  onglets().forEach((t) => t.addEventListener('click', () => { ouvrir(t.getAttribute('data-tab'), true); document.querySelectorAll('#onglets').forEach((n) => { if (n.scrollIntoView) n.scrollIntoView({ block: 'nearest' }); }); }));
+  ouvrir((location.hash || '').replace('#', '') || 'resume', false);
+  let avantImpression = null;
+  window.addEventListener('beforeprint', () => { avantImpression = panneaux().find((p) => !p.hidden)?.id || 'resume'; panneaux().forEach((p) => { p.hidden = false; }); });
+  window.addEventListener('afterprint', () => { if (avantImpression) ouvrir(avantImpression, false); });
+})();
+
+</script>
+<script>(function(){var m=window.DATA&&window.DATA.maj;var e=document.getElementById("maj");if(e&&m)e.textContent="Données mises à jour le "+new Date(m).toLocaleString("fr-FR",{dateStyle:"long",timeStyle:"short"})+".";})();
+dash._run(); (window.DD_ready || Promise.resolve()).then(() => dash._run());</script>
+</body>
+</html>
