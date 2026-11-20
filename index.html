@@ -82,6 +82,16 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c8aa6e' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c8aa6e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-position: 14px center, right 13px center; background-repeat: no-repeat; }
 .lx .lx-compte .dash-select:hover { background-color: rgba(200, 170, 110, 0.16); border-color: rgba(200, 170, 110, 0.55); }
+.lx .lx-tab.lx-tab-meta { flex: none; height: 38px; padding: 0 14px 0 12px; gap: 7px; border-radius: 999px; font-size: 13px; color: var(--lx-gold2); background: rgba(200, 170, 110, 0.1); border: 1px solid rgba(200, 170, 110, 0.35); flex-direction: row; }
+.lx .lx-tab.lx-tab-meta svg { display: block; width: 17px; height: 17px; }
+.lx .lx-tab.lx-tab-meta:hover { background: rgba(200, 170, 110, 0.16); border-color: rgba(200, 170, 110, 0.55); }
+.lx .lx-tab.lx-tab-meta.lx-tab-on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); border-color: transparent; }
+.lx .lx-tab.lx-tab-meta.lx-tab-on::after { display: none; }
+@media (max-width: 860px) {
+  .lx .lx-tab.lx-tab-meta { height: 38px; font-size: 13px; padding: 0 12px 0 10px; }
+  .lx .lx-compte .dash-select { max-width: 158px; text-overflow: ellipsis; }
+}
+@media (max-width: 340px) { .lx .lx-tab.lx-tab-meta span { display: none; } .lx .lx-tab.lx-tab-meta { padding: 0 10px; } }
 .lx-tabs { display: flex; gap: 2px; margin-left: auto; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--lx-line); }
 .lx-tab { font: inherit; font-size: 14px; font-weight: 500; color: var(--lx-muted); background: none; border: 0; padding: 0 15px; height: 36px; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: color .15s, background .15s; }
 .lx-tab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: none; }
@@ -443,6 +453,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
         <option value="">Les deux comptes</option><option>Caps75#EUW</option><option>SPACFR#EUW</option>
       </select>
     </label>
+<button class="lx-tab lx-tab-meta" type="button" data-tab="meta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M5 15l4.5-5 3.5 3.5L19 6"/><path d="M15 6h4v4"/></svg><span>Méta</span></button>
 <nav class="lx-tabs" id="onglets" role="tablist" aria-label="Sujets">
     <button class="lx-tab" type="button" role="tab" data-tab="resume"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg><span>Résumé</span></button>
     <button class="lx-tab" type="button" role="tab" data-tab="champs"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Champions</span></button>
@@ -450,7 +461,6 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
     <button class="lx-tab" type="button" role="tab" data-tab="temps"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>Horaires</span></button>
     <button class="lx-tab" type="button" role="tab" data-tab="joueurs"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.6a3.2 3.2 0 0 1 0 6.3M18 14.3c1.8.8 3 2.7 3 5.7"/></svg><span>Joueurs</span></button>
     <button class="lx-tab" type="button" role="tab" data-tab="parties"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="0.6"/><circle cx="4" cy="12" r="0.6"/><circle cx="4" cy="18" r="0.6"/></svg><span>Parties</span></button>
-    <button class="lx-tab" type="button" role="tab" data-tab="meta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M5 15l4.5-5 3.5 3.5L19 6"/><path d="M15 6h4v4"/></svg><span>Méta</span></button>
   </nav>
 </div></header>
 <main class="lx-wrap">
