@@ -311,6 +311,25 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-seg button { font: inherit; font-size: 13px; font-weight: 500; color: var(--lx-muted); background: none; border: 0; padding: 0 14px; height: 32px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
 .lx-seg button:hover { color: var(--lx-text); }
 .lx-seg button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); }
+.lx-card:focus-within { position: relative; z-index: 25; }
+.lx-ac { position: relative; flex: 1 1 220px; max-width: 360px; min-width: 0; }
+.lx-ac .lx-recherche { width: 100%; max-width: none; padding-left: 40px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23939cab' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 15px center; }
+.lx-ac-liste { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 30; min-width: 280px; max-height: min(420px, 60vh); overflow-y: auto; padding: 6px; border-radius: 18px;
+  background: rgba(10, 14, 21, 0.985); border: 1px solid var(--lx-line2); box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.85); }
+.lx-ac-liste[hidden] { display: none; }
+.lx-ac-it { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px; border-radius: 12px; cursor: pointer; }
+.lx-ac-it.on, .lx-ac-it:hover { background: rgba(200, 170, 110, 0.12); }
+.lx-ac-it img { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--lx-line2); display: block; }
+.lx-ac-it.on img { border-color: var(--lx-gold); }
+.lx-ac-n { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lx-ac-n mark { background: none; color: var(--lx-gold); }
+.lx-ac-l { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+.lx-ac-l button { font: inherit; font-size: 11px; font-weight: 500; color: var(--lx-muted); background: rgba(255, 255, 255, 0.06); border: 1px solid transparent; border-radius: 999px; padding: 2px 8px; cursor: pointer; }
+.lx-ac-l button:hover, .lx-ac-l button.best { color: var(--lx-gold2); border-color: rgba(200, 170, 110, 0.4); }
+.lx-ac-wr { text-align: right; font-size: 11px; color: var(--lx-muted); }
+.lx-ac-wr b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 20px; line-height: 1; }
+.lx-ac-vide { padding: 14px; font-size: 13px; color: var(--lx-muted); text-align: center; }
+@media (max-width: 560px) { .lx-ac { flex-basis: 100%; max-width: none; } .lx-ac-liste { min-width: 0; } }
 .lx-recherche { font: inherit; font-size: 13px; color: var(--lx-text); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--lx-line); border-radius: 999px; height: 40px; padding: 0 16px; min-width: 0; flex: 1 1 200px; max-width: 320px; }
 .lx-recherche:focus { outline: 2px solid var(--lx-gold); outline-offset: 1px; }
 .lx-meta-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -643,7 +662,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
       <p class="lx-sous">Entre le champion d'en face : le site te propose le meilleur choix dans ton pool (compte choisi en haut). La reco sur 100 = moitié ton niveau sur le champion (note de l'onglet Champions, prudente si tu l'as peu joué), moitié le winrate mondial du matchup (50 % = 50 points, chaque point de % au-dessus ou en dessous en vaut 4). Les données de matchup viennent d'OP.GG, toutes divisions.</p>
       <div class="lx-meta-outils">
         <div class="lx-seg" data-draw="cp_lanes" role="tablist" aria-label="Lane du contre-pick"></div>
-        <input class="lx-recherche" id="cp-ennemi" type="search" placeholder="Champion ennemi" list="meta-noms" autocomplete="off" aria-label="Champion ennemi">
+        <div class="lx-ac"><input class="lx-recherche" id="cp-ennemi" type="search" placeholder="Champion ennemi" autocomplete="off" aria-label="Champion ennemi" role="combobox" aria-expanded="false" aria-autocomplete="list"></div>
       </div>
       <div class="lx-cp" data-draw="cp"></div>
     </section>
@@ -652,8 +671,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
       <p class="lx-sous">Statistiques globales OP.GG sur toutes les divisions en ranked solo/duo, pas tes parties. Choisis une lane, puis un champion pour voir son build, ses runes et ses counters. <span data-draw="meta_maj"></span></p>
       <div class="lx-meta-outils">
         <div class="lx-seg" data-draw="meta_lanes" role="tablist" aria-label="Lane"></div>
-        <input class="lx-recherche" id="meta-recherche" type="search" placeholder="Chercher un champion" list="meta-noms" autocomplete="off" aria-label="Chercher un champion">
-        <datalist id="meta-noms"></datalist>
+        <div class="lx-ac"><input class="lx-recherche" id="meta-recherche" type="search" placeholder="Chercher un champion" autocomplete="off" aria-label="Chercher un champion" role="combobox" aria-expanded="false" aria-autocomplete="list"></div>
       </div>
       <div class="lx-mes" data-draw="meta_mes"></div>
       <div class="lx-meta-grille" id="meta-grille">
@@ -2276,17 +2294,77 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     if (a.lien) { const ln = mk2('a', null, 'Voir la page complète sur OP.GG'); ln.href = a.lien; ln.target = '_blank'; ln.rel = 'noopener'; src.appendChild(ln); }
     box.appendChild(src);
   });
-  document.addEventListener('change', (e) => {
-    if (e.target && e.target.id === 'meta-recherche') {
-      const v = window.DD.norm(e.target.value || ''); const cle = (window.DD.cid || {})[v];
-      if (!cle || !window.META) return;
-      const lanes = LANES.map((l) => l[0]).filter((l) => window.META.analyses[cle + '|' + l]);
-      if (!lanes.length) return;
-      e.target.value = ''; e.target.blur(); ouvrirFiche(cle, lanes.includes(META.lane) ? META.lane : lanes[0]);
-    }
-  });
   document.querySelectorAll('[data-tab="meta"]').forEach((t) => t.addEventListener('click', () => { chargerMeta(); dash._run(); }));
   if ((location.hash || '') === '#meta') chargerMeta();
+  // ---------------- Recherche avec suggestions (remplace la datalist native)
+  const LANE_NOM = { top: 'Top', jungle: 'Jungle', mid: 'Mid', adc: 'ADC', support: 'Support' };
+  function indexChampions() {
+    const m = new Map();
+    for (const [lane, liste] of Object.entries(window.META.lanes)) {
+      for (const x of liste) {
+        if (!window.META.analyses[x.key + '|' + lane]) continue;
+        const c = m.get(x.key) || { cle: x.key, nom: infoChamp(x.key).nom, lanes: [] };
+        c.lanes.push({ lane, rr: x.role_rate || 0, wr: x.win_rate, tier: x.tier });
+        m.set(x.key, c);
+      }
+    }
+    for (const c of m.values()) c.lanes.sort((a, b) => b.rr - a.rr);
+    return [...m.values()];
+  }
+  function autocomplete(input, choisir) {
+    const liste = mk2('div', 'lx-ac-liste'); liste.hidden = true; liste.setAttribute('role', 'listbox');
+    input.parentNode.appendChild(liste);
+    let res = [], sel = 0;
+    const fermer = () => { liste.hidden = true; input.setAttribute('aria-expanded', 'false'); };
+    const valider = (c, lane) => { if (!c) return; fermer(); input.value = ''; input.blur(); choisir(c.cle, lane || c.lanes[0].lane); };
+    const surligner = (nom, q) => {
+      const i = window.DD.norm(nom).indexOf(q); const span = mk2('div', 'lx-ac-n');
+      if (!q || i < 0) { span.textContent = nom; return span; }
+      // approximation : on surligne le début du nom quand la recherche correspond au début
+      if (i === 0) { span.append(mk2('mark', null, nom.slice(0, q.length)), nom.slice(q.length)); } else span.textContent = nom;
+      return span;
+    };
+    const afficher = () => {
+      if (!window.META) return;
+      const q = window.DD.norm(input.value || '');
+      const tous = indexChampions();
+      res = (q ? tous.filter((c) => window.DD.norm(c.nom).includes(q) || window.DD.norm(c.cle).includes(q))
+        .sort((a, b) => (window.DD.norm(b.nom).startsWith(q)) - (window.DD.norm(a.nom).startsWith(q)) || a.nom.localeCompare(b.nom))
+        : tous.sort((a, b) => a.nom.localeCompare(b.nom))).slice(0, 8);
+      sel = 0; liste.replaceChildren();
+      if (!res.length) { liste.appendChild(mk2('div', 'lx-ac-vide', 'Aucun champion trouvé')); }
+      res.forEach((c, i) => {
+        const it = mk2('div', 'lx-ac-it' + (i === sel ? ' on' : '')); it.setAttribute('role', 'option');
+        const info = mk2('div'); info.style.minWidth = '0';
+        info.appendChild(surligner(c.nom, q));
+        const ln = mk2('div', 'lx-ac-l');
+        c.lanes.forEach((l, k) => { const b = mk2('button', k === 0 ? 'best' : '', LANE_NOM[l.lane]); b.type = 'button'; b.onmousedown = (e) => { e.preventDefault(); e.stopPropagation(); valider(c, l.lane); }; ln.appendChild(b); });
+        info.appendChild(ln);
+        const w = c.lanes[0], wr = mk2('div', 'lx-ac-wr'); const bb = mk2('b', null, pc(w.wr)); bb.style.color = w.wr >= 0.5 ? 'var(--lx-win)' : 'var(--lx-loss)'; wr.append(bb, 'WR ' + LANE_NOM[w.lane]);
+        it.append(imgChamp(c.cle), info, wr);
+        it.onmousedown = (e) => { e.preventDefault(); valider(c); };
+        it.onmouseenter = () => { sel = i; [...liste.children].forEach((x, j) => x.classList.toggle('on', j === sel)); };
+        liste.appendChild(it);
+      });
+      liste.hidden = false; input.setAttribute('aria-expanded', 'true');
+    };
+    input.addEventListener('focus', () => { chargerMeta(); afficher(); });
+    input.addEventListener('input', afficher);
+    input.addEventListener('blur', () => setTimeout(fermer, 120));
+    input.addEventListener('keydown', (e) => {
+      if (liste.hidden && e.key !== 'Escape') afficher();
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault(); if (!res.length) return;
+        sel = (sel + (e.key === 'ArrowDown' ? 1 : res.length - 1)) % res.length;
+        [...liste.children].forEach((x, j) => x.classList.toggle('on', j === sel));
+        liste.children[sel] && liste.children[sel].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') { e.preventDefault(); valider(res[sel]); }
+      else if (e.key === 'Escape') { fermer(); input.blur(); }
+    });
+  }
+  const acMeta = document.getElementById('meta-recherche'), acCp = document.getElementById('cp-ennemi');
+  if (acMeta) autocomplete(acMeta, (cle, lane) => ouvrirFiche(cle, lane));
+  if (acCp) autocomplete(acCp, (cle, lane) => { CP.ennemi = cle; CP.lane = lane; dash._run(); });
   // ---------------- Contre-pick
   const CP = { lane: null, ennemi: null };
   function niveauPerso(role) {
@@ -2383,17 +2461,6 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     box.appendChild(cols);
     const lien = mk2('button', 'lx-retour', 'Voir la fiche de ' + nomE + ' →'); lien.style.display = 'inline-flex'; lien.type = 'button'; lien.onclick = () => ouvrirFiche(ennemi, lane);
     box.appendChild(lien);
-  });
-  document.addEventListener('change', (e) => {
-    if (e.target && e.target.id === 'cp-ennemi') {
-      const cle = (window.DD.cid || {})[window.DD.norm(e.target.value || '')];
-      if (!cle) return;
-      CP.ennemi = cle;
-      if (window.META && !window.META.analyses[cle + '|' + (CP.lane || '')]) {
-        const l = LANES.map((x) => x[0]).find((x) => window.META.analyses[cle + '|' + x]); if (l) CP.lane = l;
-      }
-      e.target.blur(); dash._run();
-    }
   });
   dash.draw('controle', (box) => {
     const d = dash.data('c_controle');
