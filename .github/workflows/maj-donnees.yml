@@ -39,7 +39,12 @@ jobs:
           git add data.js meta.js
           if git diff --cached --quiet; then echo "Rien de nouveau."; exit 0; fi
           git commit -m "Mise à jour des données"
-          git push
+          # Le site a pu être modifié pendant la tâche (20 min) : on se recale avant de pousser.
+          for essai in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push && exit 0
+            sleep 10
+          done
+          exit 1
       - name: Signaler un échec de la clé Riot
         if: steps.riot.outcome == 'failure'
         run: |
