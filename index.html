@@ -296,6 +296,107 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-best-suite b { color: var(--lx-text); font-weight: 500; }
 .lx-best-alerte { font-size: 12px; color: var(--lx-gold); line-height: 1.4; }
 .lx-best-nrole { margin-left: auto; font-size: 11.5px; color: var(--lx-faint); }
+.lx-meta-outils { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+.lx-seg { display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--lx-line); overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.lx-seg button { font: inherit; font-size: 13px; font-weight: 500; color: var(--lx-muted); background: none; border: 0; padding: 0 14px; height: 32px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.lx-seg button:hover { color: var(--lx-text); }
+.lx-seg button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); }
+.lx-recherche { font: inherit; font-size: 13px; color: var(--lx-text); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--lx-line); border-radius: 999px; height: 40px; padding: 0 16px; min-width: 0; flex: 1 1 200px; max-width: 320px; }
+.lx-recherche:focus { outline: 2px solid var(--lx-gold); outline-offset: 1px; }
+.lx-meta-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 1000px) { .lx-meta-grille { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); align-items: start; } .lx-tier { max-height: 900px; overflow-y: auto; position: sticky; top: 84px; } }
+.lx-tier { display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
+.lx-retour { display: none; font: inherit; font-size: 13px; font-weight: 500; color: var(--lx-gold); background: rgba(200, 170, 110, 0.1); border: 1px solid rgba(200, 170, 110, 0.3); border-radius: 999px; padding: 8px 14px; cursor: pointer; align-self: flex-start; }
+@media (max-width: 999px) {
+  .lx-meta-grille.fiche .lx-tier { display: none; }
+  .lx-meta-grille:not(.fiche) .lx-fiche { display: none; }
+  .lx-retour { display: inline-flex; }
+  .lx-fiche-stats { margin-left: 0; width: 100%; }
+  .lx-fs { flex: 1 1 0; }
+  .lx-fiche-nom { font-size: 32px; }
+  .lx-fiche-tete > img { width: 64px; height: 64px; border-radius: 18px; }
+}
+.lx-cp { display: flex; flex-direction: column; gap: 14px; }
+.lx-cp-tete { display: flex; align-items: center; gap: 12px; }
+.lx-cp-tete img { width: 52px; height: 52px; border-radius: 14px; border: 2px solid var(--lx-loss); box-shadow: 0 0 18px -6px rgba(232, 64, 87, 0.6); }
+.lx-cp-tete b { font-family: var(--font-serif); font-weight: 400; font-size: 28px; color: #fff; line-height: 1; display: block; }
+.lx-cp-tete span { font-size: 12.5px; color: var(--lx-muted); }
+.lx-cp-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+.lx-cp-l { display: grid; grid-template-columns: 26px 44px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--lx-line); margin-bottom: 6px; cursor: pointer; }
+.lx-cp-l:hover { background: var(--lx-hover); }
+.lx-cp-l.top { border-color: rgba(200, 170, 110, 0.5); background: rgba(200, 170, 110, 0.1); }
+.lx-cp-l img { width: 44px; height: 44px; border-radius: 12px; display: block; }
+.lx-cp-rg { font-family: var(--font-serif); font-size: 20px; color: var(--lx-faint); text-align: center; }
+.lx-cp-l.top .lx-cp-rg { color: var(--lx-gold); }
+.lx-cp-n { font-size: 14.5px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lx-cp-d { font-size: 12px; color: var(--lx-muted); margin-top: 3px; line-height: 1.4; }
+.lx-cp-d b { font-weight: 600; }
+.lx-cp-sc { text-align: right; }
+.lx-cp-sc b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 30px; line-height: .9; }
+.lx-cp-sc span { font-size: 10.5px; color: var(--lx-muted); }
+.lx-cp-pool { font-size: 10.5px; font-weight: 600; color: var(--lx-win); background: rgba(10, 200, 185, 0.12); padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
+.lx-cp-vide { font-size: 13px; color: var(--lx-muted); padding: 14px; border-radius: 14px; border: 1px dashed var(--lx-line2); text-align: center; }
+.lx-mes { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 0 14px; padding-bottom: 2px; }
+.lx-mes:empty { display: none; }
+.lx-mes-t { flex: none; font-size: 12px; color: var(--lx-muted); align-self: center; margin-right: 2px; }
+.lx-mes button { flex: none; display: flex; align-items: center; gap: 7px; font: inherit; font-size: 12.5px; color: var(--lx-text); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--lx-line); border-radius: 999px; padding: 4px 12px 4px 4px; cursor: pointer; }
+.lx-mes button.on { border-color: var(--lx-gold); background: rgba(200, 170, 110, 0.12); }
+.lx-mes img { width: 28px; height: 28px; border-radius: 50%; }
+.lx-noms { font-size: 12px; color: var(--lx-muted); margin-top: 6px; line-height: 1.45; }
+.lx-noms b { color: var(--lx-text); font-weight: 500; }
+.lx-tier-l { display: grid; grid-template-columns: 26px 38px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 8px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; background: none; font: inherit; color: inherit; text-align: left; width: 100%; }
+.lx-tier-l:hover { background: var(--lx-hover); }
+.lx-tier-l.on { background: rgba(200, 170, 110, 0.1); border-color: rgba(200, 170, 110, 0.35); }
+.lx-tier-l img { width: 38px; height: 38px; border-radius: 10px; display: block; }
+.lx-tier-rg { font-size: 12px; color: var(--lx-faint); text-align: right; }
+.lx-tier-n { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+.lx-tier-n small { font-size: 11px; font-weight: 500; color: var(--lx-win); background: rgba(10, 200, 185, 0.12); padding: 1px 6px; border-radius: 999px; flex: none; }
+.lx-tier-s { font-size: 11.5px; color: var(--lx-muted); margin-top: 2px; }
+.lx-tb { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; min-width: 30px; text-align: center; }
+.lx-tb.t1 { background: linear-gradient(180deg, #f0e6d2, #c8aa6e); color: #1a1408; } .lx-tb.t2 { background: rgba(10, 200, 185, 0.18); color: var(--lx-win); }
+.lx-tb.t3 { background: rgba(61, 139, 253, 0.16); color: #8db8ff; } .lx-tb.t4 { background: rgba(255, 255, 255, 0.07); color: var(--lx-muted); } .lx-tb.t5 { background: rgba(232, 64, 87, 0.14); color: #ff8a9b; }
+.lx-fiche { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.lx-fiche-tete { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.lx-fiche-tete > img { width: 76px; height: 76px; border-radius: 22px; border: 2px solid var(--lx-gold); box-shadow: 0 0 24px -6px rgba(200, 170, 110, 0.6); }
+.lx-fiche-nom { font-family: var(--font-serif); font-size: 38px; line-height: 1; color: #fff; }
+.lx-fiche-lane { font-size: 13px; color: var(--lx-muted); margin-top: 4px; }
+.lx-fiche-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+.lx-fs { padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--lx-line); min-width: 74px; }
+.lx-fs b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 22px; line-height: 1; }
+.lx-fs span { font-size: 11.5px; color: var(--lx-muted); }
+.lx-fiche-bento { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 12px; }
+.lx-fb { border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--lx-line); padding: 16px; min-width: 0; }
+.lx-fb h3 { margin: 0 0 12px; font-family: var(--font-serif); font-weight: 400; font-size: 21px; color: #fff; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.lx-fb h3 small { font-family: var(--font-anthropic-sans); font-size: 12px; color: var(--lx-muted); }
+.lx-fb-lab { font-size: 12px; color: var(--lx-muted); margin: 12px 0 6px; display: flex; justify-content: space-between; gap: 8px; }
+.lx-fb-lab:first-of-type { margin-top: 0; }
+.lx-items { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lx-items img { width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--lx-line2); display: block; }
+.lx-items .fl { color: var(--lx-faint); font-size: 12px; }
+.lx-opts { display: flex; flex-direction: column; gap: 6px; }
+.lx-opt { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--lx-muted); }
+.lx-opt img { width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--lx-line2); }
+.lx-opt b { color: var(--lx-text); font-weight: 500; }
+.lx-pct { margin-left: auto; white-space: nowrap; }
+.lx-runes { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; }
+.lx-runes img { width: 30px; height: 30px; display: block; }
+.lx-runes .ks { width: 46px; height: 46px; }
+.lx-runes .lig { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--lx-muted); }
+.lx-skills { display: grid; grid-template-columns: 22px repeat(15, minmax(0, 1fr)); gap: 3px; font-size: 11px; text-align: center; }
+.lx-skills span { padding: 4px 0; border-radius: 4px; color: var(--lx-faint); }
+.lx-skills .k { color: var(--lx-gold); font-weight: 700; text-align: left; }
+.lx-skills .on { background: rgba(200, 170, 110, 0.22); color: #fff; font-weight: 600; }
+.lx-skills .on.r { background: rgba(10, 200, 185, 0.25); }
+.lx-maxo { display: flex; gap: 6px; align-items: center; font-size: 13px; margin-bottom: 10px; }
+.lx-maxo b { font-family: var(--font-serif); font-weight: 400; font-size: 22px; color: var(--lx-gold2); width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: rgba(200, 170, 110, 0.12); border: 1px solid rgba(200, 170, 110, 0.3); }
+.lx-cnt { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.lx-cnt-l { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 5px 0; }
+.lx-cnt-l img { width: 32px; height: 32px; border-radius: 9px; }
+.lx-cnt-l span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lx-moi { display: flex; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--lx-muted); }
+.lx-moi b { color: var(--lx-text); }
+.lx-source { font-size: 12px; color: var(--lx-faint); }
+.lx-source a { color: var(--lx-gold); }
 .lx-recap-groupe { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding-top: 16px; border-top: 1px solid var(--lx-line); font-family: var(--font-serif); font-size: 21px; color: #fff; }
 .lx-recap-groupe:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .lx-recap-groupe small { font-family: var(--font-anthropic-sans); font-size: 12px; color: var(--lx-muted); }
@@ -349,6 +450,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
     <button class="lx-tab" type="button" role="tab" data-tab="temps"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>Horaires</span></button>
     <button class="lx-tab" type="button" role="tab" data-tab="joueurs"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 4.6a3.2 3.2 0 0 1 0 6.3M18 14.3c1.8.8 3 2.7 3 5.7"/></svg><span>Joueurs</span></button>
     <button class="lx-tab" type="button" role="tab" data-tab="parties"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="0.6"/><circle cx="4" cy="12" r="0.6"/><circle cx="4" cy="18" r="0.6"/></svg><span>Parties</span></button>
+    <button class="lx-tab" type="button" role="tab" data-tab="meta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M5 15l4.5-5 3.5 3.5L19 6"/><path d="M15 6h4v4"/></svg><span>Méta</span></button>
   </nav>
 </div></header>
 <main class="lx-wrap">
@@ -523,6 +625,32 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
         <div class="lx-rows" data-draw="t_rivaux" data-source="c_rivaux"></div>
       </section>
     </div>
+  </div>
+
+  <div class="lx-panel" id="meta" role="tabpanel" hidden>
+    <section class="lx-card" id="contrepick">
+      <h2>Contre-pick</h2>
+      <p class="lx-sous">Entre le champion d'en face : le site te propose le meilleur choix dans ton pool (compte choisi en haut). La reco sur 100 = moitié ton niveau sur le champion (note de l'onglet Champions, prudente si tu l'as peu joué), moitié le winrate mondial du matchup (50 % = 50 points, chaque point de % au-dessus ou en dessous en vaut 4). Les données de matchup viennent d'OP.GG, toutes divisions.</p>
+      <div class="lx-meta-outils">
+        <div class="lx-seg" data-draw="cp_lanes" role="tablist" aria-label="Lane du contre-pick"></div>
+        <input class="lx-recherche" id="cp-ennemi" type="search" placeholder="Champion ennemi" list="meta-noms" autocomplete="off" aria-label="Champion ennemi">
+      </div>
+      <div class="lx-cp" data-draw="cp"></div>
+    </section>
+    <section class="lx-card">
+      <h2>Méta du moment</h2>
+      <p class="lx-sous">Statistiques globales OP.GG sur toutes les divisions en ranked solo/duo, pas tes parties. Choisis une lane, puis un champion pour voir son build, ses runes et ses counters. <span data-draw="meta_maj"></span></p>
+      <div class="lx-meta-outils">
+        <div class="lx-seg" data-draw="meta_lanes" role="tablist" aria-label="Lane"></div>
+        <input class="lx-recherche" id="meta-recherche" type="search" placeholder="Chercher un champion" list="meta-noms" autocomplete="off" aria-label="Chercher un champion">
+        <datalist id="meta-noms"></datalist>
+      </div>
+      <div class="lx-mes" data-draw="meta_mes"></div>
+      <div class="lx-meta-grille" id="meta-grille">
+        <div class="lx-tier" data-draw="meta_tier"></div>
+        <div class="lx-fiche" id="meta-fiche" data-draw="meta_fiche"></div>
+      </div>
+    </section>
   </div>
 
   <div class="lx-panel" id="parties" role="tabpanel" hidden>
@@ -1271,7 +1399,7 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     ]).then(([c, it]) => {
       for (const k in c.data) {
         const ch = c.data[k], url = base + '/cdn/' + v + '/img/champion/' + ch.image.full;
-        window.DD.champ[norm(ch.name)] = url; window.DD.champ[norm(ch.id)] = url; window.DD.cid[norm(ch.name)] = ch.id;
+        window.DD.champ[norm(ch.name)] = url; window.DD.champ[norm(ch.id)] = url; window.DD.cid[norm(ch.name)] = ch.id; (window.DD.parId = window.DD.parId || {})[ch.id] = { nom: ch.name, img: url };
       }
       for (const id in it.data) {
         const o = it.data[id], key = norm(o.name);
@@ -1960,6 +2088,302 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
       box.appendChild(it);
     }
     if (vide) box.appendChild(mk('p', 'lx-vide', 'Aucune partie avec ces filtres'));
+  });
+  // ---------------- Méta (données OP.GG, chargées à la demande)
+  const ECLATS = {5001: 'PV (croissants)', 5002: 'Armure', 5003: 'Résistance magique', 5005: 'Vitesse d’attaque', 5007: 'Accélération de compétence', 5008: 'Force adaptative', 5010: 'Vitesse de déplacement', 5011: 'PV', 5013: 'Ténacité et résistance aux ralentissements'};
+  const LANES = [['top', 'Top'], ['jungle', 'Jungle'], ['mid', 'Mid'], ['adc', 'ADC'], ['support', 'Support']];
+  const ROLE_LANE = { Haut: 'top', Jungle: 'jungle', Milieu: 'mid', Bas: 'adc', Support: 'support' };
+  const META = { lane: null, cle: null, charge: false, dd: null, fiche: false };
+  const majVue = () => { const g = document.getElementById('meta-grille'); if (g) g.classList.toggle('fiche', META.fiche); };
+  const ouvrirFiche = (cle, lane) => { META.cle = cle; if (lane) META.lane = lane; META.fiche = true; dash._run(); majVue(); const f = document.getElementById('meta-grille'); if (f) window.scrollTo(0, Math.max(0, f.getBoundingClientRect().top + window.scrollY - 80)); };
+  const mk2 = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+  const pc = (x) => (x === null || x === undefined ? '—' : fr(100 * x) + ' %');
+  const DDB = 'https://ddragon.leagueoflegends.com';
+  const imgItem = (id) => { const i = mk2('img'); i.src = DDB + '/cdn/' + window.DD.v + '/img/item/' + id + '.png'; i.alt = ''; i.loading = 'lazy'; return i; };
+  const infoChamp = (cle) => (window.DD.parId || {})[cle] || { nom: cle, img: '' };
+  const imgChamp = (cle) => { const i = mk2('img'); i.src = infoChamp(cle).img; i.alt = infoChamp(cle).nom; i.loading = 'lazy'; return i; };
+  function chargerMeta() {
+    if (META.charge) return; META.charge = true;
+    const sc = document.createElement('script'); sc.src = 'meta.js?v=' + Date.now().toString().slice(0, 7);
+    const dd = window.DD_ready.then(() => Promise.all([
+      fetch(DDB + '/cdn/' + window.DD.v + '/data/fr_FR/summoner.json').then((r) => r.json()),
+      fetch(DDB + '/cdn/' + window.DD.v + '/data/fr_FR/runesReforged.json').then((r) => r.json()),
+    ])).then(([sum, runes]) => {
+      const sorts = {}; for (const k in sum.data) sorts[sum.data[k].key] = sum.data[k];
+      const r = {}; for (const arbre of runes) { r[arbre.id] = arbre.icon; for (const sl of arbre.slots) for (const x of sl.runes) r[x.id] = x.icon; }
+      META.dd = { sorts, runes: r };
+    }).catch(() => { META.dd = { sorts: {}, runes: {} }; });
+    sc.onload = () => dd.then(() => { remplirNoms(); dash._run(); });
+    sc.onerror = () => { META.erreur = true; dash._run(); };
+    document.head.appendChild(sc);
+  }
+  function remplirNoms() {
+    const dl = document.getElementById('meta-noms'); if (!dl || !window.META) return;
+    const vus = new Set(); dl.replaceChildren();
+    for (const k of Object.keys(window.META.analyses)) { const c = k.split('|')[0]; if (!vus.has(c)) { vus.add(c); const o = document.createElement('option'); o.value = infoChamp(c).nom; dl.appendChild(o); } }
+  }
+  const panneauOuvert = () => { const p = document.getElementById('meta'); return p && !p.hidden; };
+  function laneParDefaut() {
+    const m = new Map(); for (const r of lignes()) m.set(r.role, (m.get(r.role) || 0) + 1);
+    const top = [...m.entries()].sort((a, b) => b[1] - a[1])[0];
+    return (top && ROLE_LANE[top[0]]) || 'top';
+  }
+  const mesParties = (cle) => lignes().filter((r) => (window.DD.cid || {})[window.DD.norm(r.champion)] === cle);
+  dash.draw('meta_maj', (box) => {
+    box.textContent = window.META ? 'Mise à jour le ' + new Date(window.META.maj).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + '.' : '';
+  });
+  dash.draw('meta_lanes', (box) => {
+    if (!panneauOuvert() && !window.META) return;
+    if (!META.lane) META.lane = laneParDefaut();
+    box.replaceChildren();
+    for (const [k, lab] of LANES) {
+      const b = mk2('button', k === META.lane ? 'on' : '', lab); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(k === META.lane));
+      b.onclick = () => { META.lane = k; META.cle = null; META.fiche = false; dash._run(); majVue(); };
+      box.appendChild(b);
+    }
+  });
+  dash.draw('meta_mes', (box) => {
+    box.replaceChildren();
+    if (!window.META || !META.lane) return;
+    const role = Object.keys(ROLE_LANE).find((r) => ROLE_LANE[r] === META.lane);
+    const m = new Map();
+    for (const r of lignes().filter((x) => x.role === role)) { const c = (window.DD.cid || {})[window.DD.norm(r.champion)]; if (c && window.META.analyses[c + '|' + META.lane]) m.set(c, (m.get(c) || 0) + 1); }
+    const l = [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+    if (!l.length) return;
+    box.appendChild(mk2('span', 'lx-mes-t', 'Tes champions ici :'));
+    for (const [c, n] of l) { const b = mk2('button', c === META.cle && META.fiche ? 'on' : ''); b.type = 'button'; b.append(imgChamp(c), infoChamp(c).nom + ' · ' + n); b.onclick = () => ouvrirFiche(c); box.appendChild(b); }
+  });
+  dash.draw('meta_tier', (box) => {
+    if (!panneauOuvert() && !window.META) return;
+    if (!window.META) { chargerMeta(); box.replaceChildren(mk2('p', 'lx-vide', META.erreur ? 'Données méta indisponibles pour le moment.' : 'Chargement de la méta…')); return; }
+    const liste = (window.META.lanes[META.lane] || []).slice().sort((a, b) => a.rank - b.rank);
+    const joues = new Map(); for (const r of lignes()) { const c = (window.DD.cid || {})[window.DD.norm(r.champion)]; if (c) joues.set(c, (joues.get(c) || 0) + 1); }
+    if (!META.cle || !window.META.analyses[META.cle + '|' + META.lane]) {
+      const perso = liste.filter((x) => joues.has(x.key) && window.META.analyses[x.key + '|' + META.lane]).sort((a, b) => joues.get(b.key) - joues.get(a.key))[0];
+      META.cle = (perso || liste.find((x) => window.META.analyses[x.key + '|' + META.lane]) || {}).key || null;
+    }
+    box.replaceChildren();
+    for (const x of liste) {
+      const l = mk2('button', 'lx-tier-l' + (x.key === META.cle ? ' on' : '')); l.type = 'button';
+      const info = mk2('div'); info.style.minWidth = '0';
+      const n = mk2('div', 'lx-tier-n', infoChamp(x.key).nom);
+      if (joues.has(x.key)) n.appendChild(mk2('small', null, joues.get(x.key) + ' parties'));
+      info.append(n, mk2('div', 'lx-tier-s', 'WR ' + pc(x.win_rate) + ' · pick ' + pc(x.pick_rate) + ' · ban ' + pc(x.ban_rate)));
+      const t = Math.min(5, Math.max(1, x.tier || 4));
+      l.append(mk2('span', 'lx-tier-rg', String(x.rank)), imgChamp(x.key), info, mk2('span', 'lx-tb t' + t, t === 1 ? 'OP' : 'T' + t));
+      l.onclick = () => ouvrirFiche(x.key);
+      box.appendChild(l);
+    }
+  });
+  function lignePct(o) { return mk2('span', 'lx-pct', pc(o.pick_rate) + ' pick · ' + (o.play ? fr((100 * o.win) / o.play) : '—') + ' % WR'); }
+  dash.draw('meta_fiche', (box) => {
+    if (!window.META || !META.dd) { box.replaceChildren(); return; }
+    const a = window.META.analyses[META.cle + '|' + META.lane];
+    box.replaceChildren();
+    if (!a) { box.appendChild(mk2('p', 'lx-vide', 'Choisis un champion dans la liste.')); return; }
+    const ret = mk2('button', 'lx-retour', '← Retour à la liste ' + ((LANES.find((l) => l[0] === META.lane) || [])[1] || '')); ret.type = 'button'; ret.onclick = () => { META.fiche = false; majVue(); dash._run(); };
+    box.appendChild(ret);
+    const ch = infoChamp(META.cle), st = (a.summary || {}).average_stats || {};
+    const tete = mk2('div', 'lx-fiche-tete'); const im = imgChamp(META.cle);
+    const nm = mk2('div'); nm.append(mk2('div', 'lx-fiche-nom', ch.nom), mk2('div', 'lx-fiche-lane', (LANES.find((l) => l[0] === META.lane) || [])[1] + ' · ' + (st.play ? st.play.toLocaleString('fr-FR') + ' parties analysées' : '')));
+    const sts = mk2('div', 'lx-fiche-stats');
+    for (const [lab, v, col] of [['Winrate', pc(st.win_rate), st.win_rate >= 0.5 ? 'var(--lx-win)' : 'var(--lx-loss)'], ['Pick', pc(st.pick_rate)], ['Ban', pc(st.ban_rate)]]) {
+      const d = mk2('div', 'lx-fs'); const b = mk2('b', null, v); if (col) b.style.color = col; d.append(b, mk2('span', null, lab)); sts.appendChild(d);
+    }
+    tete.append(im, nm, sts); box.appendChild(tete);
+    const mes = mesParties(META.cle);
+    if (mes.length) {
+      const v = mes.filter((r) => r.resultat === 'V').length;
+      const moi = mk2('div', 'lx-moi'); moi.append('Toi sur ce champion : ', mk2('b', null, mes.length + ' parties'), ' · ', mk2('b', null, fr((100 * v) / mes.length) + ' % de winrate'), ' (méta ' + pc(st.win_rate) + ')');
+      box.appendChild(moi);
+    }
+    const bento = mk2('div', 'lx-fiche-bento');
+    // Build
+    const bd = mk2('div', 'lx-fb'); bd.appendChild(mk2('h3', null, 'Build'));
+    const bloc = (lab, o, fleches) => {
+      if (!o || !o.ids || !o.ids.length) return;
+      const t = mk2('div', 'lx-fb-lab'); t.append(mk2('span', null, lab), lignePct(o)); bd.appendChild(t);
+      const r = mk2('div', 'lx-items'); o.ids.forEach((id, i) => { if (i && fleches) r.appendChild(mk2('span', 'fl', '›')); const im2 = imgItem(id); im2.title = (o.ids_names || [])[i] || ''; r.appendChild(im2); }); bd.appendChild(r);
+      if (o.ids_names && o.ids_names.length) bd.appendChild(mk2('div', 'lx-noms', o.ids_names.join(fleches ? ' › ' : ' + ')));
+    };
+    bloc('Départ', a.starter_items, false); bloc('Build principal', a.core_items, true); bloc('Bottes', a.boots, false);
+    const opts = (lab, l) => {
+      if (!l || !l.length) return;
+      bd.appendChild(mk2('div', 'lx-fb-lab', lab)); const w = mk2('div', 'lx-opts');
+      for (const o of l.slice(0, 3)) { const r = mk2('div', 'lx-opt'); const im3 = imgItem(o.ids[0]); r.append(im3, mk2('b', null, (o.ids_names || [])[0] || ''), lignePct(o)); w.appendChild(r); }
+      bd.appendChild(w);
+    };
+    opts('4e objet', a.fourth_items); opts('5e objet', a.fifth_items); opts('6e objet', a.sixth_items);
+    bento.appendChild(bd);
+    // Runes + sorts
+    const ru = mk2('div', 'lx-fb'); const rn = a.runes || {};
+    const h = mk2('h3', null, 'Runes'); if (rn.play) h.appendChild(mk2('small', null, pc(rn.pick_rate) + ' pick · ' + fr((100 * rn.win) / rn.play) + ' % WR')); ru.appendChild(h);
+    const icone = (id, cls) => { const i = mk2('img', cls); const p2 = META.dd.runes[id]; if (p2) i.src = DDB + '/cdn/img/' + p2; i.alt = ''; return i; };
+    const g = mk2('div', 'lx-runes');
+    if (rn.primary_rune_ids) {
+      g.append(icone(rn.primary_rune_ids[0], 'ks'));
+      const l1 = mk2('div', 'lig'); l1.append(mk2('b', null, rn.primary_rune_names[0])); l1.append(' · ' + rn.primary_page_name); g.appendChild(l1);
+      g.append(icone(rn.primary_page_id)); const l2 = mk2('div', 'lig'); rn.primary_rune_ids.slice(1).forEach((id, i) => { const im4 = icone(id); im4.title = rn.primary_rune_names[i + 1]; l2.appendChild(im4); }); l2.append(rn.primary_rune_names.slice(1).join(', ')); g.appendChild(l2);
+      g.append(icone(rn.secondary_page_id)); const l3 = mk2('div', 'lig'); (rn.secondary_rune_ids || []).forEach((id, i) => { const im5 = icone(id); im5.title = rn.secondary_rune_names[i]; l3.appendChild(im5); }); l3.append((rn.secondary_rune_names || []).join(', ')); g.appendChild(l3);
+    }
+    ru.appendChild(g);
+    if (rn.stat_mod_names && rn.stat_mod_names.length) { const t = mk2('div', 'lx-noms'); t.append(mk2('b', null, 'Éclats : '), (rn.stat_mod_names.map((x, i) => (typeof x === 'string' ? x : (ECLATS[x] || ECLATS[(rn.stat_mod_ids || [])[i]] || x))).join(' · ') || '—')); ru.appendChild(t); }
+    const sp = a.summoner_spells;
+    if (sp && sp.ids) {
+      const t = mk2('div', 'lx-fb-lab'); t.style.marginTop = '16px'; t.append(mk2('span', null, 'Sorts d’invocateur'), lignePct(sp)); ru.appendChild(t);
+      const r = mk2('div', 'lx-items'); const noms = []; for (const id of sp.ids) { const so = META.dd.sorts[String(id)]; const i = mk2('img'); if (so) { i.src = DDB + '/cdn/' + window.DD.v + '/img/spell/' + so.image.full; i.title = so.name; noms.push(so.name); } r.appendChild(i); } ru.appendChild(r);
+      if (noms.length) ru.appendChild(mk2('div', 'lx-noms', noms.join(' + ')));
+    }
+    bento.appendChild(ru);
+    // Compétences
+    const sk = mk2('div', 'lx-fb'); const so2 = a.skills || {}, ma = a.skill_masteries || {};
+    const h2 = mk2('h3', null, 'Compétences'); if (so2.play) h2.appendChild(mk2('small', null, fr((100 * so2.win) / so2.play) + ' % WR')); sk.appendChild(h2);
+    if (ma.ids && ma.ids.length) { const mo = mk2('div', 'lx-maxo'); mo.append('Ordre de max : '); ma.ids.forEach((k, i) => { if (i) mo.append('›'); mo.appendChild(mk2('b', null, k)); }); sk.appendChild(mo); }
+    if (so2.order && so2.order.length) {
+      const gr = mk2('div', 'lx-skills');
+      for (const k of ['Q', 'W', 'E', 'R']) { gr.appendChild(mk2('span', 'k', k)); for (let i = 0; i < 15; i++) gr.appendChild(mk2('span', so2.order[i] === k ? 'on' + (k === 'R' ? ' r' : '') : '', so2.order[i] === k ? String(i + 1) : '')); }
+      sk.appendChild(gr);
+    }
+    bento.appendChild(sk);
+    // Counters
+    const co = mk2('div', 'lx-fb'); co.appendChild(mk2('h3', null, 'Matchups'));
+    const cn = mk2('div', 'lx-cnt');
+    const tous = (a.matchups || []).filter((m) => m[1] >= 200).map((m) => ({ cle: m[0], my_win_rate: m[2] / m[1], play: m[1] }));
+    const listeBon = tous.length ? tous.slice().sort((x, y) => y.my_win_rate - x.my_win_rate).slice(0, 5) : (a.strong_counters || []);
+    const listeDur = tous.length ? tous.slice().sort((x, y) => x.my_win_rate - y.my_win_rate).slice(0, 5) : (a.weak_counters || []);
+    for (const [lab, l, bon] of [['Bon contre', listeBon, true], ['Difficile contre', listeDur, false]]) {
+      const c = mk2('div'); c.appendChild(mk2('div', 'lx-fb-lab', lab));
+      for (const x of (l || [])) {
+        const cle2 = x.cle || (window.DD.cid || {})[window.DD.norm(x.champion_name)] || x.champion_name;
+        const r = mk2('div', 'lx-cnt-l'); const w = mk2('b', null, pc(x.my_win_rate)); w.style.color = bon ? 'var(--lx-win)' : 'var(--lx-loss)';
+        r.append(imgChamp(cle2), mk2('span', null, infoChamp(cle2).nom), w); r.title = (x.play || 0).toLocaleString('fr-FR') + ' parties'; c.appendChild(r);
+      }
+      cn.appendChild(c);
+    }
+    co.appendChild(cn); bento.appendChild(co);
+    box.appendChild(bento);
+    const src = mk2('p', 'lx-source'); src.append('Données OP.GG (toutes divisions, ranked solo/duo). ');
+    if (a.lien) { const ln = mk2('a', null, 'Voir la page complète sur OP.GG'); ln.href = a.lien; ln.target = '_blank'; ln.rel = 'noopener'; src.appendChild(ln); }
+    box.appendChild(src);
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'meta-recherche') {
+      const v = window.DD.norm(e.target.value || ''); const cle = (window.DD.cid || {})[v];
+      if (!cle || !window.META) return;
+      const lanes = LANES.map((l) => l[0]).filter((l) => window.META.analyses[cle + '|' + l]);
+      if (!lanes.length) return;
+      e.target.value = ''; e.target.blur(); ouvrirFiche(cle, lanes.includes(META.lane) ? META.lane : lanes[0]);
+    }
+  });
+  document.querySelectorAll('[data-tab="meta"]').forEach((t) => t.addEventListener('click', () => { chargerMeta(); dash._run(); }));
+  if ((location.hash || '') === '#meta') chargerMeta();
+  // ---------------- Contre-pick
+  const CP = { lane: null, ennemi: null };
+  function niveauPerso(role) {
+    // Même calcul que « Meilleur champion par rôle » : winrate /50 (lissé) + duel /50
+    const m = new Map();
+    for (const r of lignes().filter((x) => x.role === role)) {
+      const c = m.get(r.champion) || { n: 0, v: 0, duel: 0 };
+      const du = duel(r); let pts = 0; for (const f in du.fam) pts += du.fam[f][0];
+      c.n++; if (r.resultat === 'V') c.v++; c.duel += pts; m.set(r.champion, c);
+    }
+    const out = new Map();
+    for (const [nom, c] of m) out.set(nom, { n: c.n, v: c.v, score: Math.round((50 * (c.v + 2.5)) / (c.n + 5) + c.duel / c.n) });
+    return out;
+  }
+  function wrContre(cle, ennemi, lane) {
+    // Winrate de « cle » contre « ennemi » dans la lane, depuis la liste de matchups de l'un ou de l'autre
+    const a = window.META.analyses[cle + '|' + lane], e = window.META.analyses[ennemi + '|' + lane];
+    const x = a && a.matchups && a.matchups.find((m) => m[0] === ennemi);
+    if (x && x[1]) return { wr: x[2] / x[1], play: x[1] };
+    const y = e && e.matchups && e.matchups.find((m) => m[0] === cle);
+    if (y && y[1]) return { wr: 1 - y[2] / y[1], play: y[1] };
+    return null;
+  }
+  dash.draw('cp_lanes', (box) => {
+    if (!panneauOuvert() && !window.META) return;
+    if (!CP.lane) CP.lane = laneParDefaut();
+    box.replaceChildren();
+    for (const [k, lab] of LANES) {
+      const b = mk2('button', k === CP.lane ? 'on' : '', lab); b.type = 'button';
+      b.onclick = () => { CP.lane = k; dash._run(); };
+      box.appendChild(b);
+    }
+  });
+  dash.draw('cp', (box) => {
+    if (!panneauOuvert() && !window.META) return;
+    box.replaceChildren();
+    if (!window.META) { box.appendChild(mk2('p', 'lx-vide', META.erreur ? 'Données méta indisponibles.' : 'Chargement…')); return; }
+    if (!CP.ennemi) { box.appendChild(mk2('div', 'lx-cp-vide', 'Tape le nom du champion adverse ci-dessus.')); return; }
+    const lane = CP.lane, ennemi = CP.ennemi, nomE = infoChamp(ennemi).nom;
+    const tete = mk2('div', 'lx-cp-tete'); const ie = imgChamp(ennemi); const t = mk2('div');
+    t.append(mk2('b', null, 'Contre ' + nomE), mk2('span', null, (LANES.find((l) => l[0] === lane) || [])[1] + ' · winrates mondiaux OP.GG'));
+    tete.append(ie, t); box.appendChild(tete);
+    const ea = window.META.analyses[ennemi + '|' + lane];
+    if (!ea || !ea.matchups) {
+      box.appendChild(mk2('div', 'lx-cp-vide', nomE + ' est rarement joué dans cette lane, ou les matchups ne sont pas encore chargés. Essaie une autre lane.'));
+      return;
+    }
+    const role = Object.keys(ROLE_LANE).find((r) => ROLE_LANE[r] === lane);
+    const perso = niveauPerso(role);
+    const cols = mk2('div', 'lx-cp-cols');
+    // 1. Pour toi
+    const c1 = mk2('div'); c1.appendChild(mk2('div', 'lx-fb-lab', 'Dans ton pool'));
+    const reco = [];
+    for (const [nom, p] of perso) {
+      const cle = (window.DD.cid || {})[window.DD.norm(nom)]; if (!cle || cle === ennemi) continue;
+      const mu = wrContre(cle, ennemi, lane);
+      const fiable = mu && mu.play >= 50;
+      const ptsMu = fiable ? Math.max(0, Math.min(100, 50 + (mu.wr - 0.5) * 400)) : 50;
+      const persoFiable = (p.score * p.n + 50 * 3) / (p.n + 3); // peu de parties : tiré vers 50
+      reco.push({ cle, nom, p, mu, fiable, score: Math.round(0.5 * persoFiable + 0.5 * ptsMu) });
+    }
+    reco.sort((a, b) => b.score - a.score);
+    if (!reco.length) c1.appendChild(mk2('div', 'lx-cp-vide', 'Aucune partie dans cette lane pour le compte choisi.'));
+    reco.slice(0, 6).forEach((r, i) => {
+      const l = mk2('div', 'lx-cp-l' + (i === 0 ? ' top' : ''));
+      const info = mk2('div'); info.style.minWidth = '0';
+      info.appendChild(mk2('div', 'lx-cp-n', r.nom));
+      const d = mk2('div', 'lx-cp-d');
+      const wrB = mk2('b', null, r.mu ? pc(r.mu.wr) : '—'); if (r.mu) wrB.style.color = r.mu.wr >= 0.5 ? 'var(--lx-win)' : 'var(--lx-loss)';
+      d.append('Ton niveau ', mk2('b', null, r.p.score + '/100'), ' (' + r.p.n + ' partie' + (r.p.n > 1 ? 's' : '') + ')', mk2('br'), 'Matchup ', wrB, r.mu ? ' sur ' + r.mu.play.toLocaleString('fr-FR') + ' parties' + (r.fiable ? '' : ', trop peu') : ' non documenté');
+      info.appendChild(d);
+      const sc = mk2('div', 'lx-cp-sc'); const b = mk2('b', null, String(r.score)); b.style.color = r.score >= 55 ? 'var(--lx-win)' : r.score <= 45 ? 'var(--lx-loss)' : '#fff'; sc.append(b, mk2('span', null, 'reco /100'));
+      l.append(mk2('span', 'lx-cp-rg', String(i + 1)), imgChamp(r.cle), info, sc);
+      l.onclick = () => { ouvrirFiche(r.cle, lane); };
+      c1.appendChild(l);
+    });
+    cols.appendChild(c1);
+    // 2. Meilleurs contre-picks mondiaux
+    const c2 = mk2('div'); c2.appendChild(mk2('div', 'lx-fb-lab', 'Meilleurs contre-picks (tous joueurs)'));
+    const dansPool = new Set(reco.map((r) => r.cle));
+    const glob = ea.matchups.filter((m) => m[1] >= 150).map((m) => ({ cle: m[0], wr: 1 - m[2] / m[1], play: m[1] })).sort((a, b) => b.wr - a.wr).slice(0, 8);
+    glob.forEach((g, i) => {
+      const l = mk2('div', 'lx-cp-l');
+      const info = mk2('div'); info.style.minWidth = '0';
+      const n = mk2('div', 'lx-cp-n', infoChamp(g.cle).nom); if (dansPool.has(g.cle)) n.appendChild(mk2('span', 'lx-cp-pool', 'ton pool'));
+      info.append(n, mk2('div', 'lx-cp-d', g.play.toLocaleString('fr-FR') + ' parties contre ' + nomE));
+      const sc = mk2('div', 'lx-cp-sc'); const b = mk2('b', null, fr(100 * g.wr) + '%'); b.style.color = 'var(--lx-win)'; b.style.fontSize = '24px'; sc.append(b, mk2('span', null, 'de victoires'));
+      l.append(mk2('span', 'lx-cp-rg', String(i + 1)), imgChamp(g.cle), info, sc);
+      l.onclick = () => { if (window.META.analyses[g.cle + '|' + lane]) ouvrirFiche(g.cle, lane); };
+      c2.appendChild(l);
+    });
+    if (!glob.length) c2.appendChild(mk2('div', 'lx-cp-vide', 'Pas assez de parties pour classer les contre-picks.'));
+    cols.appendChild(c2);
+    box.appendChild(cols);
+    const lien = mk2('button', 'lx-retour', 'Voir la fiche de ' + nomE + ' →'); lien.style.display = 'inline-flex'; lien.type = 'button'; lien.onclick = () => ouvrirFiche(ennemi, lane);
+    box.appendChild(lien);
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'cp-ennemi') {
+      const cle = (window.DD.cid || {})[window.DD.norm(e.target.value || '')];
+      if (!cle) return;
+      CP.ennemi = cle;
+      if (window.META && !window.META.analyses[cle + '|' + (CP.lane || '')]) {
+        const l = LANES.map((x) => x[0]).find((x) => window.META.analyses[cle + '|' + x]); if (l) CP.lane = l;
+      }
+      e.target.blur(); dash._run();
+    }
   });
   dash.draw('controle', (box) => {
     const d = dash.data('c_controle');

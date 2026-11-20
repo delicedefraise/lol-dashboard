@@ -15,21 +15,33 @@ concurrency:
 jobs:
   maj:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Récupérer les nouvelles parties
+        id: riot
+        continue-on-error: true   # une clé expirée ne doit pas bloquer la méta
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
         run: python scripts/fetch_riot.py
-      - name: Enregistrer data.js s'il a changé
+      - name: Récupérer la méta OP.GG
+        id: meta
+        continue-on-error: true
+        run: python scripts/fetch_meta.py
+      - name: Enregistrer les données qui ont changé
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data.js
+          git add data.js meta.js
           if git diff --cached --quiet; then echo "Rien de nouveau."; exit 0; fi
           git commit -m "Mise à jour des données"
           git push
+      - name: Signaler un échec de la clé Riot
+        if: steps.riot.outcome == 'failure'
+        run: |
+          echo "::error::La récupération des parties a échoué (clé Riot expirée ?). La méta a quand même été mise à jour."
+          exit 1

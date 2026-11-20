@@ -6,7 +6,9 @@ Dashboard personnel de parties classées League of Legends (Caps75 et SPACFR, EU
 - `data.js` : les données (parties, rangs, catalogue). Généré par le script, ne pas éditer à la main.
 - `config.json` : comptes suivis, région, début de saison.
 - `scripts/fetch_riot.py` : récupère les nouvelles parties via l'API Riot et met à jour `data.js`.
-- `.github/workflows/maj-donnees.yml` : lance le script chaque jour et publie le résultat.
+- `scripts/fetch_meta.py` (+ `scripts/opgg_mcp.py`) : récupère la méta globale depuis le serveur MCP public d'OP.GG (tier list par lane, builds, runes, sorts, compétences, counters) et écrit `meta.js`. Aucune clé nécessaire.
+- `meta.js` : la méta, chargée seulement à l'ouverture de l'onglet Méta. Données © OP.GG.
+- `.github/workflows/maj-donnees.yml` : lance les deux scripts chaque jour et publie le résultat.
 
 ## Mettre à jour à la main
 
