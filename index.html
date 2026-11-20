@@ -263,7 +263,23 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-best-score { justify-self: end; text-align: right; }
 .lx-best-score b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 44px; line-height: .9; }
 .lx-best-score span { font-size: 11px; color: var(--lx-muted); }
-.lx-best-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.lx-best-tags { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+.lx-best-tags .lx-chip { white-space: normal; max-width: 100%; }
+.lx-best-dec { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lx-best-j { display: flex; flex-direction: column; gap: 5px; min-width: 0; cursor: help; }
+.lx-best-jh { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--lx-muted); }
+.lx-best-jh b { font-family: var(--font-serif); font-weight: 400; font-size: 18px; color: var(--lx-text); }
+.lx-best-det summary { font-size: 12.5px; color: var(--lx-gold); cursor: pointer; list-style: none; }
+.lx-best-det summary::-webkit-details-marker { display: none; }
+.lx-best-det summary::before { content: '▸ '; } .lx-best-det[open] summary::before { content: '▾ '; }
+.lx-best-crit { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+.lx-best-cr { display: grid; grid-template-columns: minmax(0, 1fr) 2.8em; gap: 3px 8px; align-items: center; font-size: 12px; }
+.lx-best-cr .lx-best-crn { grid-column: 1 / -1; }
+.lx-best-crn { color: var(--lx-text); line-height: 1.3; }
+.lx-best-crn em { font-style: normal; color: var(--lx-gold); font-size: 11px; }
+.lx-best-cr b { text-align: right; font-weight: 500; }
+.lx-best-cr .lx-bar { height: 4px; }
+.lx-best-note { font-size: 11.5px; color: var(--lx-faint); margin: 10px 0 0; line-height: 1.45; }
 .lx-best-suite { font-size: 12.5px; color: var(--lx-muted); padding-top: 10px; border-top: 1px solid var(--lx-line); }
 .lx-best-suite b { color: var(--lx-text); font-weight: 500; }
 .lx-best-alerte { font-size: 12px; color: var(--lx-gold); }
@@ -375,7 +391,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
   <div class="lx-panel" id="champs" role="tabpanel" hidden>
     <section id="meilleurs" class="lx-card">
       <h2>Meilleur champion par rôle</h2>
-      <p class="lx-sous">Un score sur 100 par champion : moitié winrate, moitié duel contre ton adversaire direct sur une trentaine de critères (combat, dégâts infligés et encaissés, soins et boucliers, contrôle, or et CS, vision, tours, skillshots esquivés, objectifs en jungle), pondérés selon le rôle et la classe du champion. Les champions joués au moins 3 fois passent en premier. Les pastilles montrent dans quelle part des parties tu es devant sur un critère.</p>
+      <p class="lx-sous">La note sur 100 est la moyenne de deux jauges. <b>Winrate</b> : tes victoires sur ce champion. <b>Duel</b> : la part des critères où tu fais mieux que ton adversaire direct, partie par partie (combat, dégâts infligés et encaissés, soins, contrôle, or, CS, vision, objectifs…), certains critères comptant plus selon le rôle et la classe du champion. Les deux sont tirées vers 50 tant qu'il y a peu de parties, et les champions joués au moins 3 fois passent en premier. Ouvre « Voir les critères » pour le détail.</p>
       <div class="lx-best" data-draw="meilleurs"></div>
     </section>
     <div class="lx-grille">
@@ -1829,7 +1845,7 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     let t = 0, w = 0; const det = {};
     for (const [lab, a, b, sens, poids] of criteres(r)) {
       const v = a === b ? 0.5 : ((a - b) * sens > 0 ? 1 : 0);
-      t += v * poids; w += poids; det[lab] = v;
+      t += v * poids; w += poids; det[lab] = [v, poids];
     }
     return { score: w ? (100 * t) / w : 50, det };
   }
@@ -1845,14 +1861,14 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
         const c = m.get(r.champion) || { n: 0, v: 0, duel: 0, det: {} };
         const du = duel(r);
         c.n++; if (r.resultat === 'V') c.v++; c.duel += du.score;
-        for (const k in du.det) { c.det[k] = c.det[k] || [0, 0]; c.det[k][0] += du.det[k]; c.det[k][1]++; }
+        for (const k in du.det) { c.det[k] = c.det[k] || [0, 0, du.det[k][1]]; c.det[k][0] += du.det[k][0]; c.det[k][1]++; }
         m.set(r.champion, c);
       }
       if (!m.size) continue;
       vide = false;
       const classes = [...m.entries()].map(([nom, c]) => {
         const wr = (100 * (c.v + 2.5)) / (c.n + 5), du = (c.duel + 50 * 3) / (c.n + 3);
-        return { nom, ...c, score: Math.round(0.5 * wr + 0.5 * du), wrReel: (100 * c.v) / c.n };
+        return { nom, ...c, wrS: Math.round(wr), duS: Math.round(du), duReel: c.duel / c.n, score: Math.round(0.5 * wr + 0.5 * du), wrReel: (100 * c.v) / c.n };
       }).sort((a, b) => (b.n >= 3) - (a.n >= 3) || b.score - a.score || b.n - a.n);
       const best = classes[0];
       const it = mk('div', 'lx-best-it');
@@ -1865,13 +1881,39 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
       const sc = mk('div', 'lx-best-score'); const b = mk('b', null, String(best.score)); b.style.color = best.score >= 55 ? 'var(--lx-win)' : best.score <= 45 ? 'var(--lx-loss)' : '#fff';
       sc.append(b, mk('span', null, 'sur 100'));
       tete.append(im, info, sc); it.appendChild(tete);
-      const taux = Object.entries(best.det).map(([k, [t, n]]) => [k, t / n]).sort((a, b) => b[1] - a[1]);
+      const dec = mk('div', 'lx-best-dec');
+      const jauge = (lab, val, aide) => {
+        const l = mk('div', 'lx-best-j'); l.title = aide;
+        const h = mk('div', 'lx-best-jh'); h.append(mk('span', null, lab), mk('b', null, String(val)));
+        const bar = mk('div', 'lx-bar'); const f = mk('span', val >= 50 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(4, val) + '%'; bar.appendChild(f);
+        l.append(h, bar); return l;
+      };
+      dec.append(
+        jauge('Winrate', best.wrS, best.v + ' V sur ' + best.n + ' parties, lissé vers 50 % tant qu’il y a peu de parties'),
+        jauge('Duel', best.duS, 'Devant ton adversaire direct sur ' + Math.round(best.duReel) + ' % des critères (pondérés) en moyenne, lissé vers 50 % tant qu’il y a peu de parties'),
+      );
+      it.appendChild(dec);
+      const taux = Object.entries(best.det).map(([k, [t, n, w]]) => [k, t / n, w]).sort((a, b) => b[1] - a[1] || b[2] - a[2]);
       const tags = mk('div', 'lx-best-tags');
       for (const [k, t] of taux.filter((x) => x[1] >= 0.6).slice(0, 3)) tags.appendChild(mk('span', 'lx-chip lx-up', k + ' ' + Math.round(100 * t) + ' %'));
       const faible = taux.filter((x) => x[1] <= 0.4).slice(-1)[0];
       if (faible) tags.appendChild(mk('span', 'lx-chip lx-down', faible[0] + ' ' + Math.round(100 * faible[1]) + ' %'));
       if (tags.childNodes.length) it.appendChild(tags);
       if (best.n < 3) it.appendChild(mk('div', 'lx-best-alerte', 'Peu de parties sur ce rôle, classement indicatif'));
+      const det = mk('details', 'lx-best-det');
+      det.appendChild(mk('summary', null, 'Voir les ' + taux.length + ' critères'));
+      const lst = mk('div', 'lx-best-crit');
+      for (const [k, t, w] of taux) {
+        const row = mk('div', 'lx-best-cr');
+        const nm = mk('span', 'lx-best-crn', k); if (w >= 1.5) nm.appendChild(mk('em', null, ' ×' + String(w).replace('.', ',')));
+        else if (w < 1) nm.appendChild(mk('em', null, ' ×' + String(w).replace('.', ',')));
+        const bar = mk('div', 'lx-bar'); const f = mk('span', t >= 0.5 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(3, 100 * t) + '%'; bar.appendChild(f);
+        const pc = mk('b', null, Math.round(100 * t) + ' %'); pc.style.color = t >= 0.6 ? 'var(--lx-win)' : t <= 0.4 ? 'var(--lx-loss)' : 'var(--lx-text)';
+        row.append(nm, bar, pc); lst.appendChild(row);
+      }
+      det.appendChild(lst);
+      det.appendChild(mk('p', 'lx-best-note', '% = part des parties où tu es devant ton adversaire direct. ×2, ×1,5 : critère qui compte plus pour ce rôle ou cette classe ; ×0,5 : compte moins.'));
+      it.appendChild(det);
       const suite = classes.slice(1, 3);
       if (suite.length) {
         const s2 = mk('div', 'lx-best-suite'); s2.append('Ensuite : ');
