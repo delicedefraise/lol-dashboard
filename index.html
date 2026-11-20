@@ -265,6 +265,18 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-best-score span { font-size: 11px; color: var(--lx-muted); }
 .lx-best-tags { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
 .lx-best-tags .lx-chip { white-space: normal; max-width: 100%; }
+.lx-bareme { display: flex; flex-direction: column; gap: 9px; }
+.lx-pts { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.lx-pts-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12.5px; color: var(--lx-text); }
+.lx-pts-v { font-size: 11.5px; color: var(--lx-muted); white-space: nowrap; }
+.lx-pts-v b { font-weight: 600; font-size: 12.5px; }
+.lx-pts .lx-bar { height: 4px; }
+.lx-pts-main .lx-pts-h { font-weight: 600; font-size: 13px; }
+.lx-pts-main .lx-pts-v b { font-family: var(--font-serif); font-weight: 400; font-size: 19px; }
+.lx-pts-main .lx-bar { height: 6px; }
+.lx-pts-fams { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 0 10px; padding-left: 10px; border-left: 1px solid var(--lx-line2); }
+.lx-best-fam { font-size: 11.5px; color: var(--lx-gold); margin-top: 6px; }
+.lx-best-fam:first-child { margin-top: 0; }
 .lx-best-dec { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .lx-best-j { display: flex; flex-direction: column; gap: 5px; min-width: 0; cursor: help; }
 .lx-best-jh { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--lx-muted); }
@@ -273,8 +285,8 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-best-det summary::-webkit-details-marker { display: none; }
 .lx-best-det summary::before { content: '▸ '; } .lx-best-det[open] summary::before { content: '▾ '; }
 .lx-best-crit { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
-.lx-best-cr { display: grid; grid-template-columns: minmax(0, 1fr) 2.8em; gap: 3px 8px; align-items: center; font-size: 12px; }
-.lx-best-cr .lx-best-crn { grid-column: 1 / -1; }
+.lx-best-cr { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 12px; }
+.lx-best-cr b { white-space: nowrap; }
 .lx-best-crn { color: var(--lx-text); line-height: 1.3; }
 .lx-best-crn em { font-style: normal; color: var(--lx-gold); font-size: 11px; }
 .lx-best-cr b { text-align: right; font-weight: 500; }
@@ -391,7 +403,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
   <div class="lx-panel" id="champs" role="tabpanel" hidden>
     <section id="meilleurs" class="lx-card">
       <h2>Meilleur champion par rôle</h2>
-      <p class="lx-sous">La note sur 100 est la moyenne de deux jauges. <b>Winrate</b> : tes victoires sur ce champion. <b>Duel</b> : la part des critères où tu fais mieux que ton adversaire direct, partie par partie (combat, dégâts infligés et encaissés, soins, contrôle, or, CS, vision, objectifs…), certains critères comptant plus selon le rôle et la classe du champion. Les deux sont tirées vers 50 tant qu'il y a peu de parties, et les champions joués au moins 3 fois passent en premier. Ouvre « Voir les critères » pour le détail.</p>
+      <p class="lx-sous"><b>Note sur 100 = Winrate sur 50 + Duel sur 50.</b> Le Duel répartit ses 50 points entre des familles de critères (combat, dégâts, tank et soutien, économie, vision, objectifs), avec plus de poids sur ce qui compte pour le rôle et la classe du champion. Sur chaque critère, tu prends les points quand tu fais mieux que ton adversaire direct, la moitié en cas d’égalité. Le winrate est tiré vers 50 % tant qu’il y a peu de parties, et les champions joués au moins 3 fois passent en premier.</p>
       <div class="lx-best" data-draw="meilleurs"></div>
     </section>
     <div class="lx-grille">
@@ -1841,34 +1853,61 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     }
     return c.filter((x) => x[4] > 0 && x[1] !== null && x[2] !== null && !Number.isNaN(x[1]) && !Number.isNaN(x[2]));
   }
+  const FAMILLES = [
+    ['Combat', ['KDA', 'Kills et assists', 'Morts', 'Participation aux kills', 'Temps mort', 'Kills en solo', 'Plus longue série', 'Skillshots esquivés', 'Assists']],
+    ['Dégâts', ['Dégâts infligés', 'Part des dégâts']],
+    ['Tank et soutien', ['Dégâts subis', 'Dégâts encaissés (mitigés)', 'Soins et boucliers alliés', 'Contrôle (CC)']],
+    ['Économie', ['Or', 'Or à 15 min', 'Niveau à 10 min', 'CS/min', 'CS à 10 min', 'Avance max en CS']],
+    ['Vision', ['Score de vision', 'Wards posées', 'Wards détruites', 'Balises de contrôle']],
+    ['Objectifs', ['Dégâts aux bâtiments', 'Tours détruites', 'Plaques', 'Camps', 'Contre-jungle', 'Crabes', 'Participation aux dragons', 'Participation aux Nashors', 'Larves', 'Héraut', 'Objectifs volés']],
+  ];
+  const famille = (lab) => (FAMILLES.find(([, l]) => l.includes(lab)) || ['Combat'])[0];
+  // Une partie : 50 points de duel répartis entre les critères selon leur poids.
+  // Tu gagnes les points d'un critère quand tu fais mieux que ton adversaire direct (la moitié en cas d'égalité).
   function duel(r) {
-    let t = 0, w = 0; const det = {};
-    for (const [lab, a, b, sens, poids] of criteres(r)) {
+    const crit = criteres(r), W = crit.reduce((t, x) => t + x[4], 0) || 1;
+    const fam = {}, det = {};
+    for (const [lab, a, b, sens, poids] of crit) {
       const v = a === b ? 0.5 : ((a - b) * sens > 0 ? 1 : 0);
-      t += v * poids; w += poids; det[lab] = [v, poids];
+      const f = famille(lab); fam[f] = fam[f] || [0, 0];
+      fam[f][0] += (50 * v * poids) / W; fam[f][1] += (50 * poids) / W;
+      det[lab] = [v, (50 * poids) / W];
     }
-    return { score: w ? (100 * t) / w : 50, det };
+    return { fam, det };
   }
+  const f1 = (x) => Number(x).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   dash.draw('meilleurs', (box) => {
     const rows = lignes(), p = dash.params();
     box.replaceChildren();
     const roles = p.role ? [p.role] : ['Haut', 'Jungle', 'Milieu', 'Bas', 'Support'];
     const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+    const ligne = (lab, pts, max, cls) => {
+      const l = mk('div', 'lx-pts' + (cls ? ' ' + cls : ''));
+      const ratio = max ? pts / max : 0;
+      const h = mk('div', 'lx-pts-h'); const v = mk('b', null, f1(pts)); v.style.color = ratio >= 0.6 ? 'var(--lx-win)' : ratio <= 0.4 ? 'var(--lx-loss)' : '#fff';
+      const sp = mk('span', 'lx-pts-v'); sp.append(v, ' / ' + f1(max));
+      h.append(mk('span', null, lab), sp);
+      const bar = mk('div', 'lx-bar'); const f = mk('span', ratio >= 0.5 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(3, 100 * ratio) + '%'; bar.appendChild(f);
+      l.append(h, bar); return l;
+    };
     let vide = true;
     for (const role of roles) {
       const m = new Map();
       for (const r of rows.filter((x) => x.role === role)) {
-        const c = m.get(r.champion) || { n: 0, v: 0, duel: 0, det: {} };
+        const c = m.get(r.champion) || { n: 0, v: 0, fam: {}, det: {} };
         const du = duel(r);
-        c.n++; if (r.resultat === 'V') c.v++; c.duel += du.score;
-        for (const k in du.det) { c.det[k] = c.det[k] || [0, 0, du.det[k][1]]; c.det[k][0] += du.det[k][0]; c.det[k][1]++; }
+        c.n++; if (r.resultat === 'V') c.v++;
+        for (const f in du.fam) { c.fam[f] = c.fam[f] || [0, 0]; c.fam[f][0] += du.fam[f][0]; c.fam[f][1] += du.fam[f][1]; }
+        for (const k in du.det) { c.det[k] = c.det[k] || [0, 0, 0]; c.det[k][0] += du.det[k][0]; c.det[k][1]++; c.det[k][2] += du.det[k][1]; }
         m.set(r.champion, c);
       }
       if (!m.size) continue;
       vide = false;
       const classes = [...m.entries()].map(([nom, c]) => {
-        const wr = (100 * (c.v + 2.5)) / (c.n + 5), du = (c.duel + 50 * 3) / (c.n + 3);
-        return { nom, ...c, wrS: Math.round(wr), duS: Math.round(du), duReel: c.duel / c.n, score: Math.round(0.5 * wr + 0.5 * du), wrReel: (100 * c.v) / c.n };
+        const wrPts = (50 * (c.v + 2.5)) / (c.n + 5);
+        const fam = FAMILLES.map(([f]) => [f, (c.fam[f] || [0, 0])[0] / c.n, (c.fam[f] || [0, 0])[1] / c.n]).filter((x) => x[2] > 0.05);
+        const duelPts = fam.reduce((t, x) => t + x[1], 0);
+        return { nom, ...c, wrPts, fam, duelPts, score: Math.round(wrPts + duelPts), wrReel: (100 * c.v) / c.n };
       }).sort((a, b) => (b.n >= 3) - (a.n >= 3) || b.score - a.score || b.n - a.n);
       const best = classes[0];
       const it = mk('div', 'lx-best-it');
@@ -1877,42 +1916,38 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
       const src = window.DD && window.DD.champ[window.DD.norm(best.nom)];
       const im = mk(src ? 'img' : 'div', src ? null : 'ph'); if (src) { im.src = src; im.alt = best.nom; }
       const info = mk('div'); info.style.minWidth = '0';
-      info.append(mk('div', 'lx-best-nom', best.nom), mk('div', 'lx-best-meta', best.n + ' partie' + (best.n > 1 ? 's' : '') + ' · ' + fr(best.wrReel) + ' % de winrate'));
+      info.append(mk('div', 'lx-best-nom', best.nom), mk('div', 'lx-best-meta', best.n + ' partie' + (best.n > 1 ? 's' : '') + ' · ' + best.v + ' V ' + (best.n - best.v) + ' D'));
       const sc = mk('div', 'lx-best-score'); const b = mk('b', null, String(best.score)); b.style.color = best.score >= 55 ? 'var(--lx-win)' : best.score <= 45 ? 'var(--lx-loss)' : '#fff';
       sc.append(b, mk('span', null, 'sur 100'));
       tete.append(im, info, sc); it.appendChild(tete);
-      const dec = mk('div', 'lx-best-dec');
-      const jauge = (lab, val, aide) => {
-        const l = mk('div', 'lx-best-j'); l.title = aide;
-        const h = mk('div', 'lx-best-jh'); h.append(mk('span', null, lab), mk('b', null, String(val)));
-        const bar = mk('div', 'lx-bar'); const f = mk('span', val >= 50 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(4, val) + '%'; bar.appendChild(f);
-        l.append(h, bar); return l;
-      };
-      dec.append(
-        jauge('Winrate', best.wrS, best.v + ' V sur ' + best.n + ' parties, lissé vers 50 % tant qu’il y a peu de parties'),
-        jauge('Duel', best.duS, 'Devant ton adversaire direct sur ' + Math.round(best.duReel) + ' % des critères (pondérés) en moyenne, lissé vers 50 % tant qu’il y a peu de parties'),
-      );
-      it.appendChild(dec);
-      const taux = Object.entries(best.det).map(([k, [t, n, w]]) => [k, t / n, w]).sort((a, b) => b[1] - a[1] || b[2] - a[2]);
-      const tags = mk('div', 'lx-best-tags');
-      for (const [k, t] of taux.filter((x) => x[1] >= 0.6).slice(0, 3)) tags.appendChild(mk('span', 'lx-chip lx-up', k + ' ' + Math.round(100 * t) + ' %'));
-      const faible = taux.filter((x) => x[1] <= 0.4).slice(-1)[0];
-      if (faible) tags.appendChild(mk('span', 'lx-chip lx-down', faible[0] + ' ' + Math.round(100 * faible[1]) + ' %'));
-      if (tags.childNodes.length) it.appendChild(tags);
+      // Barème : winrate /50 + duel /50, puis le duel par famille
+      const bar = mk('div', 'lx-bareme');
+      const w = ligne('Winrate', best.wrPts, 50, 'lx-pts-main'); w.title = fr(best.wrReel) + ' % de winrate réel (' + best.v + ' V sur ' + best.n + '), tiré vers 50 % tant qu’il y a peu de parties';
+      const d = ligne('Duel', best.duelPts, 50, 'lx-pts-main'); d.title = 'Points gagnés face à ton adversaire direct, en moyenne par partie';
+      bar.append(w, d);
+      const fams = mk('div', 'lx-pts-fams');
+      for (const [f, pts, max] of best.fam) fams.appendChild(ligne(f, pts, max));
+      bar.appendChild(fams);
+      it.appendChild(bar);
       if (best.n < 3) it.appendChild(mk('div', 'lx-best-alerte', 'Peu de parties sur ce rôle, classement indicatif'));
+      // Détail critère par critère
       const det = mk('details', 'lx-best-det');
-      det.appendChild(mk('summary', null, 'Voir les ' + taux.length + ' critères'));
+      const taux = Object.entries(best.det).map(([k, [t, n, pts]]) => [k, t / n, pts / n]);
+      det.appendChild(mk('summary', null, 'Détail des ' + taux.length + ' critères'));
       const lst = mk('div', 'lx-best-crit');
-      for (const [k, t, w] of taux) {
-        const row = mk('div', 'lx-best-cr');
-        const nm = mk('span', 'lx-best-crn', k); if (w >= 1.5) nm.appendChild(mk('em', null, ' ×' + String(w).replace('.', ',')));
-        else if (w < 1) nm.appendChild(mk('em', null, ' ×' + String(w).replace('.', ',')));
-        const bar = mk('div', 'lx-bar'); const f = mk('span', t >= 0.5 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(3, 100 * t) + '%'; bar.appendChild(f);
-        const pc = mk('b', null, Math.round(100 * t) + ' %'); pc.style.color = t >= 0.6 ? 'var(--lx-win)' : t <= 0.4 ? 'var(--lx-loss)' : 'var(--lx-text)';
-        row.append(nm, bar, pc); lst.appendChild(row);
+      for (const [f] of FAMILLES) {
+        const items = taux.filter((x) => famille(x[0]) === f).sort((a, b) => b[2] - a[2]);
+        if (!items.length) continue;
+        lst.appendChild(mk('div', 'lx-best-fam', f));
+        for (const [k, t, max] of items) {
+          const row = mk('div', 'lx-best-cr');
+          const pc = mk('b', null, f1(t * max) + ' / ' + f1(max)); pc.style.color = t >= 0.6 ? 'var(--lx-win)' : t <= 0.4 ? 'var(--lx-loss)' : 'var(--lx-text)';
+          const nm = mk('span', 'lx-best-crn', k); nm.title = 'Devant ton adversaire dans ' + Math.round(100 * t) + ' % des parties';
+          row.append(nm, pc); lst.appendChild(row);
+        }
       }
       det.appendChild(lst);
-      det.appendChild(mk('p', 'lx-best-note', '% = part des parties où tu es devant ton adversaire direct. ×2, ×1,5 : critère qui compte plus pour ce rôle ou cette classe ; ×0,5 : compte moins.'));
+      det.appendChild(mk('p', 'lx-best-note', 'Points d’un critère = sa part des 50 points de duel × la part des parties où tu fais mieux que ton adversaire direct.'));
       it.appendChild(det);
       const suite = classes.slice(1, 3);
       if (suite.length) {
