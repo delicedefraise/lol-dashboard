@@ -250,6 +250,23 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-ligne { display: grid; grid-template-columns: 3.4em minmax(0, 1fr) 3.4em 1.2em; gap: 6px 10px; align-items: center; font-size: 13.5px; }
 .lx-ligne .lx-crit { grid-column: 1 / -1; font-size: 12px; color: var(--lx-muted); text-align: center; margin-bottom: -4px; }
 .lx-ligne .lx-a { text-align: right; color: var(--lx-win); } .lx-ligne .lx-b { color: var(--lx-loss); }
+.lx-best { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; margin-top: 4px; }
+@media (min-width: 1100px) { .lx-best { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.lx-best-it { border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--lx-line); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.lx-best-role { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--lx-muted); }
+.lx-best-role svg { width: 16px; height: 16px; fill: none; stroke: var(--lx-gold); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.lx-best-tete { display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'img score' 'info info'; align-items: center; gap: 12px; min-width: 0; }
+.lx-best-tete > :first-child { grid-area: img; } .lx-best-tete > div:nth-child(2) { grid-area: info; } .lx-best-tete > .lx-best-score { grid-area: score; }
+.lx-best-tete img, .lx-best-tete .ph { width: 60px; height: 60px; border-radius: 16px; object-fit: cover; border: 1px solid var(--lx-gold); box-shadow: 0 0 18px -6px rgba(200, 170, 110, 0.6); flex: none; background: var(--lx-panel2); }
+.lx-best-nom { font-family: var(--font-serif); font-size: 26px; line-height: 1; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lx-best-meta { font-size: 12.5px; color: var(--lx-muted); margin-top: 5px; }
+.lx-best-score { justify-self: end; text-align: right; }
+.lx-best-score b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 44px; line-height: .9; }
+.lx-best-score span { font-size: 11px; color: var(--lx-muted); }
+.lx-best-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.lx-best-suite { font-size: 12.5px; color: var(--lx-muted); padding-top: 10px; border-top: 1px solid var(--lx-line); }
+.lx-best-suite b { color: var(--lx-text); font-weight: 500; }
+.lx-best-alerte { font-size: 12px; color: var(--lx-gold); }
 .lx-recap-groupe { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding-top: 16px; border-top: 1px solid var(--lx-line); font-family: var(--font-serif); font-size: 21px; color: #fff; }
 .lx-recap-groupe:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .lx-recap-groupe small { font-family: var(--font-anthropic-sans); font-size: 12px; color: var(--lx-muted); }
@@ -356,6 +373,11 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
   </div>
 
   <div class="lx-panel" id="champs" role="tabpanel" hidden>
+    <section id="meilleurs" class="lx-card">
+      <h2>Meilleur champion par rôle</h2>
+      <p class="lx-sous">Un score sur 100 par champion : moitié winrate, moitié duel contre ton adversaire direct sur une trentaine de critères (combat, dégâts infligés et encaissés, soins et boucliers, contrôle, or et CS, vision, tours, skillshots esquivés, objectifs en jungle), pondérés selon le rôle et la classe du champion. Les champions joués au moins 3 fois passent en premier. Les pastilles montrent dans quelle part des parties tu es devant sur un critère.</p>
+      <div class="lx-best" data-draw="meilleurs"></div>
+    </section>
     <div class="lx-grille">
       <section id="roles" class="lx-card">
         <h2>Par rôle</h2>
@@ -1750,6 +1772,115 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
       const b = document.createElement('b'); b.textContent = val; if (col) b.style.color = col;
       const sp = document.createElement('span'); sp.textContent = lab; d.append(b, sp); box.appendChild(d);
     }
+  });
+  const ROLE_ICO = {
+    Haut: '<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/>',
+    Jungle: '<path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"/><path d="M5 19l8-8"/>',
+    Milieu: '<path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/>',
+    Bas: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/>',
+    Support: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
+  };
+  const N = (v) => (v === null || v === undefined || v === '' ? null : +v);
+  // Critères du duel : [libellé, valeur toi, valeur adversaire, sens, poids]
+  function criteres(r) {
+    const d = N(r.duree_min) || 1, role = r.role, sup = role === 'Support', jg = role === 'Jungle', lane = !sup && !jg;
+    const cat = dash.data('catalogue').data || {}, cl = (cat.champions || {})[r.champion] || '';
+    const carry = cl === 'Mage' || cl === 'Tireur' || cl === 'Assassin', front = cl === 'Tank' || cl === 'Combattant';
+    const kda = (k, m, a) => (N(k) + N(a)) / Math.max(1, N(m));
+    const pm = (v) => (v === null ? null : v / d);
+    // [libellé, toi, adversaire, sens, poids]
+    const c = [
+      ['KDA', kda(r.kills, r.deaths, r.assists), kda(r.adv_kills, r.adv_deaths, r.adv_assists), 1, 1.5],
+      ['Kills et assists', N(r.kills) + N(r.assists), N(r.adv_kills) + N(r.adv_assists), 1, 1],
+      ['Morts', N(r.deaths), N(r.adv_deaths), -1, 1.5],
+      ['Participation aux kills', N(r.kp), N(r.adv_kp), 1, 1],
+      ['Temps mort', N(r.temps_mort), N(r.adv_temps_mort), -1, 0.5],
+      ['Kills en solo', N(r.solo_kills), N(r.adv_solo_kills), 1, lane ? 0.75 : 0.25],
+      ['Plus longue série', N(r.plus_longue_serie), N(r.adv_plus_longue_serie), 1, 0.5],
+      ['Dégâts infligés', pm(N(r.degats)), pm(N(r.adv_degats)), 1, carry ? 1.5 : 1],
+      ['Part des dégâts', N(r.part_degats), N(r.adv_part_degats), 1, carry ? 1.5 : 0.75],
+      ['Dégâts subis', pm(N(r.degats_subis)), pm(N(r.adv_degats_subis)), 1, front ? 1.25 : (sup && cl === 'Tank' ? 1 : 0)],
+      ['Dégâts encaissés (mitigés)', pm(N(r.degats_mitiges)), pm(N(r.adv_degats_mitiges)), 1, front ? 1.25 : (cl === 'Tank' ? 1 : 0)],
+      ['Soins et boucliers alliés', N(r.soins_allies) + N(r.boucliers_allies), N(r.adv_soins_allies) + N(r.adv_boucliers_allies), 1, sup ? (cl === 'Support' ? 2 : 1) : 0],
+      ['Contrôle (CC)', N(r.cc), N(r.adv_cc), 1, cl === 'Tank' || sup ? 1.25 : 0.5],
+      ['Dégâts aux bâtiments', N(r.degats_batiments), N(r.adv_degats_batiments), 1, lane ? 1 : 0.5],
+      ['Tours détruites', N(r.tours_detruites), N(r.adv_tours_detruites), 1, 0.5],
+      ['Or', N(r.gold), N(r.adv_gold), 1, 1],
+      ['Or à 15 min', N(r.ecart_or_15), r.ecart_or_15 === null ? null : 0, 1, 1.25],
+      ['Niveau à 10 min', N(r.ecart_niv_10), r.ecart_niv_10 === null ? null : 0, 1, 1],
+      ['Score de vision', N(r.vision), N(r.adv_vision), 1, sup ? 2 : 1],
+      ['Wards posées', N(r.wards), N(r.adv_wards), 1, sup ? 1 : 0.5],
+      ['Wards détruites', N(r.wards_detruites), N(r.adv_wards_detruites), 1, sup ? 1 : 0.5],
+      ['Balises de contrôle', N(r.balises), N(r.adv_balises), 1, sup ? 1 : 0.5],
+      ['Skillshots esquivés', N(r.esquives), N(r.adv_esquives), 1, 0.5],
+    ];
+    if (!sup) c.push(['CS/min', N(r.cs) / d, N(r.adv_cs) / d, 1, lane ? 1.5 : 1], ['CS à 10 min', N(r.cs_10), N(r.adv_cs_10), 1, lane ? 1.5 : 1]);
+    if (lane) c.push(['Avance max en CS', N(r.cs_avance_max), N(r.adv_cs_avance_max), 1, 0.75], ['Plaques', N(r.plaques), N(r.adv_plaques), 1, 0.75]);
+    if (sup) c.push(['Assists', N(r.assists), N(r.adv_assists), 1, 1]);
+    if (jg && r.camps !== undefined) {
+      c.push(['Camps', N(r.camps), N(r.adv_camps), 1, 1], ['Contre-jungle', N(r.contre_jungle), N(r.adv_contre_jungle), 1, 1],
+        ['Crabes', N(r.crabes), N(r.adv_crabes), 1, 0.75], ['Participation aux dragons', N(r.dragons_part), N(r.adv_dragons_part), 1, 1.25],
+        ['Participation aux Nashors', N(r.barons_part), N(r.adv_barons_part), 1, 0.75], ['Larves', N(r.larves), N(r.adv_larves), 1, 0.5],
+        ['Héraut', N(r.heraut), N(r.adv_heraut), 1, 0.5], ['Objectifs volés', N(r.vols), N(r.adv_vols), 1, 0.5]);
+    }
+    return c.filter((x) => x[4] > 0 && x[1] !== null && x[2] !== null && !Number.isNaN(x[1]) && !Number.isNaN(x[2]));
+  }
+  function duel(r) {
+    let t = 0, w = 0; const det = {};
+    for (const [lab, a, b, sens, poids] of criteres(r)) {
+      const v = a === b ? 0.5 : ((a - b) * sens > 0 ? 1 : 0);
+      t += v * poids; w += poids; det[lab] = v;
+    }
+    return { score: w ? (100 * t) / w : 50, det };
+  }
+  dash.draw('meilleurs', (box) => {
+    const rows = lignes(), p = dash.params();
+    box.replaceChildren();
+    const roles = p.role ? [p.role] : ['Haut', 'Jungle', 'Milieu', 'Bas', 'Support'];
+    const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; };
+    let vide = true;
+    for (const role of roles) {
+      const m = new Map();
+      for (const r of rows.filter((x) => x.role === role)) {
+        const c = m.get(r.champion) || { n: 0, v: 0, duel: 0, det: {} };
+        const du = duel(r);
+        c.n++; if (r.resultat === 'V') c.v++; c.duel += du.score;
+        for (const k in du.det) { c.det[k] = c.det[k] || [0, 0]; c.det[k][0] += du.det[k]; c.det[k][1]++; }
+        m.set(r.champion, c);
+      }
+      if (!m.size) continue;
+      vide = false;
+      const classes = [...m.entries()].map(([nom, c]) => {
+        const wr = (100 * (c.v + 2.5)) / (c.n + 5), du = (c.duel + 50 * 3) / (c.n + 3);
+        return { nom, ...c, score: Math.round(0.5 * wr + 0.5 * du), wrReel: (100 * c.v) / c.n };
+      }).sort((a, b) => (b.n >= 3) - (a.n >= 3) || b.score - a.score || b.n - a.n);
+      const best = classes[0];
+      const it = mk('div', 'lx-best-it');
+      const rl = mk('div', 'lx-best-role'); rl.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ROLE_ICO[role] || '') + '</svg>'; rl.append(role); it.appendChild(rl);
+      const tete = mk('div', 'lx-best-tete');
+      const src = window.DD && window.DD.champ[window.DD.norm(best.nom)];
+      const im = mk(src ? 'img' : 'div', src ? null : 'ph'); if (src) { im.src = src; im.alt = best.nom; }
+      const info = mk('div'); info.style.minWidth = '0';
+      info.append(mk('div', 'lx-best-nom', best.nom), mk('div', 'lx-best-meta', best.n + ' partie' + (best.n > 1 ? 's' : '') + ' · ' + fr(best.wrReel) + ' % de winrate'));
+      const sc = mk('div', 'lx-best-score'); const b = mk('b', null, String(best.score)); b.style.color = best.score >= 55 ? 'var(--lx-win)' : best.score <= 45 ? 'var(--lx-loss)' : '#fff';
+      sc.append(b, mk('span', null, 'sur 100'));
+      tete.append(im, info, sc); it.appendChild(tete);
+      const taux = Object.entries(best.det).map(([k, [t, n]]) => [k, t / n]).sort((a, b) => b[1] - a[1]);
+      const tags = mk('div', 'lx-best-tags');
+      for (const [k, t] of taux.filter((x) => x[1] >= 0.6).slice(0, 3)) tags.appendChild(mk('span', 'lx-chip lx-up', k + ' ' + Math.round(100 * t) + ' %'));
+      const faible = taux.filter((x) => x[1] <= 0.4).slice(-1)[0];
+      if (faible) tags.appendChild(mk('span', 'lx-chip lx-down', faible[0] + ' ' + Math.round(100 * faible[1]) + ' %'));
+      if (tags.childNodes.length) it.appendChild(tags);
+      if (best.n < 3) it.appendChild(mk('div', 'lx-best-alerte', 'Peu de parties sur ce rôle, classement indicatif'));
+      const suite = classes.slice(1, 3);
+      if (suite.length) {
+        const s2 = mk('div', 'lx-best-suite'); s2.append('Ensuite : ');
+        suite.forEach((c, i) => { if (i) s2.append(' · '); s2.append(mk('b', null, c.nom), ' ' + c.score + ' (' + c.n + ')'); });
+        it.appendChild(s2);
+      }
+      box.appendChild(it);
+    }
+    if (vide) box.appendChild(mk('p', 'lx-vide', 'Aucune partie avec ces filtres'));
   });
   dash.draw('controle', (box) => {
     const d = dash.data('c_controle');

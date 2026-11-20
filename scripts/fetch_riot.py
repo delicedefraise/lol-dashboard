@@ -201,6 +201,50 @@ class DataDragon:
 
 # ---------------------------------------------------------------- calcul d'une ligne
 
+DUEL = {
+    # cle: (champ du participant ou des challenges, source)
+    "degats_subis": ("totalDamageTaken", "p"),
+    "degats_mitiges": ("damageSelfMitigated", "p"),
+    "soins_allies": ("totalHealsOnTeammates", "p"),
+    "boucliers_allies": ("totalDamageShieldedOnTeammates", "p"),
+    "cc": ("timeCCingOthers", "p"),
+    "degats_batiments": ("damageDealtToBuildings", "p"),
+    "tours_detruites": ("turretTakedowns", "p"),
+    "wards": ("wardsPlaced", "p"),
+    "wards_detruites": ("wardsKilled", "p"),
+    "balises": ("detectorWardsPlaced", "p"),
+    "temps_mort": ("totalTimeSpentDead", "p"),
+    "plus_longue_serie": ("largestKillingSpree", "p"),
+    "kp_adv_base": ("killParticipation", "c"),
+    "part_degats_base": ("teamDamagePercentage", "c"),
+    "part_subis": ("damageTakenOnTeamPercentage", "c"),
+    "solo_kills_base": ("soloKills", "c"),
+    "plaques_base": ("turretPlatesTaken", "c"),
+    "esquives": ("skillshotsDodged", "c"),
+    "skillshots": ("skillshotsHit", "c"),
+    "cs_avance_max": ("maxCsAdvantageOnLaneOpponent", "c"),
+    "niv_avance_max": ("maxLevelLeadLaneOpponent", "c"),
+}
+
+
+def duel_stats(moi, adv, ch, ach, duree):
+    """Stats de duel pour toi (cle) et ton adversaire direct (adv_cle)."""
+    out = {}
+    for cle, (champ, src) in DUEL.items():
+        v_moi = (moi if src == "p" else ch).get(champ)
+        v_adv = (adv if src == "p" else ach).get(champ) if adv else None
+        arrondi = (lambda x: None if x is None else str(round(x, 3))) if src == "c" else s
+        nom = cle.replace("_base", "")
+        if cle.endswith("_base"):  # déjà présent pour toi : on n'ajoute que l'adversaire
+            out["adv_" + nom] = arrondi(v_adv)
+        else:
+            out[cle] = arrondi(v_moi)
+            out["adv_" + cle] = arrondi(v_adv)
+    out["adv_kp"] = out.pop("adv_kp_adv")
+    out["adv_pinks"] = out["adv_balises"]
+    return out
+
+
 def riot_id(p):
     return "%s#%s" % (p.get("riotIdGameName") or p.get("summonerName"), p.get("riotIdTagline") or "")
 
@@ -336,6 +380,8 @@ def ligne_partie(compte, puuids_suivis, m, tl, dd, rangs_de):
         "vols": s(ch.get("epicMonsterSteals", 0)), "adv_vols": s(ach.get("epicMonsterSteals")),
         "dragons_part": s(ch.get("dragonTakedowns", 0)), "adv_dragons_part": s(ach.get("dragonTakedowns")),
         "barons_part": s(ch.get("baronTakedowns", 0)), "adv_barons_part": s(ach.get("baronTakedowns")),
+        # Combat, tank, soutien, vision, map : toi et ton adversaire direct
+        **{cle: v for cle, v in duel_stats(moi, a, ch, ach, duree).items()},
         "ecart_or_equipe_15": s(oe - oa) if oe is not None and oa is not None else None,
         "ff": "1" if moi.get("gameEndedInSurrender") else "0",
         "partenaire": nom_part,
@@ -489,6 +535,7 @@ CONFIG = {}
 CHAMPS_AJOUTES = ["adv_barons", "adv_larves", "adv_heraut", "adv_atakhan", "camps", "adv_camps",
                   "contre_jungle", "adv_contre_jungle", "crabes", "adv_crabes", "vols", "adv_vols",
                   "dragons_part", "adv_dragons_part", "barons_part", "adv_barons_part"]
+CHAMPS_AJOUTES += sorted({k for k in duel_stats({}, {}, {}, {}, 1)})
 
 if __name__ == "__main__":
     main()
