@@ -407,6 +407,61 @@
     "EventID": 0,
     "EventName": "GameStart",
     "EventTime": 0.0
+   },
+   {
+    "EventID": 1,
+    "EventName": "ChampionKill",
+    "EventTime": 195.0,
+    "KillerName": "Insec",
+    "VictimName": "SPACFR"
+   },
+   {
+    "EventID": 2,
+    "EventName": "DragonKill",
+    "EventTime": 330.0,
+    "KillerName": "Caps75",
+    "DragonType": "Earth",
+    "Stolen": "False"
+   },
+   {
+    "EventID": 3,
+    "EventName": "HordeKill",
+    "EventTime": 420.0,
+    "KillerName": "Insec"
+   },
+   {
+    "EventID": 4,
+    "EventName": "HordeKill",
+    "EventTime": 425.0,
+    "KillerName": "Insec"
+   },
+   {
+    "EventID": 5,
+    "EventName": "HordeKill",
+    "EventTime": 431.0,
+    "KillerName": "AxeMan"
+   },
+   {
+    "EventID": 6,
+    "EventName": "DragonKill",
+    "EventTime": 660.0,
+    "KillerName": "SPACFR",
+    "DragonType": "Fire",
+    "Stolen": "False"
+   },
+   {
+    "EventID": 7,
+    "EventName": "TurretKilled",
+    "EventTime": 720.0,
+    "KillerName": "AxeMan",
+    "TurretKilled": "Turret_T1_L_03_A"
+   },
+   {
+    "EventID": 8,
+    "EventName": "TurretKilled",
+    "EventTime": 790.0,
+    "KillerName": "Caps75",
+    "TurretKilled": "Turret_T2_R_03_A"
    }
   ]
  },

@@ -57,6 +57,18 @@ img.it { width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--
 .bilan { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .bilan div { padding: 10px 12px; border-radius: 14px; background: var(--panel2); border: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
 .bilan b { display: block; color: #fff; font-size: 14px; margin-top: 2px; }
+.pistes { display: flex; flex-direction: column; gap: 8px; }
+.piste { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: start; padding: 11px 12px; border-radius: 14px; background: var(--panel2); border: 1px solid var(--line); }
+.piste .ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 17px; background: rgba(200, 170, 110, 0.12); border: 1px solid rgba(200, 170, 110, 0.3); }
+.piste.bon .ico { background: rgba(10, 200, 185, 0.12); border-color: rgba(10, 200, 185, 0.35); }
+.piste.alerte .ico { background: rgba(232, 64, 87, 0.12); border-color: rgba(232, 64, 87, 0.35); }
+.piste b { display: block; font-size: 14px; color: #fff; line-height: 1.3; }
+.piste span { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.45; margin-top: 3px; }
+.piste em { font-style: normal; color: var(--gold2); }
+.score { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+.score div { text-align: center; padding: 8px 4px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); font-size: 11px; color: var(--muted); }
+.score b { display: block; font-family: var(--serif); font-weight: 400; font-size: 19px; color: #fff; line-height: 1.1; }
+.score .vert { color: var(--win); } .score .rouge { color: var(--loss); }
 /* Items */
 .build { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .slot { position: relative; }
@@ -165,6 +177,63 @@ nav button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8
     return { ap, moi, allies, ennemis, vis, parPos, temps: (d.gameData || {}).gameTime || 0, compte: moi.riotId || idMoi };
   }
 
+  // ---------------- Objectifs (fil d'événements du jeu) et pistes de jeu
+  function objectifs(d, g) {
+    const equipe = {};
+    for (const p of [...g.allies, ...g.ennemis]) for (const n of [p.riotIdGameName, p.summonerName, p.riotId, p.championName]) if (n) equipe[n] = p.team === g.moi.team ? 'nous' : 'eux';
+    const sc = { nous: { dragons: 0, herauts: 0, nashors: 0, larves: 0, tours: 0 }, eux: { dragons: 0, herauts: 0, nashors: 0, larves: 0, tours: 0 } };
+    const toursPerdues = { nous: { top: 0, mid: 0, bot: 0 }, eux: { top: 0, mid: 0, bot: 0 } };
+    let dernierDragon = null;
+    for (const e of ((d.events || {}).Events || [])) {
+      const camp = equipe[e.KillerName];
+      if (e.EventName === 'DragonKill' && camp) { sc[camp].dragons++; dernierDragon = e.EventTime; }
+      if (e.EventName === 'HeraldKill' && camp) sc[camp].herauts++;
+      if (e.EventName === 'BaronKill' && camp) sc[camp].nashors++;
+      if (e.EventName === 'HordeKill' && camp) sc[camp].larves++;
+      if (e.EventName === 'TurretKilled') {
+        // Turret_T1_L_03_A : T1 = tour de l'équipe bleue (ORDER), T2 = rouge ; L = top, C = mid, R = bot
+        const m = /Turret_T(\d)_([LCR])/.exec(e.TurretKilled || '');
+        if (m) {
+          const proprio = (m[1] === '1' ? 'ORDER' : 'CHAOS') === g.moi.team ? 'nous' : 'eux';
+          const lane = { L: 'top', C: 'mid', R: 'bot' }[m[2]];
+          toursPerdues[proprio][lane]++;
+          sc[proprio === 'nous' ? 'eux' : 'nous'].tours++;
+        }
+      }
+    }
+    return { sc, toursPerdues, dernierDragon };
+  }
+  function pistes(g, ob, lanes) {
+    const out = [], t = g.temps;
+    const forte = lanes.slice().sort((a, b) => b.dOr - a.dOr)[0], faible = lanes.slice().sort((a, b) => a.dOr - b.dOr)[0];
+    const objDe = (pos) => (pos === 'BOTTOM' || pos === 'UTILITY') ? 'le dragon' : pos === 'TOP' ? (t < 14 * 60 ? 'les larves du Néant' : t < 20 * 60 ? 'le Héraut' : 'le Nashor') : pos === 'MIDDLE' ? 'les roams et la vision autour du mid' : 'les objectifs de son côté';
+    const nomLane = (pos) => ROLE_FR[pos];
+    if (forte && forte.dOr >= 500) out.push(['bon', '⬆', 'Option : jouer autour de ' + nomLane(forte.pos), 'C’est votre lane la plus en avance (' + signe(forte.dOr) + ' po, niv ' + signe(forte.dNiv) + '). Jouer de son côté facilite <em>' + objDe(forte.pos) + '</em>.']);
+    if (faible && faible.dOr <= -500) out.push(['alerte', '⚠', nomLane(faible.pos) + ' est en difficulté', 'Écart de ' + signe(faible.dOr) + ' po. Deux options : la couvrir (vision, présence) pour éviter que ça s’aggrave, ou la laisser jouer safe et créer de l’avance de l’autre côté.']);
+    // Joueur adverse le plus nourri
+    const nourri = g.ennemis.map((p) => ({ p, v: p.scores.kills * 2 + p.scores.assists - p.scores.deaths * 2 + orObjets(p) / 1000 })).sort((a, b) => b.v - a.v)[0];
+    if (nourri && nourri.p.scores.kills >= 3 && nourri.p.scores.kills > nourri.p.scores.deaths) {
+      const s = nourri.p.scores; out.push(['alerte', '◎', 'À surveiller : ' + nomCh(cle(nourri.p)), 'Leur joueur le plus en forme (' + s.kills + '/' + s.deaths + '/' + s.assists + ', ' + fr(orObjets(nourri.p), 0) + ' po en objets). En combat, c’est la menace numéro un ; l’éviter seul ou le focus à plusieurs sont les deux façons de jouer.']);
+    }
+    // Duel de junglers
+    if (g.moi.position === 'JUNGLE' && g.vis) {
+      const d = orObjets(g.moi) - orObjets(g.vis), dn = g.moi.level - g.vis.level;
+      const av = d / 400 + dn; // 400 po ≈ un niveau
+      if (av >= 1) out.push(['bon', '⚔', 'Tu as l’avantage sur ' + nomCh(cle(g.vis)), signe(d) + ' po et niv ' + signe(dn) + ' sur le jungler adverse : envahir ou contester ses camps et ses objectifs est jouable, surtout si tes lanes proches ont la priorité.']);
+      else if (av <= -1) out.push(['alerte', '⚔', nomCh(cle(g.vis)) + ' a l’avantage en jungle', signe(d) + ' po et niv ' + signe(dn) + ' : éviter le duel dans sa jungle, garder tes camps avec tes lanes et chercher les ganks là où une lane alliée est en avance.']);
+    }
+    // Objectifs et or global
+    const n = ob.sc.nous, e = ob.sc.eux;
+    if (n.dragons + e.dragons > 0 && Math.abs(n.dragons - e.dragons) >= 1) {
+      const enAvance = n.dragons > e.dragons;
+      out.push([enAvance ? 'bon' : 'alerte', '🐉', 'Dragons : ' + n.dragons + ' contre ' + e.dragons, enAvance ? 'Vous menez aux dragons : continuer à les prendre rapproche l’âme.' : 'Ils mènent aux dragons : contester le prochain est important si votre bot a la priorité ; sinon, prendre un objectif de l’autre côté au même moment.']);
+    }
+    const oA = g.allies.reduce((x, p) => x + orObjets(p), 0), oE = g.ennemis.reduce((x, p) => x + orObjets(p), 0), dT = oA - oE;
+    if (dT >= 2500) out.push(['bon', '★', 'Votre équipe mène de ' + fr(dT, 0) + ' po', 'C’est le moment de transformer l’avance : tours, vision dans leur jungle, Nashor quand il est dispo.']);
+    else if (dT <= -2500) out.push(['alerte', '★', 'Votre équipe est derrière de ' + fr(-dT, 0) + ' po', 'Jouer groupé et défensif, farmer en sécurité et attendre leurs erreurs autour des objectifs.']);
+    return out.slice(0, 4);
+  }
+
   // ---------------- Lanes
   function vueLanes(g) {
     const box = el('div');
@@ -180,11 +249,12 @@ nav button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8
     box.appendChild(c1);
     const c2 = el('section', 'card');
     const lignes = [];
+    const ob = objectifs(ETAT.data, g);
     ORDRE.forEach((pos, i) => {
       const x = g.parPos(g.allies, pos, i), y = g.parPos(g.ennemis, pos, i);
       if (!x || !y) return;
       const dOr = orObjets(x) - orObjets(y), dCs = x.scores.creepScore - y.scores.creepScore, dNiv = x.level - y.level;
-      lignes.push({ pos, dOr });
+      lignes.push({ pos, dOr, dNiv });
       const l = el('div', 'lane' + (x === g.moi ? ' moi' : ''));
       const info = (p, droite) => {
         const d = el('div', 'p' + (droite ? ' d' : ''));
@@ -201,6 +271,21 @@ nav button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8
       c2.appendChild(l);
     });
     box.appendChild(c2);
+    const ps = pistes(g, ob, lignes);
+    const cp = el('section', 'card');
+    cp.appendChild(el('h2', null, 'Pistes de jeu'));
+    const lp = el('div', 'pistes');
+    if (!ps.length) lp.appendChild(el('p', 'sous', 'Partie équilibrée pour l’instant : rien qui ressorte nettement.'));
+    for (const [ton, ico, titre, txt] of ps) { const d = el('div', 'piste ' + ton); const i = el('div', 'ico', ico); const t = el('div'); t.appendChild(el('b', null, titre)); const sp = el('span'); sp.innerHTML = txt; t.appendChild(sp); d.append(i, t); lp.appendChild(d); }
+    cp.appendChild(lp);
+    const sc = el('div', 'score');
+    for (const [lab, k] of [['Dragons', 'dragons'], ['Larves', 'larves'], ['Hérauts', 'herauts'], ['Tours', 'tours']]) {
+      const d = el('div'); const b = el('b'); const a = ob.sc.nous[k], z = ob.sc.eux[k];
+      b.append(el('span', a > z ? 'vert' : a < z ? 'rouge' : null, String(a)), ' – ' + z); d.append(b, lab); sc.appendChild(d);
+    }
+    cp.appendChild(sc);
+    cp.appendChild(el('p', 'note', 'Des pistes calculées à partir des infos de la touche Tab et du fil d’événements : à toi de décider.'));
+    box.insertBefore(cp, box.firstChild.nextSibling);
     if (lignes.length) {
       const tri = lignes.slice().sort((p, q) => q.dOr - p.dOr);
       const bi = el('div', 'bilan');
