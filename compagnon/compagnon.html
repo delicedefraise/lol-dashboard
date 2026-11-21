@@ -348,8 +348,17 @@ nav button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8
     catch (e) { console.error(e); vue.appendChild(el('p', 'note', 'Erreur d’affichage : ' + e.message)); }
   }
 
+  // Démo en ligne (page ouverte depuis le site, ou ?demo) : partie fictive, sans le programme sur le PC
+  const DEMO_EN_LIGNE = /github\.io$/.test(location.hostname) || /[?&]demo\b/.test(location.search);
+  const T0 = Date.now();
   async function sonder() {
-    try { ETAT = await fetch('/etat', { cache: 'no-store' }).then((r) => r.json()); } catch (e) { ETAT = null; }
+    try {
+      if (DEMO_EN_LIGNE) {
+        const d = await fetch('demo.json', { cache: 'no-store' }).then((r) => r.json());
+        d.gameData.gameTime = (d.gameData.gameTime || 600) + (Date.now() - T0) / 1000;
+        ETAT = { enJeu: true, demo: true, data: d };
+      } else ETAT = await fetch('/etat', { cache: 'no-store' }).then((r) => r.json());
+    } catch (e) { ETAT = null; }
     rendre();
   }
   document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => { VUE = b.dataset.v; VUE_CHOISIE = true; rendre(); window.scrollTo(0, 0); }));
