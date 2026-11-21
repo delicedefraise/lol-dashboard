@@ -366,6 +366,26 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-cp-pool { font-size: 10.5px; font-weight: 600; color: var(--lx-win); background: rgba(10, 200, 185, 0.12); padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
 .lx-cp-vide { font-size: 13px; color: var(--lx-muted); padding: 14px; border-radius: 14px; border: 1px dashed var(--lx-line2); text-align: center; }
 .lx-compagnon-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.lx-sc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 16px; }
+.lx-sc-bouton { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); border-radius: 999px; padding: 12px 22px; text-decoration: none; box-shadow: 0 6px 20px -8px rgba(200, 170, 110, 0.7); }
+.lx-sc-bouton::before { content: "▶"; font-size: 11px; }
+.lx-sc-etat { font-size: 12.5px; color: var(--lx-muted); }
+.lx-sc { display: flex; flex-direction: column; gap: 14px; }
+.lx-sc-tete { display: flex; align-items: center; gap: 14px; }
+.lx-sc-tete img { width: 64px; height: 64px; border-radius: 18px; border: 2px solid var(--lx-loss); box-shadow: 0 0 20px -6px rgba(232, 64, 87, 0.6); }
+.lx-sc-tete b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 30px; line-height: 1; color: #fff; }
+.lx-sc-tete span { display: block; font-size: 12.5px; color: var(--lx-muted); margin-top: 5px; line-height: 1.4; }
+.lx-sc-lignes { display: flex; flex-direction: column; gap: 6px; }
+.lx-sc-l { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--lx-line); }
+.lx-sc-l i { font-style: normal; font-size: 17px; text-align: center; }
+.lx-sc-l span { font-size: 12.5px; color: var(--lx-muted); }
+.lx-sc-l b { display: block; font-size: 15px; color: #fff; font-weight: 600; margin-top: 1px; }
+.lx-sc-f { font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; color: var(--lx-muted); background: rgba(255, 255, 255, 0.06); }
+.lx-sc-f.fort { color: #1a1408; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); } .lx-sc-f.moyen { color: var(--lx-gold); background: rgba(200, 170, 110, 0.12); }
+.lx-sc-titre { font-size: 12.5px; color: var(--lx-gold); margin: 2px 0 0; }
+.lx-sc-pool { display: flex; flex-wrap: wrap; gap: 6px; }
+.lx-sc-pool span { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 4px 10px 4px 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--lx-line); }
+.lx-sc-pool img { width: 24px; height: 24px; border-radius: 50%; }
 .lx-mes { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 0 14px; padding-bottom: 2px; }
 .lx-mes:empty { display: none; }
 .lx-mes-t { flex: none; font-size: 12px; color: var(--lx-muted); align-self: center; margin-right: 2px; }
@@ -708,6 +728,15 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
   </div>
 
   <div class="lx-panel" id="meta" role="tabpanel" hidden>
+    <section class="lx-card" id="scouting">
+      <h2>Jungler adverse</h2>
+      <p class="lx-sous">En champ select, appuie sur « Ma game se lance » puis « Run workflow » sur GitHub. La tâche attend le début de la partie et analyse les 20 dernières parties en jungle du jungler d'en face (en priorité sur le champion qu'il joue). Résultat ici en 2 à 3 minutes, pour vous deux.</p>
+      <div class="lx-sc-actions">
+        <a class="lx-sc-bouton" id="sc-lancer" href="https://github.com/delicedefraise/lol-dashboard/actions/workflows/scouting.yml" target="_blank" rel="noopener">Ma game se lance</a>
+        <span class="lx-sc-etat" id="sc-etat"></span>
+      </div>
+      <div data-draw="scouting"></div>
+    </section>
     <section class="lx-card" id="contrepick">
       <h2>Contre-pick</h2>
       <p class="lx-sous">Entre le champion d'en face : le site te propose le meilleur choix dans ton pool (compte choisi en haut). La reco sur 100 = moitié ton niveau sur le champion (note de l'onglet Champions, prudente si tu l'as peu joué), moitié le winrate mondial du matchup (50 % = 50 points, chaque point de % au-dessus ou en dessous en vaut 4). Les données de matchup viennent d'OP.GG, toutes divisions.</p>
@@ -2538,6 +2567,66 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
   const acMeta = document.getElementById('meta-recherche'), acCp = document.getElementById('cp-ennemi');
   if (acMeta) autocomplete(acMeta, (cle, lane) => ouvrirFiche(cle, lane));
   if (acCp) autocomplete(acCp, (cle, lane) => { CP.ennemi = cle; CP.lane = lane; dash._run(); });
+  // ---------------- Scouting du jungler adverse (scouting.json, mis à jour par la tâche GitHub « Scouting »)
+  const SC_URL = 'https://api.github.com/repos/delicedefraise/lol-dashboard/contents/scouting.json?ref=main';
+  let SC = null, SC_SONDE = null;
+  async function lireScouting() {
+    try {
+      const r = await fetch(SC_URL + '&t=' + Date.now(), { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
+      if (r.ok) { const d = await r.json(); const neuf = !SC || d.maj !== SC.maj; SC = d; if (neuf) dash._run(); return neuf; }
+    } catch (e) { /* hors ligne ou limite GitHub : on garde l'affichage */ }
+    return false;
+  }
+  const depuis = (iso) => { const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
+  document.getElementById('sc-lancer').addEventListener('click', () => {
+    const etat = document.getElementById('sc-etat'), avant = SC && SC.maj, t0 = Date.now();
+    etat.textContent = 'En attente du résultat… (confirme « Run workflow » sur GitHub)';
+    clearInterval(SC_SONDE);
+    SC_SONDE = setInterval(async () => {
+      await lireScouting();
+      if (SC && SC.maj !== avant) { clearInterval(SC_SONDE); etat.textContent = 'Résultat reçu.'; }
+      else if (Date.now() - t0 > 10 * 60000) { clearInterval(SC_SONDE); etat.textContent = 'Pas de résultat après 10 min : vérifie la tâche sur GitHub.'; }
+    }, 20000);
+  });
+  document.querySelectorAll('[data-tab="meta"]').forEach((t) => t.addEventListener('click', () => { if (!SC) lireScouting(); }));
+  if ((location.hash || '') === '#meta') lireScouting();
+  const LANE_FR = { top: 'top', mid: 'mid', bot: 'bot' };
+  function forceDe(x) { if (!x || !x.sur) return null; const r = x.fois / x.sur; return [x.fois + ' fois sur ' + x.sur, r >= 0.7 ? 'fort' : r >= 0.5 ? 'moyen' : '']; }
+  const mmss = (m) => (m === null || m === undefined ? '—' : Math.floor(m) + ':' + String(Math.round((m % 1) * 60)).padStart(2, '0'));
+  dash.draw('scouting', (box) => {
+    box.replaceChildren();
+    if (!SC || SC.statut === 'vide') { box.appendChild(mk2('p', 'lx-vide', 'Aucun scouting pour l’instant. Lance-le pendant ta prochaine champ select.')); return; }
+    if (SC.statut !== 'ok') { box.appendChild(mk2('p', 'lx-vide', 'Dernier essai (' + depuis(SC.maj) + ') : ' + (SC.statut === 'pas de partie' ? 'aucune partie en cours trouvée. Relance une fois sur l’écran de chargement.' : 'pas de jungler en face.'))); return; }
+    const wrap = mk2('div', 'lx-sc');
+    const g = SC.sur_champion || SC.general;
+    const tete = mk2('div', 'lx-sc-tete'); const t = mk2('div');
+    const rg = SC.rang ? SC.rang.tier + ' ' + SC.rang.division + ' · ' + SC.rang.winrate + ' % sur ' + SC.rang.parties + ' parties' : 'non classé';
+    const serie = SC.serie && SC.serie.nombre >= 2 ? ' · série de ' + SC.serie.nombre + (SC.serie.victoires ? ' victoires' : ' défaites') : '';
+    t.append(mk2('b', null, SC.champion || '?'), mk2('span', null, rg + serie), mk2('span', null, 'Analysé ' + depuis(SC.maj) + ' · ' + (SC.general ? SC.general.parties : 0) + ' parties en jungle, dont ' + SC.parties_sur_champion + ' sur ' + (SC.champion || 'ce champion')));
+    tete.append(imgChamp(SC.cle_champion), t); wrap.appendChild(tete);
+    if (!g) { wrap.appendChild(mk2('p', 'lx-vide', 'Pas assez de parties en jungle récentes pour dégager des habitudes.')); box.appendChild(wrap); return; }
+    wrap.appendChild(mk2('p', 'lx-sc-titre', SC.sur_champion ? 'Ses habitudes sur ' + SC.champion : 'Ses habitudes en jungle (trop peu de parties sur ' + (SC.champion || 'ce champion') + ')'));
+    const lignes = mk2('div', 'lx-sc-lignes');
+    const ligne = (ico, lab, val, f) => { const l = mk2('div', 'lx-sc-l'); const c = mk2('div'); c.append(mk2('span', null, lab), mk2('b', null, val)); l.append(mk2('i', null, ico), c); if (f) l.appendChild(mk2('span', 'lx-sc-f ' + f[1], f[0])); else l.appendChild(mk2('span')); lignes.appendChild(l); };
+    if (g.buff) ligne('🧭', 'Départ', 'Buff ' + g.buff.valeur + (g.depart ? ' · côté ' + g.depart.valeur + ' de la carte' : ''), forceDe(g.buff));
+    if (g.premier_gank) ligne('⚔', '1er passage en lane', g.premier_gank.valeur.toUpperCase() + ' vers ' + mmss(g.premier_gank_min), forceDe(g.premier_gank));
+    if (g.lanes_gankees && g.lanes_gankees.length) ligne('🎯', 'Lanes les plus visitées avant 10 min', g.lanes_gankees.map((l) => l.toUpperCase()).join(' › '), null);
+    const inv = g.invade_tot; ligne('🏃', 'Invade avant 4 min', inv.fois / inv.sur >= 0.4 ? 'Souvent : protège ta jungle' : inv.fois ? 'Parfois' : 'Jamais', [inv.fois + ' fois sur ' + inv.sur, inv.fois / inv.sur >= 0.4 ? 'fort' : '']);
+    if (g.premier_retour) ligne('🏠', '1er retour en base', 'Vers ' + mmss(g.premier_retour) + ' · fenêtre pour envahir sa jungle', null);
+    if (g.premier_objectif) ligne('🐉', '1er objectif de son équipe', g.premier_objectif.valeur + ' vers ' + mmss(g.premier_objectif_min), forceDe(g.premier_objectif));
+    const style = g.ka_avant_10 >= 2.5 ? 'Agressif' : (g.camps_10 >= 60 && g.ka_avant_10 < 1.5 ? 'Farmer' : 'Équilibré');
+    ligne('📈', 'Style', style + ' · ' + fr(g.ka_avant_10) + ' kills+assists et ' + fr(g.camps_10 || 0, 0) + ' camps à 10 min', null);
+    ligne('🦀', 'Crabes et contre-jungle', fr(g.crabes) + ' crabes · ' + fr(g.contre_jungle) + ' camps volés par partie', null);
+    wrap.appendChild(lignes);
+    if (SC.pool && SC.pool.length) {
+      wrap.appendChild(mk2('p', 'lx-sc-titre', 'Ses champions en jungle récemment'));
+      const pl = mk2('div', 'lx-sc-pool');
+      for (const c of SC.pool) { const sp = mk2('span'); const k = (window.DD.cid || {})[window.DD.norm(c.champion)] || c.champion; sp.append(imgChamp(k), c.champion + ' · ' + c.parties + ' (' + c.winrate + ' %)'); pl.appendChild(sp); }
+      wrap.appendChild(pl);
+    }
+    wrap.appendChild(mk2('p', 'lx-source', 'Tendances tirées de ses parties précédentes (positions relevées une fois par minute) : des habitudes, pas une prédiction.'));
+    box.appendChild(wrap);
+  });
   // ---------------- Contre-pick
   const CP = { lane: null, ennemi: null };
   function niveauPerso(role) {

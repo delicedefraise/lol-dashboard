@@ -18,6 +18,7 @@ Dashboard personnel League of Legends de deux joueurs : **Caps75#EUW** (le propr
 | `scripts/fetch_meta.py` + `scripts/opgg_mcp.py` | Méta globale via le serveur MCP public d'OP.GG (`https://mcp-api.op.gg/mcp`, sans clé, réponses en format texte compact analysé par `opgg_mcp.analyser`). |
 | `scripts/debrief.py` | Analyse chiffrée de la timeline Riot (impact des 10 joueurs, courbe d'or, morts avec zone, fenêtres de gank pour un jungler, objectifs). `--sans-ia` = analyse seule. Avec `ANTHROPIC_API_KEY` : texte du coach par l'API Claude. |
 | `scripts/texte_debrief.py` | Avis du coach écrit par Claude Code lui-même (pas de clé API). Voir plus bas. |
+| `scripts/scouting.py` + `.github/workflows/scouting.yml` | Scouting du jungler adverse : bouton « Ma game se lance » (onglet Méta) → tâche GitHub `workflow_dispatch` qui attend la partie (API spectateur), repère le jungler adverse (Châtiment) et analyse ses 20 dernières parties en jungle (priorité au champion joué). Écrit `scouting.json` (lu par le site via api.github.com) et `scouting_cache.json`. Test : `python scripts/scouting.py --test "Pseudo#TAG" --champion Zac` (ne pas publier un scouting.json de test). |
 | `compagnon/` + `compagnon.zip` | Compagnon de partie : programme Python à lancer sur le PC de jeu, lit l'API locale officielle Live Client Data (`https://127.0.0.1:2999`) et sert une page sur le Wi-Fi (port 8777) pour le téléphone : Mémo, Lanes (pistes de jeu), Items. `--demo` = partie fictive. Démo en ligne : `/compagnon/compagnon.html`. **Régénérer `compagnon.zip` après toute modification du dossier.** |
 | `.github/workflows/maj-donnees.yml` | Tâche quotidienne (cron 05:00 UTC + bouton manuel) : parties Riot → debrief → méta → commit/push (se recale avec `git pull --rebase` avant de pousser). L'échec de la clé Riot n'empêche pas la méta ; il est signalé par un échec volontaire en fin de tâche. |
 | `config.json` | Comptes suivis, région, début de saison. |
@@ -59,6 +60,6 @@ Dashboard personnel League of Legends de deux joueurs : **Caps75#EUW** (le propr
 
 ## Idées en attente
 
-- Scouting des 10 joueurs à l'écran de chargement (API spectateur, nécessite un relais type Cloudflare Worker pour garder la clé).
+- Scouting du jungler adverse : en place (bouton + tâche GitHub). Pas encore testé en vraie partie. Étendre éventuellement aux 10 joueurs.
 - Le compagnon n'a été testé qu'en mode démo : attendre les retours de Spac après de vraies parties (captures).
 - Version Discord du debrief (`/debrief`) si besoin d'immédiateté.

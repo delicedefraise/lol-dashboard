@@ -1,0 +1,44 @@
+name: Scouting du jungler adverse
+
+on:
+  workflow_dispatch:
+    inputs:
+      compte:
+        description: "Qui lance la partie ?"
+        type: choice
+        options: ["Caps75#EUW", "SPACFR#EUW"]
+        default: "Caps75#EUW"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scouting
+  cancel-in-progress: true
+
+jobs:
+  scouting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Attendre la partie et analyser le jungler adverse
+        env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+        run: python scripts/scouting.py --compte "${{ inputs.compte }}" --attente 8
+      - name: Publier le résultat
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scouting.json scouting_cache.json 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Rien à publier."; exit 0; fi
+          git commit -m "Scouting du jungler adverse"
+          for essai in 1 2 3; do
+            git pull --rebase -X theirs origin main && git push && exit 0
+            sleep 5
+          done
+          exit 1
