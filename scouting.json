@@ -1,118 +1,88 @@
 {
- "maj": "2026-11-21T21:10:00.599656+00:00",
+ "maj": "2026-11-21T21:41:25.168571+00:00",
  "statut": "ok",
  "compte": "Caps75#EUW",
  "partie": {
-  "id": 8053469818,
-  "debut": 1795295362342,
+  "id": 8053508918,
+  "debut": 1795297219022,
   "file": 420
  },
- "champion": "Viego",
- "cle_champion": "Viego",
+ "champion": "Zyra",
+ "cle_champion": "Zyra",
  "rang": {
   "tier": "Or",
-  "division": "I",
-  "lp": 3,
-  "winrate": 49,
-  "parties": 133
+  "division": "III",
+  "lp": 23,
+  "winrate": 50,
+  "parties": 1201
  },
- "sur_champion": {
-  "parties": 18,
-  "depart": {
-   "valeur": "top",
-   "fois": 10,
-   "sur": 18
-  },
-  "buff": {
-   "valeur": "bleu",
-   "fois": 18,
-   "sur": 18
-  },
-  "premier_gank": {
-   "valeur": "mid",
-   "fois": 12,
-   "sur": 18
-  },
-  "premier_gank_min": 2.0,
-  "lanes_gankees": [
-   "mid",
-   "bot",
-   "top"
-  ],
-  "invade_tot": {
-   "fois": 2,
-   "sur": 18
-  },
-  "minutes_chez_eux": 0.2,
-  "premier_retour": 7.5,
-  "premier_objectif": {
-   "valeur": "dragon",
-   "fois": 12,
-   "sur": 18
-  },
-  "premier_objectif_min": 7.0,
-  "crabes": 3.7,
-  "contre_jungle": 10.1,
-  "ka_avant_10": 2.8,
-  "camps_10": 65.0,
-  "winrate": 56
- },
- "parties_sur_champion": 18,
+ "sur_champion": null,
+ "parties_sur_champion": 1,
  "general": {
-  "parties": 20,
+  "parties": 17,
   "depart": {
    "valeur": "top",
-   "fois": 11,
-   "sur": 20
+   "fois": 9,
+   "sur": 17
   },
   "buff": {
-   "valeur": "bleu",
-   "fois": 19,
-   "sur": 20
+   "valeur": "rouge",
+   "fois": 14,
+   "sur": 17
   },
   "premier_gank": {
-   "valeur": "mid",
-   "fois": 13,
-   "sur": 20
+   "valeur": "bot",
+   "fois": 8,
+   "sur": 17
   },
-  "premier_gank_min": 2,
+  "premier_gank_min": 3.5,
   "lanes_gankees": [
-   "mid",
    "bot",
-   "top"
+   "top",
+   "mid"
   ],
   "invade_tot": {
-   "fois": 3,
-   "sur": 20
+   "fois": 8,
+   "sur": 17
   },
-  "minutes_chez_eux": 0.2,
+  "minutes_chez_eux": 0.8,
   "premier_retour": 7,
   "premier_objectif": {
-   "valeur": "dragon",
-   "fois": 13,
-   "sur": 20
+   "valeur": "larves",
+   "fois": 11,
+   "sur": 17
   },
-  "premier_objectif_min": 6.9,
-  "crabes": 3.7,
-  "contre_jungle": 9.8,
-  "ka_avant_10": 2.6,
-  "camps_10": 64.3,
-  "winrate": 60
+  "premier_objectif_min": 9.2,
+  "crabes": 4.2,
+  "contre_jungle": 12.4,
+  "ka_avant_10": 2.2,
+  "camps_10": 59.5,
+  "winrate": 47
  },
  "pool": [
   {
-   "champion": "Viego",
-   "parties": 18,
-   "winrate": 56
+   "champion": "Rengar",
+   "parties": 13,
+   "winrate": 38
   },
   {
-   "champion": "Kayn",
-   "parties": 2,
+   "champion": "Karthus",
+   "parties": 1,
+   "winrate": 100
+  },
+  {
+   "champion": "Nautilus",
+   "parties": 1,
+   "winrate": 0
+  },
+  {
+   "champion": "Zyra",
+   "parties": 1,
    "winrate": 100
   }
  ],
  "serie": {
   "victoires": true,
-  "nombre": 2
+  "nombre": 1
  }
 }
