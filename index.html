@@ -366,6 +366,12 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-cp-pool { font-size: 10.5px; font-weight: 600; color: var(--lx-win); background: rgba(10, 200, 185, 0.12); padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
 .lx-cp-vide { font-size: 13px; color: var(--lx-muted); padding: 14px; border-radius: 14px; border: 1px dashed var(--lx-line2); text-align: center; }
 .lx-compagnon-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.lx-sc-reglages { margin: -4px 0 16px; }
+.lx-sc-reglages summary { font-size: 12.5px; color: var(--lx-muted); cursor: pointer; }
+.lx-sc-reglages label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--lx-muted); margin-top: 12px; max-width: 360px; }
+.lx-sc-reglages .lx-recherche { max-width: none; width: 100%; flex: none; height: 40px; }
+.lx-sc-bouton { border: 0; cursor: pointer; font-family: inherit; }
+.lx-sc-bouton[disabled] { opacity: .6; cursor: progress; }
 .lx-sc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 16px; }
 .lx-sc-bouton { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); border-radius: 999px; padding: 12px 22px; text-decoration: none; box-shadow: 0 6px 20px -8px rgba(200, 170, 110, 0.7); }
 .lx-sc-bouton::before { content: "▶"; font-size: 11px; }
@@ -730,11 +736,21 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
   <div class="lx-panel" id="meta" role="tabpanel" hidden>
     <section class="lx-card" id="scouting">
       <h2>Jungler adverse</h2>
-      <p class="lx-sous">En champ select, appuie sur « Ma game se lance » puis « Run workflow » sur GitHub. La tâche attend le début de la partie et analyse les 20 dernières parties en jungle du jungler d'en face (en priorité sur le champion qu'il joue). Résultat ici en 2 à 3 minutes, pour vous deux.</p>
+      <p class="lx-sous">En champ select, appuie sur « Ma game se lance ». Le site attend le début de la partie, repère le jungler d'en face et analyse ses 20 dernières parties en jungle (en priorité sur le champion qu'il joue). Résultat ici en 2 à 3 minutes, pour vous deux.</p>
       <div class="lx-sc-actions">
-        <a class="lx-sc-bouton" id="sc-lancer" href="https://github.com/delicedefraise/lol-dashboard/actions/workflows/scouting.yml" target="_blank" rel="noopener">Ma game se lance</a>
+        <button class="lx-sc-bouton" id="sc-lancer" type="button">Ma game se lance</button>
         <span class="lx-sc-etat" id="sc-etat"></span>
       </div>
+      <details class="lx-sc-reglages" id="sc-reglages">
+        <summary>Réglages de ce téléphone</summary>
+        <label>Je suis
+          <select class="dash-select" id="sc-moi"><option>Caps75#EUW</option><option>SPACFR#EUW</option></select>
+        </label>
+        <label>Jeton GitHub (une seule fois)
+          <input class="lx-recherche" id="sc-jeton" type="password" autocomplete="off" placeholder="github_pat_…">
+        </label>
+        <p class="lx-source">Le jeton reste uniquement dans ce navigateur, il n'est jamais publié. Pour le créer : <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a> → accès au seul dépôt <b>lol-dashboard</b> → permission <b>Actions : Read and write</b> → générer, puis coller ici. Sans jeton, le bouton ouvre la page GitHub de la tâche.</p>
+      </details>
       <div data-draw="scouting"></div>
     </section>
     <section class="lx-card" id="contrepick">
@@ -2578,15 +2594,37 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     return false;
   }
   const depuis = (iso) => { const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
-  document.getElementById('sc-lancer').addEventListener('click', () => {
-    const etat = document.getElementById('sc-etat'), avant = SC && SC.maj, t0 = Date.now();
-    etat.textContent = 'En attente du résultat… (confirme « Run workflow » sur GitHub)';
+  const LS = { get: (k) => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* stockage indisponible */ } } };
+  const selMoi = document.getElementById('sc-moi'), champJeton = document.getElementById('sc-jeton');
+  selMoi.value = LS.get('sc-moi') || 'Caps75#EUW';
+  champJeton.value = LS.get('sc-jeton');
+  if (!champJeton.value) document.getElementById('sc-reglages').open = true;
+  selMoi.addEventListener('change', () => LS.set('sc-moi', selMoi.value));
+  champJeton.addEventListener('change', () => LS.set('sc-jeton', champJeton.value.trim()));
+  function attendreResultat(avant) {
+    const etat = document.getElementById('sc-etat'), t0 = Date.now();
     clearInterval(SC_SONDE);
     SC_SONDE = setInterval(async () => {
       await lireScouting();
-      if (SC && SC.maj !== avant) { clearInterval(SC_SONDE); etat.textContent = 'Résultat reçu.'; }
-      else if (Date.now() - t0 > 10 * 60000) { clearInterval(SC_SONDE); etat.textContent = 'Pas de résultat après 10 min : vérifie la tâche sur GitHub.'; }
+      if (SC && SC.maj !== avant) { clearInterval(SC_SONDE); etat.textContent = 'Résultat reçu.'; document.getElementById('sc-lancer').disabled = false; }
+      else if (Date.now() - t0 > 11 * 60000) { clearInterval(SC_SONDE); etat.textContent = 'Pas de résultat après 11 min. La partie a-t-elle bien commencé ?'; document.getElementById('sc-lancer').disabled = false; }
     }, 20000);
+  }
+  document.getElementById('sc-lancer').addEventListener('click', async () => {
+    const etat = document.getElementById('sc-etat'), bouton = document.getElementById('sc-lancer'), avant = SC && SC.maj;
+    const jeton = LS.get('sc-jeton');
+    if (!jeton) { window.open('https://github.com/delicedefraise/lol-dashboard/actions/workflows/scouting.yml', '_blank', 'noopener'); etat.textContent = 'Confirme « Run workflow » sur GitHub (ajoute un jeton dans les réglages pour sauter cette étape).'; attendreResultat(avant); return; }
+    bouton.disabled = true; etat.textContent = 'Lancement…';
+    try {
+      const r = await fetch('https://api.github.com/repos/delicedefraise/lol-dashboard/actions/workflows/scouting.yml/dispatches', {
+        method: 'POST',
+        headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + jeton, 'X-GitHub-Api-Version': '2022-11-28' },
+        body: JSON.stringify({ ref: 'main', inputs: { compte: LS.get('sc-moi') || 'Caps75#EUW' } }),
+      });
+      if (r.status === 204) { etat.textContent = 'C’est parti : le site attend le début de ta partie. Résultat dans 2 à 3 min après le chargement.'; attendreResultat(avant); }
+      else if (r.status === 401 || r.status === 403 || r.status === 404) { etat.textContent = 'Jeton refusé (erreur ' + r.status + ') : vérifie qu’il a accès au dépôt lol-dashboard avec Actions en lecture et écriture.'; bouton.disabled = false; document.getElementById('sc-reglages').open = true; }
+      else { etat.textContent = 'GitHub a répondu ' + r.status + '. Réessaie dans un instant.'; bouton.disabled = false; }
+    } catch (e) { etat.textContent = 'Pas de connexion à GitHub.'; bouton.disabled = false; }
   });
   document.querySelectorAll('[data-tab="meta"]').forEach((t) => t.addEventListener('click', () => { if (!SC) lireScouting(); }));
   if ((location.hash || '') === '#meta') lireScouting();
