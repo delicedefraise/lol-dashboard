@@ -1,128 +1,118 @@
 {
- "maj": "2026-11-21T16:25:53.251720+00:00",
+ "maj": "2026-11-21T17:10:58.214224+00:00",
  "statut": "ok",
  "compte": "Caps75#EUW",
  "partie": {
-  "id": 8053119973,
-  "debut": 1795278288804,
+  "id": 8053176722,
+  "debut": 1795281033194,
   "file": 420
  },
- "champion": "Vi",
- "cle_champion": "Vi",
+ "champion": "Dr. Mundo",
+ "cle_champion": "DrMundo",
  "rang": {
   "tier": "Or",
-  "division": "IV",
-  "lp": 0,
-  "winrate": 49,
-  "parties": 370
+  "division": "I",
+  "lp": 39,
+  "winrate": 51,
+  "parties": 533
  },
  "sur_champion": {
-  "parties": 8,
+  "parties": 12,
   "depart": {
    "valeur": "top",
-   "fois": 6,
-   "sur": 8
+   "fois": 12,
+   "sur": 12
   },
   "buff": {
-   "valeur": "rouge",
-   "fois": 6,
-   "sur": 8
+   "valeur": "bleu",
+   "fois": 8,
+   "sur": 12
   },
   "premier_gank": {
-   "valeur": "bot",
-   "fois": 5,
-   "sur": 8
+   "valeur": "mid",
+   "fois": 7,
+   "sur": 12
   },
-  "premier_gank_min": 4,
+  "premier_gank_min": 2,
   "lanes_gankees": [
+   "mid",
    "top",
-   "bot",
-   "mid"
+   "bot"
   ],
   "invade_tot": {
-   "fois": 2,
-   "sur": 8
+   "fois": 0,
+   "sur": 12
   },
   "minutes_chez_eux": 0.2,
-  "premier_retour": 10,
+  "premier_retour": 6,
   "premier_objectif": {
    "valeur": "dragon",
-   "fois": 7,
-   "sur": 8
+   "fois": 5,
+   "sur": 12
   },
-  "premier_objectif_min": 7.7,
-  "crabes": 3.4,
-  "contre_jungle": 9.4,
-  "ka_avant_10": 3.0,
-  "camps_10": 57.5,
-  "winrate": 62
+  "premier_objectif_min": 6.3,
+  "crabes": 4.0,
+  "contre_jungle": 5.8,
+  "ka_avant_10": 1.8,
+  "camps_10": 70.2,
+  "winrate": 42
  },
- "parties_sur_champion": 8,
+ "parties_sur_champion": 12,
  "general": {
-  "parties": 15,
+  "parties": 20,
   "depart": {
    "valeur": "top",
-   "fois": 9,
-   "sur": 15
+   "fois": 20,
+   "sur": 20
   },
   "buff": {
-   "valeur": "rouge",
-   "fois": 9,
-   "sur": 15
+   "valeur": "bleu",
+   "fois": 13,
+   "sur": 20
   },
   "premier_gank": {
-   "valeur": "bot",
-   "fois": 8,
-   "sur": 15
+   "valeur": "mid",
+   "fois": 14,
+   "sur": 20
   },
-  "premier_gank_min": 3.5,
+  "premier_gank_min": 2.0,
   "lanes_gankees": [
-   "top",
+   "mid",
    "bot",
-   "mid"
+   "top"
   ],
   "invade_tot": {
-   "fois": 3,
-   "sur": 15
+   "fois": 0,
+   "sur": 20
   },
-  "minutes_chez_eux": 0.3,
-  "premier_retour": 10,
+  "minutes_chez_eux": 0.2,
+  "premier_retour": 6,
   "premier_objectif": {
    "valeur": "dragon",
-   "fois": 10,
-   "sur": 15
+   "fois": 11,
+   "sur": 20
   },
-  "premier_objectif_min": 7.5,
-  "crabes": 3.1,
-  "contre_jungle": 7.5,
-  "ka_avant_10": 3.0,
-  "camps_10": 58.7,
-  "winrate": 40
+  "premier_objectif_min": 6.3,
+  "crabes": 3.8,
+  "contre_jungle": 6.5,
+  "ka_avant_10": 2.7,
+  "camps_10": 70.5,
+  "winrate": 50
  },
  "pool": [
   {
-   "champion": "Vi",
+   "champion": "Dr. Mundo",
+   "parties": 12,
+   "winrate": 42
+  },
+  {
+   "champion": "Nunu et Willump",
    "parties": 8,
    "winrate": 62
-  },
-  {
-   "champion": "Briar",
-   "parties": 1,
-   "winrate": 0
-  },
-  {
-   "champion": "Zed",
-   "parties": 1,
-   "winrate": 0
-  },
-  {
-   "champion": "Jhin",
-   "parties": 1,
-   "winrate": 0
   }
  ],
  "serie": {
   "victoires": false,
-  "nombre": 4
+  "nombre": 2
  }
 }
