@@ -8,6 +8,7 @@ Dashboard personnel de parties classées League of Legends (Caps75 et SPACFR, EU
 - `scripts/fetch_riot.py` : récupère les nouvelles parties via l'API Riot et met à jour `data.js`.
 - `scripts/fetch_meta.py` (+ `scripts/opgg_mcp.py`) : récupère la méta globale depuis le serveur MCP public d'OP.GG (tier list par lane, builds, runes, sorts, compétences, counters) et écrit `meta.js`. Aucune clé nécessaire.
 - `meta.js` : la méta, chargée seulement à l'ouverture de l'onglet Méta. Données © OP.GG.
+- `scripts/debrief.py` + `debriefs.js` : debrief d'après-partie. Analyse chiffrée de la timeline Riot (impact des 10 joueurs, morts, fenêtres de gank, objectifs) et avis de coach écrit par Claude (`claude-opus-5-5`, clé `ANTHROPIC_API_KEY` dans `.env` ou les secrets GitHub). Sans clé : analyse chiffrée seule.
 - `compagnon/` (+ `compagnon.zip` à télécharger) : compagnon de partie, à lancer sur le PC de jeu. Lit l'API locale officielle (Live Client Data) et sert une page sur le Wi-Fi : état des lanes, items adaptés, mémo du matchup. Regénérer `compagnon.zip` après modification.
 - `.github/workflows/maj-donnees.yml` : lance les deux scripts chaque jour et publie le résultat.
 

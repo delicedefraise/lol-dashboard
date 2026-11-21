@@ -445,6 +445,38 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-moi b { color: var(--lx-text); }
 .lx-source { font-size: 12px; color: var(--lx-faint); }
 .lx-source a { color: var(--lx-gold); }
+.lx-deb { display: flex; flex-direction: column; gap: 14px; }
+.lx-deb-tete { display: flex; flex-direction: column; gap: 8px; }
+.lx-deb-resp { align-self: flex-start; font-size: 12.5px; font-weight: 600; padding: 4px 12px; border-radius: 999px; }
+.lx-deb-resp.vert { color: var(--lx-win); background: rgba(10, 200, 185, 0.12); } .lx-deb-resp.rouge { color: #ff8a9b; background: rgba(232, 64, 87, 0.12); } .lx-deb-resp.or { color: var(--lx-gold); background: rgba(200, 170, 110, 0.12); }
+.lx-deb-titre { font-family: var(--font-serif); font-size: 28px; line-height: 1.15; color: #fff; }
+.lx-deb-resume { font-size: 14.5px; line-height: 1.6; color: #d5d9e1; margin: 0; }
+.lx-deb-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.lx-deb-bloc { border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--lx-line); padding: 14px 16px; min-width: 0; }
+.lx-deb-bloc h3 { margin: 0 0 10px; font-family: var(--font-serif); font-weight: 400; font-size: 20px; color: #fff; }
+.lx-deb-bloc ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.lx-deb-bloc li { font-size: 13.5px; line-height: 1.5; padding-left: 16px; position: relative; color: #d5d9e1; }
+.lx-deb-bloc li::before { content: ""; position: absolute; left: 0; top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--lx-gold); }
+.lx-deb-bloc.plus li::before { background: var(--lx-win); } .lx-deb-bloc.moins li::before { background: var(--lx-loss); }
+.lx-deb-conseil { border-radius: 16px; padding: 14px 16px; background: linear-gradient(135deg, rgba(200, 170, 110, 0.16), rgba(200, 170, 110, 0.05)); border: 1px solid rgba(200, 170, 110, 0.35); font-size: 14px; line-height: 1.55; color: var(--lx-gold2); }
+.lx-deb-conseil b { display: block; font-size: 12px; color: var(--lx-gold); margin-bottom: 4px; font-weight: 600; }
+.lx-deb-moments { display: flex; flex-direction: column; gap: 10px; }
+.lx-deb-m { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.lx-deb-m b { font-family: var(--font-serif); font-weight: 400; font-size: 20px; color: var(--lx-gold2); }
+.lx-deb-m span { font-size: 13.5px; line-height: 1.5; color: #d5d9e1; }
+.lx-imp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .lx-imp { grid-template-columns: 1fr; } }
+.lx-imp-l { display: grid; grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 10px; }
+.lx-imp-l.moi { background: rgba(200, 170, 110, 0.12); }
+.lx-imp-l img { width: 34px; height: 34px; border-radius: 9px; }
+.lx-imp-n { font-size: 12.5px; color: var(--lx-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lx-imp-n small { color: var(--lx-muted); font-size: 11.5px; margin-left: 4px; }
+.lx-imp-l .lx-bar { margin-top: 4px; height: 5px; }
+.lx-imp-v { font-family: var(--font-serif); font-size: 20px; text-align: right; }
+.lx-deb-liste { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #d5d9e1; }
+.lx-deb-liste div { display: flex; gap: 8px; align-items: baseline; }
+.lx-deb-liste b { font-family: var(--font-serif); font-weight: 400; font-size: 18px; color: var(--lx-gold2); min-width: 44px; }
+.lx-courbe { width: 100%; height: 90px; display: block; }
 .lx-recap-groupe { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 14px 0 0; padding-top: 16px; border-top: 1px solid var(--lx-line); font-family: var(--font-serif); font-size: 21px; color: #fff; }
 .lx-recap-groupe:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .lx-recap-groupe small { font-family: var(--font-anthropic-sans); font-size: 12px; color: var(--lx-muted); }
@@ -715,6 +747,11 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
       <div data-draw="duel" data-source="c_partie catalogue"></div>
       <p class="lx-score">Devant sur <b data-draw="r_devant" data-source="c_recap_bilan" data-field="devant" data-row="0">—</b> critères sur <b data-draw="r_total" data-source="c_recap_bilan" data-field="total" data-row="0">—</b> face à l'adversaire direct</p>
       <div class="lx-recap" data-draw="recap" data-source="c_recap" role="img" aria-label="Comparaison avec l'adversaire direct sur la partie choisie"></div>
+    </section>
+    <section id="debrief" class="lx-card">
+      <h2>Debrief</h2>
+      <p class="lx-sous">L'analyse de la partie choisie au-dessus : qui a pesé sur la partie, tes morts, tes occasions, et l'avis du coach (écrit par Claude à partir des données de la partie).</p>
+      <div data-draw="debrief"></div>
     </section>
     <section id="historique" class="lx-card">
       <h2>Dernières parties</h2>
@@ -2327,6 +2364,111 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
   });
   document.querySelectorAll('[data-tab="meta"]').forEach((t) => t.addEventListener('click', () => { chargerMeta(); dash._run(); }));
   if ((location.hash || '') === '#meta') chargerMeta();
+  // ---------------- Debrief d'après-partie (debriefs.js, chargé à la demande)
+  let DEB_CHARGE = false;
+  function chargerDebriefs() {
+    if (DEB_CHARGE) return; DEB_CHARGE = true;
+    const sc = document.createElement('script'); sc.src = 'debriefs.js?v=' + Date.now().toString().slice(0, 7);
+    sc.onload = () => dash._run(); sc.onerror = () => { window.DEBRIEFS = {}; dash._run(); };
+    document.head.appendChild(sc);
+  }
+  const cleDe = (nom) => (window.DD.cid || {})[window.DD.norm(nom)] || nom;
+  const ORDRE_ROLES = ['Haut', 'Jungle', 'Milieu', 'Bas', 'Support'];
+  function courbeOr(points) {
+    const NS = 'http://www.w3.org/2000/svg', W = 320, H = 90, P = 8;
+    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('class', 'lx-courbe'); svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Écart d’or entre les équipes au fil de la partie');
+    const pts = [{ minute: 0, ecart: 0 }].concat(points);
+    const maxA = Math.max(1000, ...pts.map((p) => Math.abs(p.ecart))), maxM = pts[pts.length - 1].minute || 1;
+    const x = (m) => P + (m / maxM) * (W - 2 * P), y = (v) => H / 2 - (v / maxA) * (H / 2 - P);
+    const add = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
+    add('line', { x1: P, x2: W - P, y1: H / 2, y2: H / 2, stroke: 'rgba(255,255,255,0.15)', 'stroke-dasharray': '3 4' });
+    const d = pts.map((p, i) => (i ? 'L' : 'M') + x(p.minute).toFixed(1) + ' ' + y(p.ecart).toFixed(1)).join(' ');
+    const fin = pts[pts.length - 1].ecart;
+    add('path', { d, fill: 'none', stroke: fin >= 0 ? '#0ac8b9' : '#e84057', 'stroke-width': 2.5, 'stroke-linejoin': 'round' });
+    for (const p of pts.slice(1)) {
+      const t = add('text', { x: x(p.minute), y: H - 1, 'text-anchor': 'middle', fill: '#5f6878', 'font-size': 9 }); t.textContent = p.minute + "'";
+    }
+    return svg;
+  }
+  dash.draw('debrief', (box) => {
+    const ouvert = !document.getElementById('parties').hidden;
+    if (!ouvert && !window.DEBRIEFS) return;
+    box.replaceChildren();
+    if (!window.DEBRIEFS) { chargerDebriefs(); box.appendChild(mk2('p', 'lx-vide', 'Chargement…')); return; }
+    const g = (dash.data('c_partie').data || [])[0];
+    const d = g && window.DEBRIEFS[g.match_id];
+    if (!d) { box.appendChild(mk2('p', 'lx-vide', 'Pas encore de debrief pour cette partie : seules les parties récentes sont debriefées.')); return; }
+    const a = d.analyse, t = d.texte, wrap = mk2('div', 'lx-deb');
+    if (t) {
+      const tete = mk2('div', 'lx-deb-tete');
+      const r = t.responsabilite || '', cls = /malgré|due à l'équipe/.test(r) ? 'or' : /Victoire/.test(r) ? 'vert' : /ton fait/.test(r) ? 'rouge' : 'or';
+      tete.append(mk2('span', 'lx-deb-resp ' + cls, r), mk2('div', 'lx-deb-titre', t.titre), mk2('p', 'lx-deb-resume', t.resume));
+      wrap.appendChild(tete);
+    } else {
+      wrap.appendChild(mk2('p', 'lx-vide', 'L’avis du coach n’est pas encore généré pour cette partie. Voici déjà l’analyse chiffrée.'));
+    }
+    // Qui a pesé sur la partie
+    const imp = mk2('div', 'lx-deb-bloc'); imp.appendChild(mk2('h3', null, 'Qui a pesé sur la partie'));
+    imp.appendChild(mk2('p', 'lx-sous', 'Note d’impact sur 100 : la part des critères où chacun fait mieux que son vis-à-vis direct (KDA, morts, or, dégâts, vision, CS, or à 15 min…). 50 = à égalité.'));
+    const cols = mk2('div', 'lx-imp');
+    for (const camp of ['allié', 'ennemi']) {
+      const c = mk2('div'); c.appendChild(mk2('div', 'lx-fb-lab', camp === 'allié' ? 'Ton équipe' : 'En face'));
+      const l = a.joueurs.filter((j) => j.camp === camp).sort((x, y) => ORDRE_ROLES.indexOf(x.role) - ORDRE_ROLES.indexOf(y.role));
+      for (const j of l) {
+        const row = mk2('div', 'lx-imp-l' + (j.moi ? ' moi' : ''));
+        const info = mk2('div'); info.style.minWidth = '0';
+        const n = mk2('div', 'lx-imp-n', j.champion + (j.moi ? ' (toi)' : '')); n.appendChild(mk2('small', null, j.kda)); info.appendChild(n);
+        const v = j.impact === null ? 0 : j.impact;
+        const bar = mk2('div', 'lx-bar'); const f = mk2('span', v >= 50 ? 'lx-w' : 'lx-l'); f.style.width = Math.max(3, v) + '%'; bar.appendChild(f); info.appendChild(bar);
+        const val = mk2('div', 'lx-imp-v', j.impact === null ? '—' : String(j.impact)); val.style.color = v >= 60 ? 'var(--lx-win)' : v <= 40 ? 'var(--lx-loss)' : '#fff';
+        row.append(imgChamp(cleDe(j.champion)), info, val); c.appendChild(row);
+      }
+      cols.appendChild(c);
+    }
+    imp.appendChild(cols);
+    if (t && t.equipe) { const p = mk2('p', 'lx-deb-resume'); p.style.marginTop = '12px'; p.textContent = t.equipe; imp.appendChild(p); }
+    wrap.appendChild(imp);
+    if (t) {
+      const gr = mk2('div', 'lx-deb-grille');
+      for (const [titre, l, cls] of [['Ce qui a marché', t.points_forts, 'plus'], ['À travailler', t.a_ameliorer, 'moins']]) {
+        if (!l || !l.length) continue;
+        const b = mk2('div', 'lx-deb-bloc ' + cls); b.appendChild(mk2('h3', null, titre)); const ul = mk2('ul');
+        for (const x of l) ul.appendChild(mk2('li', null, x)); b.appendChild(ul); gr.appendChild(b);
+      }
+      wrap.appendChild(gr);
+      if (t.moments_cles && t.moments_cles.length) {
+        const b = mk2('div', 'lx-deb-bloc'); b.appendChild(mk2('h3', null, 'Moments clés')); const m = mk2('div', 'lx-deb-moments');
+        for (const x of t.moments_cles) { const r = mk2('div', 'lx-deb-m'); r.append(mk2('b', null, x.minute + "'"), mk2('span', null, x.texte)); m.appendChild(r); }
+        b.appendChild(m); wrap.appendChild(b);
+      }
+      if (t.conseil) { const c = mk2('div', 'lx-deb-conseil'); c.append(mk2('b', null, 'Pour ta prochaine partie'), t.conseil); wrap.appendChild(c); }
+    }
+    // Les chiffres bruts
+    const gr2 = mk2('div', 'lx-deb-grille');
+    const bo = mk2('div', 'lx-deb-bloc'); bo.appendChild(mk2('h3', null, 'Or des équipes'));
+    bo.appendChild(courbeOr(a.courbe_or_equipe || []));
+    const av = a.plus_grande_avance, re = a.plus_grand_retard;
+    bo.appendChild(mk2('p', 'lx-sous', 'Plus grande avance : ' + fr(av.or) + ' po (' + av.minute + "'). Plus grand retard : " + fr(re.or) + ' po (' + re.minute + "')."));
+    gr2.appendChild(bo);
+    const bm = mk2('div', 'lx-deb-bloc'); bm.appendChild(mk2('h3', null, 'Tes morts'));
+    const lm = mk2('div', 'lx-deb-liste');
+    if (!a.mes_morts.length) lm.appendChild(mk2('span', null, 'Aucune mort, propre.'));
+    for (const m of a.mes_morts) { const r = mk2('div'); r.append(mk2('b', null, Math.floor(m.minute) + "'" + String(Math.round((m.minute % 1) * 60)).padStart(2, '0')), m.zone + ', par ' + m.tueur + ' · ' + m.ennemis_impliques + ' ennemi' + (m.ennemis_impliques > 1 ? 's' : '') + ', ' + m.allies_proches + ' allié' + (m.allies_proches > 1 ? 's' : '') + ' proche' + (m.allies_proches > 1 ? 's' : '')); lm.appendChild(r); }
+    bm.appendChild(lm); gr2.appendChild(bm);
+    if (a.fenetres_gank && a.fenetres_gank.length) {
+      const bg = mk2('div', 'lx-deb-bloc'); bg.appendChild(mk2('h3', null, 'Fenêtres de gank'));
+      bg.appendChild(mk2('p', 'lx-sous', 'Leur lane avancée chez vous pendant que leur jungler était de l’autre côté (relevé à la minute près).'));
+      const lg = mk2('div', 'lx-deb-liste');
+      for (const w of a.fenetres_gank) { const r = mk2('div'); const b = mk2('b', null, w.minute + "'"); r.append(b, 'Lane ' + w.lane + ', leur jungler ' + w.jungler_adverse + ' · '); const s = mk2('span', null, w.pris ? 'tu y étais' : 'pas prise'); s.style.color = w.pris ? 'var(--lx-win)' : 'var(--lx-loss)'; r.appendChild(s); lg.appendChild(r); }
+      bg.appendChild(lg); gr2.appendChild(bg);
+    }
+    wrap.appendChild(gr2);
+    if (d.genere) wrap.appendChild(mk2('p', 'lx-source', 'Avis rédigé par Claude à partir des données Riot de la partie.'));
+    box.appendChild(wrap);
+  });
+  document.querySelectorAll('[data-tab="parties"]').forEach((t) => t.addEventListener('click', () => { chargerDebriefs(); }));
+  if ((location.hash || '') === '#parties') chargerDebriefs();
   // ---------------- Recherche avec suggestions (remplace la datalist native)
   const LANE_NOM = { top: 'Top', jungle: 'Jungle', mid: 'Mid', adc: 'ADC', support: 'Support' };
   function indexChampions() {
