@@ -72,7 +72,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-top::before { content: ""; position: absolute; inset: 0; border-width: 0 0 1px; border-radius: 0; box-shadow: none; background: rgba(4, 7, 12, 0.55); z-index: -1; }
 .lx-top-in { max-width: var(--lx-max); margin: 0 auto; padding: 0 14px; height: 62px; display: flex; align-items: center; gap: 14px; }
 @media (min-width: 720px) { .lx-top-in { padding: 0 28px; height: 68px; gap: 18px; } }
-.lx-brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.01em; color: #fff; white-space: nowrap; line-height: 1; }
+.lx-brand { text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 24px; letter-spacing: -0.01em; color: #fff; white-space: nowrap; line-height: 1; }
 .lx-brand em { color: var(--lx-gold); }
 .lx-brand svg { width: 32px; height: 32px; flex: none; }
 @media (max-width: 440px) { .lx-brand span { display: none; } }
@@ -399,11 +399,29 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-fb h3 small { font-family: var(--font-anthropic-sans); font-size: 12px; color: var(--lx-muted); }
 .lx-fb-lab { font-size: 12px; color: var(--lx-muted); margin: 12px 0 6px; display: flex; justify-content: space-between; gap: 8px; }
 .lx-fb-lab:first-of-type { margin-top: 0; }
+.lx-fb-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px 0; }
+.lx-fb-bloc > .lx-fb-lab { margin-top: 12px; }
+.lx-fb-bloc:first-child > .lx-fb-lab { margin-top: 0; }
+@media (min-width: 1000px) {
+  .lx-meta-grille { grid-template-columns: minmax(0, 330px) minmax(0, 1fr) !important; }
+  .lx-tier { max-height: calc(100vh - 110px) !important; }
+  .lx-fiche-bento { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lx-fb-build { grid-column: 1 / -1; }
+  .lx-fb-build .lx-fb-grille { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 22px; }
+  .lx-fb-build .lx-fb-bloc > .lx-fb-lab { margin-top: 0; }
+  .lx-fb-build .lx-fb-bloc { padding-top: 2px; }
+  .lx-items img { width: 44px; height: 44px; }
+  .lx-fb:has(.lx-cnt) { grid-column: span 1; }
+}
+@media (min-width: 1000px) and (max-width: 1250px) { .lx-fiche-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .lx-fb-build .lx-fb-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .lx-items { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .lx-items img { width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--lx-line2); display: block; }
 .lx-items .fl { color: var(--lx-faint); font-size: 12px; }
 .lx-opts { display: flex; flex-direction: column; gap: 6px; }
-.lx-opt { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--lx-muted); }
+.lx-opt { display: grid; grid-template-columns: 32px minmax(0, 1fr); column-gap: 10px; align-items: center; font-size: 12px; color: var(--lx-muted); }
+.lx-opt img { grid-row: span 2; }
+.lx-opt b { line-height: 1.25; }
+.lx-opt .lx-pct { margin-left: 0; font-size: 11.5px; }
 .lx-opt img { width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--lx-line2); }
 .lx-opt b { color: var(--lx-text); font-weight: 500; }
 .lx-pct { margin-left: auto; white-space: nowrap; }
@@ -466,7 +484,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 
 <div class="lx">
 <div class="lx-fond" aria-hidden="true"><div class="lx-fond-img"></div></div>
-<header class="lx-top"><div class="lx-top-in"><div class="lx-brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><defs><linearGradient id="lg-or" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0e6d2"/><stop offset="1" stop-color="#9c7a3c"/></linearGradient></defs><path d="M16 2.5l11.3 6.5v14L16 29.5 4.7 23V9z" stroke="url(#lg-or)" stroke-width="1.6" stroke-linejoin="round" fill="rgba(200,170,110,0.08)"/><path d="M10 20.5l6-9 6 9" stroke="#0ac8b9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16.2l2.6 3.9h-5.2z" fill="url(#lg-or)"/></svg><span>Analyse <em>ranked</em></span></div>
+<header class="lx-top"><div class="lx-top-in"><a class="lx-brand" href="#resume" aria-label="Analyse ranked, retour au résumé"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><defs><linearGradient id="lg-or" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0e6d2"/><stop offset="1" stop-color="#9c7a3c"/></linearGradient></defs><path d="M16 2.5l11.3 6.5v14L16 29.5 4.7 23V9z" stroke="url(#lg-or)" stroke-width="1.6" stroke-linejoin="round" fill="rgba(200,170,110,0.08)"/><path d="M10 20.5l6-9 6 9" stroke="#0ac8b9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16.2l2.6 3.9h-5.2z" fill="url(#lg-or)"/></svg><span>Analyse <em>ranked</em></span></a>
 <label class="lx-compte">Compte
       <select class="dash-select" id="f-compte" aria-label="Compte">
         <option value="">Les deux comptes</option><option>Caps75#EUW</option><option>SPACFR#EUW</option>
@@ -1927,6 +1945,7 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
   }
   onglets().forEach((t) => t.addEventListener('click', () => { ouvrir(t.getAttribute('data-tab'), true); window.scrollTo(0, 0); }));
   ouvrir((location.hash || '').replace('#', '') || 'resume', false);
+  document.querySelectorAll('.lx-brand').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); ouvrir('resume', true); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
   let avantImpression = null;
   window.addEventListener('beforeprint', () => { avantImpression = panneaux().find((p) => !p.hidden)?.id || 'resume'; panneaux().forEach((p) => { p.hidden = false; }); });
   window.addEventListener('afterprint', () => { if (avantImpression) ouvrir(avantImpression, false); });
@@ -2227,19 +2246,22 @@ window.DD = { v: null, champ: {}, item: {}, cid: {} };
     }
     const bento = mk2('div', 'lx-fiche-bento');
     // Build
-    const bd = mk2('div', 'lx-fb'); bd.appendChild(mk2('h3', null, 'Build'));
+    const bd = mk2('div', 'lx-fb lx-fb-build'); bd.appendChild(mk2('h3', null, 'Build'));
     const bloc = (lab, o, fleches) => {
       if (!o || !o.ids || !o.ids.length) return;
-      const t = mk2('div', 'lx-fb-lab'); t.append(mk2('span', null, lab), lignePct(o)); bd.appendChild(t);
-      const r = mk2('div', 'lx-items'); o.ids.forEach((id, i) => { if (i && fleches) r.appendChild(mk2('span', 'fl', '›')); const im2 = imgItem(id); im2.title = (o.ids_names || [])[i] || ''; r.appendChild(im2); }); bd.appendChild(r);
-      if (o.ids_names && o.ids_names.length) bd.appendChild(mk2('div', 'lx-noms', o.ids_names.join(fleches ? ' › ' : ' + ')));
+      const cible = mk2('div', 'lx-fb-bloc'); grille.appendChild(cible);
+      const t = mk2('div', 'lx-fb-lab'); t.append(mk2('span', null, lab), lignePct(o)); cible.appendChild(t);
+      const r = mk2('div', 'lx-items'); o.ids.forEach((id, i) => { if (i && fleches) r.appendChild(mk2('span', 'fl', '›')); const im2 = imgItem(id); im2.title = (o.ids_names || [])[i] || ''; r.appendChild(im2); }); cible.appendChild(r);
+      if (o.ids_names && o.ids_names.length) cible.appendChild(mk2('div', 'lx-noms', o.ids_names.join(fleches ? ' › ' : ' + ')));
     };
+    const grille = mk2('div', 'lx-fb-grille'); bd.appendChild(grille);
     bloc('Départ', a.starter_items, false); bloc('Build principal', a.core_items, true); bloc('Bottes', a.boots, false);
     const opts = (lab, l) => {
       if (!l || !l.length) return;
-      bd.appendChild(mk2('div', 'lx-fb-lab', lab)); const w = mk2('div', 'lx-opts');
+      const cible = mk2('div', 'lx-fb-bloc'); grille.appendChild(cible);
+      cible.appendChild(mk2('div', 'lx-fb-lab', lab)); const w = mk2('div', 'lx-opts');
       for (const o of l.slice(0, 3)) { const r = mk2('div', 'lx-opt'); const im3 = imgItem(o.ids[0]); r.append(im3, mk2('b', null, (o.ids_names || [])[0] || ''), lignePct(o)); w.appendChild(r); }
-      bd.appendChild(w);
+      cible.appendChild(w);
     };
     opts('4e objet', a.fourth_items); opts('5e objet', a.fifth_items); opts('6e objet', a.sixth_items);
     bento.appendChild(bd);
