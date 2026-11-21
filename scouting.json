@@ -1,37 +1,37 @@
 {
- "maj": "2026-11-21T15:50:07.732181+00:00",
+ "maj": "2026-11-21T16:25:53.251720+00:00",
  "statut": "ok",
  "compte": "Caps75#EUW",
  "partie": {
-  "id": 8053080944,
-  "debut": 1795276175927,
+  "id": 8053119973,
+  "debut": 1795278288804,
   "file": 420
  },
- "champion": "Amumu",
- "cle_champion": "Amumu",
+ "champion": "Vi",
+ "cle_champion": "Vi",
  "rang": {
   "tier": "Or",
   "division": "IV",
-  "lp": 84,
+  "lp": 0,
   "winrate": 49,
-  "parties": 212
+  "parties": 370
  },
  "sur_champion": {
-  "parties": 20,
+  "parties": 8,
   "depart": {
    "valeur": "top",
-   "fois": 14,
-   "sur": 20
+   "fois": 6,
+   "sur": 8
   },
   "buff": {
-   "valeur": "bleu",
-   "fois": 20,
-   "sur": 20
+   "valeur": "rouge",
+   "fois": 6,
+   "sur": 8
   },
   "premier_gank": {
-   "valeur": "top",
-   "fois": 9,
-   "sur": 20
+   "valeur": "bot",
+   "fois": 5,
+   "sur": 8
   },
   "premier_gank_min": 4,
   "lanes_gankees": [
@@ -40,42 +40,42 @@
    "mid"
   ],
   "invade_tot": {
-   "fois": 3,
-   "sur": 20
+   "fois": 2,
+   "sur": 8
   },
-  "minutes_chez_eux": 0.5,
-  "premier_retour": 8.5,
+  "minutes_chez_eux": 0.2,
+  "premier_retour": 10,
   "premier_objectif": {
    "valeur": "dragon",
-   "fois": 16,
-   "sur": 20
+   "fois": 7,
+   "sur": 8
   },
-  "premier_objectif_min": 6.0,
-  "crabes": 2.4,
-  "contre_jungle": 8.4,
-  "ka_avant_10": 2.5,
-  "camps_10": 68.2,
-  "winrate": 55
+  "premier_objectif_min": 7.7,
+  "crabes": 3.4,
+  "contre_jungle": 9.4,
+  "ka_avant_10": 3.0,
+  "camps_10": 57.5,
+  "winrate": 62
  },
- "parties_sur_champion": 20,
+ "parties_sur_champion": 8,
  "general": {
-  "parties": 20,
+  "parties": 15,
   "depart": {
    "valeur": "top",
-   "fois": 14,
-   "sur": 20
+   "fois": 9,
+   "sur": 15
   },
   "buff": {
-   "valeur": "bleu",
-   "fois": 20,
-   "sur": 20
+   "valeur": "rouge",
+   "fois": 9,
+   "sur": 15
   },
   "premier_gank": {
-   "valeur": "top",
-   "fois": 9,
-   "sur": 20
+   "valeur": "bot",
+   "fois": 8,
+   "sur": 15
   },
-  "premier_gank_min": 4,
+  "premier_gank_min": 3.5,
   "lanes_gankees": [
    "top",
    "bot",
@@ -83,31 +83,46 @@
   ],
   "invade_tot": {
    "fois": 3,
-   "sur": 20
+   "sur": 15
   },
-  "minutes_chez_eux": 0.5,
-  "premier_retour": 8.5,
+  "minutes_chez_eux": 0.3,
+  "premier_retour": 10,
   "premier_objectif": {
    "valeur": "dragon",
-   "fois": 16,
-   "sur": 20
+   "fois": 10,
+   "sur": 15
   },
-  "premier_objectif_min": 6.0,
-  "crabes": 2.4,
-  "contre_jungle": 8.4,
-  "ka_avant_10": 2.5,
-  "camps_10": 68.2,
-  "winrate": 55
+  "premier_objectif_min": 7.5,
+  "crabes": 3.1,
+  "contre_jungle": 7.5,
+  "ka_avant_10": 3.0,
+  "camps_10": 58.7,
+  "winrate": 40
  },
  "pool": [
   {
-   "champion": "Amumu",
-   "parties": 20,
-   "winrate": 55
+   "champion": "Vi",
+   "parties": 8,
+   "winrate": 62
+  },
+  {
+   "champion": "Briar",
+   "parties": 1,
+   "winrate": 0
+  },
+  {
+   "champion": "Zed",
+   "parties": 1,
+   "winrate": 0
+  },
+  {
+   "champion": "Jhin",
+   "parties": 1,
+   "winrate": 0
   }
  ],
  "serie": {
-  "victoires": true,
-  "nombre": 1
+  "victoires": false,
+  "nombre": 4
  }
 }
