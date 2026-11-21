@@ -1,1 +1,113 @@
-{"maj": "2026-11-21T00:00:00+00:00", "statut": "vide"}
+{
+ "maj": "2026-11-21T15:50:07.732181+00:00",
+ "statut": "ok",
+ "compte": "Caps75#EUW",
+ "partie": {
+  "id": 8053080944,
+  "debut": 1795276175927,
+  "file": 420
+ },
+ "champion": "Amumu",
+ "cle_champion": "Amumu",
+ "rang": {
+  "tier": "Or",
+  "division": "IV",
+  "lp": 84,
+  "winrate": 49,
+  "parties": 212
+ },
+ "sur_champion": {
+  "parties": 20,
+  "depart": {
+   "valeur": "top",
+   "fois": 14,
+   "sur": 20
+  },
+  "buff": {
+   "valeur": "bleu",
+   "fois": 20,
+   "sur": 20
+  },
+  "premier_gank": {
+   "valeur": "top",
+   "fois": 9,
+   "sur": 20
+  },
+  "premier_gank_min": 4,
+  "lanes_gankees": [
+   "top",
+   "bot",
+   "mid"
+  ],
+  "invade_tot": {
+   "fois": 3,
+   "sur": 20
+  },
+  "minutes_chez_eux": 0.5,
+  "premier_retour": 8.5,
+  "premier_objectif": {
+   "valeur": "dragon",
+   "fois": 16,
+   "sur": 20
+  },
+  "premier_objectif_min": 6.0,
+  "crabes": 2.4,
+  "contre_jungle": 8.4,
+  "ka_avant_10": 2.5,
+  "camps_10": 68.2,
+  "winrate": 55
+ },
+ "parties_sur_champion": 20,
+ "general": {
+  "parties": 20,
+  "depart": {
+   "valeur": "top",
+   "fois": 14,
+   "sur": 20
+  },
+  "buff": {
+   "valeur": "bleu",
+   "fois": 20,
+   "sur": 20
+  },
+  "premier_gank": {
+   "valeur": "top",
+   "fois": 9,
+   "sur": 20
+  },
+  "premier_gank_min": 4,
+  "lanes_gankees": [
+   "top",
+   "bot",
+   "mid"
+  ],
+  "invade_tot": {
+   "fois": 3,
+   "sur": 20
+  },
+  "minutes_chez_eux": 0.5,
+  "premier_retour": 8.5,
+  "premier_objectif": {
+   "valeur": "dragon",
+   "fois": 16,
+   "sur": 20
+  },
+  "premier_objectif_min": 6.0,
+  "crabes": 2.4,
+  "contre_jungle": 8.4,
+  "ka_avant_10": 2.5,
+  "camps_10": 68.2,
+  "winrate": 55
+ },
+ "pool": [
+  {
+   "champion": "Amumu",
+   "parties": 20,
+   "winrate": 55
+  }
+ ],
+ "serie": {
+  "victoires": true,
+  "nombre": 1
+ }
+}
