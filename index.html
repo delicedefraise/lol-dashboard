@@ -365,6 +365,7 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
 .lx-cp-sc span { font-size: 10.5px; color: var(--lx-muted); }
 .lx-cp-pool { font-size: 10.5px; font-weight: 600; color: var(--lx-win); background: rgba(10, 200, 185, 0.12); padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: 2px; }
 .lx-cp-vide { font-size: 13px; color: var(--lx-muted); padding: 14px; border-radius: 14px; border: 1px dashed var(--lx-line2); text-align: center; }
+.lx-compagnon-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
 .lx-mes { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 0 14px; padding-bottom: 2px; }
 .lx-mes:empty { display: none; }
 .lx-mes-t { flex: none; font-size: 12px; color: var(--lx-muted); align-self: center; margin-right: 2px; }
@@ -695,6 +696,14 @@ html, body { margin: 0; background: #04070c; color-scheme: dark; }
       <div class="lx-meta-grille" id="meta-grille">
         <div class="lx-tier" data-draw="meta_tier"></div>
         <div class="lx-fiche" id="meta-fiche" data-draw="meta_fiche"></div>
+      </div>
+    </section>
+    <section class="lx-card lx-compagnon">
+      <h2>Compagnon live</h2>
+      <p class="lx-sous">Pendant ta partie, sur ton téléphone : l'état de chaque lane, le prochain objet et l'or qui manque, les objets de situation selon leur équipe, et un mémo du matchup. Un petit programme tourne sur le PC où tu joues et lit l'API officielle du jeu (les mêmes infos que la touche Tab) : conforme aux règles de Riot.</p>
+      <div class="lx-compagnon-actions">
+        <a class="lx-retour" style="display:inline-flex" href="compagnon.zip" download>Télécharger le compagnon (.zip, 15 Ko)</a>
+        <span class="lx-source">Dézippe, double-clique sur « Lancer le compagnon.bat », puis ouvre sur ton téléphone l'adresse affichée. Python 3 requis.</span>
       </div>
     </section>
   </div>

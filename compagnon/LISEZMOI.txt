@@ -1,0 +1,32 @@
+COMPAGNON DE PARTIE — mode d'emploi
+===================================
+
+Ce que ça fait
+--------------
+Pendant une partie, une page sur ton téléphone affiche :
+  - Mémo  : ton matchup (winrate mondial OP.GG), tes repères sur ce champion, runes, sorts, ordre des compétences
+  - Lanes : niveau, CS, KDA et or en objets de chaque lane, comparés à l'adversaire direct
+  - Items : le prochain objet de ton build et l'or qui manque, plus les objets de situation selon leur équipe
+
+Les infos viennent de l'API officielle du jeu (les mêmes que la touche Tab). Rien n'est lu à l'écran
+ni dans la mémoire du jeu, rien n'est envoyé au jeu : c'est conforme aux règles de Riot.
+
+Installation (une seule fois)
+-----------------------------
+1. Il faut Python 3 sur le PC. Si ce n'est pas le cas, « Lancer le compagnon.bat » ouvre le
+   Microsoft Store sur Python : installe « Python 3.12 » (ou plus récent).
+2. Dézippe ce dossier où tu veux (Bureau, Documents...).
+
+À chaque session
+----------------
+1. Double-clique sur « Lancer le compagnon.bat ».
+   La première fois, Windows demande d'autoriser Python sur le réseau : coche « Réseaux privés » et valide.
+2. La fenêtre affiche une adresse du type  http://192.168.1.23:8777
+   Ouvre-la sur ton téléphone (connecté au même Wi-Fi que le PC). Ajoute-la à l'écran d'accueil.
+3. Lance ta partie : la page se met à jour toute seule toutes les 3 secondes.
+4. Laisse la fenêtre ouverte pendant tes parties. Ferme-la quand tu as fini.
+
+Tester sans jouer : double-clique sur « Tester en demo.bat » (partie fictive).
+
+Si le téléphone n'affiche rien : vérifie qu'il est sur le même Wi-Fi que le PC (pas en 4G),
+et que Python est autorisé dans le pare-feu Windows (réseaux privés).

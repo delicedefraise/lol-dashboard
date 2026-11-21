@@ -1,0 +1,419 @@
+{
+ "activePlayer": {
+  "riotId": "SPACFR#EUW",
+  "riotIdGameName": "SPACFR",
+  "riotIdTagLine": "EUW",
+  "summonerName": "SPACFR",
+  "level": 10,
+  "currentGold": 1180.0
+ },
+ "allPlayers": [
+  {
+   "championName": "Malphite",
+   "rawChampionName": "game_character_displayname_Malphite",
+   "team": "ORDER",
+   "position": "TOP",
+   "level": 11,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 1,
+    "deaths": 2,
+    "assists": 4,
+    "creepScore": 98,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3047,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 3075,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 3082,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Rocher42#EUW",
+   "riotIdGameName": "Rocher42",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Rocher42"
+  },
+  {
+   "championName": "Zac",
+   "rawChampionName": "game_character_displayname_Zac",
+   "team": "ORDER",
+   "position": "JUNGLE",
+   "level": 10,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 2,
+    "deaths": 3,
+    "assists": 6,
+    "creepScore": 72,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3111,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 1101,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 3083,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "SPACFR#EUW",
+   "riotIdGameName": "SPACFR",
+   "riotIdTagLine": "EUW",
+   "summonerName": "SPACFR"
+  },
+  {
+   "championName": "Ahri",
+   "rawChampionName": "game_character_displayname_Ahri",
+   "team": "ORDER",
+   "position": "MIDDLE",
+   "level": 12,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 4,
+    "deaths": 1,
+    "assists": 3,
+    "creepScore": 121,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3020,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 6655,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 1058,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "MidOrFeed#EUW",
+   "riotIdGameName": "MidOrFeed",
+   "riotIdTagLine": "EUW",
+   "summonerName": "MidOrFeed"
+  },
+  {
+   "championName": "Caitlyn",
+   "rawChampionName": "game_character_displayname_Caitlyn",
+   "team": "ORDER",
+   "position": "BOTTOM",
+   "level": 11,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 3,
+    "deaths": 2,
+    "assists": 2,
+    "creepScore": 115,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3006,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 2523,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 1038,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Caps75#EUW",
+   "riotIdGameName": "Caps75",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Caps75"
+  },
+  {
+   "championName": "Rakan",
+   "rawChampionName": "game_character_displayname_Rakan",
+   "team": "ORDER",
+   "position": "UTILITY",
+   "level": 9,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 0,
+    "deaths": 3,
+    "assists": 8,
+    "creepScore": 18,
+    "wardScore": 24
+   },
+   "items": [
+    {
+     "itemID": 3117,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 3876,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Plume#EUW",
+   "riotIdGameName": "Plume",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Plume"
+  },
+  {
+   "championName": "Darius",
+   "rawChampionName": "game_character_displayname_Darius",
+   "team": "CHAOS",
+   "position": "TOP",
+   "level": 12,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 4,
+    "deaths": 1,
+    "assists": 1,
+    "creepScore": 110,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3047,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 6631,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 3053,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "AxeMan#EUW",
+   "riotIdGameName": "AxeMan",
+   "riotIdTagLine": "EUW",
+   "summonerName": "AxeMan"
+  },
+  {
+   "championName": "Lee Sin",
+   "rawChampionName": "game_character_displayname_LeeSin",
+   "team": "CHAOS",
+   "position": "JUNGLE",
+   "level": 11,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 3,
+    "deaths": 2,
+    "assists": 5,
+    "creepScore": 80,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3047,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 6692,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 1036,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Insec#EUW",
+   "riotIdGameName": "Insec",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Insec"
+  },
+  {
+   "championName": "Sylas",
+   "rawChampionName": "game_character_displayname_Sylas",
+   "team": "CHAOS",
+   "position": "MIDDLE",
+   "level": 11,
+   "isDead": true,
+   "respawnTimer": 12.5,
+   "isBot": false,
+   "scores": {
+    "kills": 2,
+    "deaths": 3,
+    "assists": 4,
+    "creepScore": 105,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3020,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 3152,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    },
+    {
+     "itemID": 1026,
+     "count": 1,
+     "slot": 2,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Chains#EUW",
+   "riotIdGameName": "Chains",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Chains"
+  },
+  {
+   "championName": "Jinx",
+   "rawChampionName": "game_character_displayname_Jinx",
+   "team": "CHAOS",
+   "position": "BOTTOM",
+   "level": 10,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 1,
+    "deaths": 3,
+    "assists": 2,
+    "creepScore": 102,
+    "wardScore": 10
+   },
+   "items": [
+    {
+     "itemID": 3006,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 3031,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Rockets#EUW",
+   "riotIdGameName": "Rockets",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Rockets"
+  },
+  {
+   "championName": "Soraka",
+   "rawChampionName": "game_character_displayname_Soraka",
+   "team": "CHAOS",
+   "position": "UTILITY",
+   "level": 9,
+   "isDead": false,
+   "respawnTimer": 0,
+   "isBot": false,
+   "scores": {
+    "kills": 0,
+    "deaths": 1,
+    "assists": 7,
+    "creepScore": 15,
+    "wardScore": 28
+   },
+   "items": [
+    {
+     "itemID": 3158,
+     "count": 1,
+     "slot": 0,
+     "displayName": ""
+    },
+    {
+     "itemID": 6617,
+     "count": 1,
+     "slot": 1,
+     "displayName": ""
+    }
+   ],
+   "riotId": "Banana#EUW",
+   "riotIdGameName": "Banana",
+   "riotIdTagLine": "EUW",
+   "summonerName": "Banana"
+  }
+ ],
+ "events": {
+  "Events": [
+   {
+    "EventID": 0,
+    "EventName": "GameStart",
+    "EventTime": 0.0
+   }
+  ]
+ },
+ "gameData": {
+  "gameMode": "CLASSIC",
+  "gameTime": 840.0,
+  "mapName": "Map11",
+  "mapNumber": 11
+ }
+}

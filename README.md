@@ -8,6 +8,7 @@ Dashboard personnel de parties classées League of Legends (Caps75 et SPACFR, EU
 - `scripts/fetch_riot.py` : récupère les nouvelles parties via l'API Riot et met à jour `data.js`.
 - `scripts/fetch_meta.py` (+ `scripts/opgg_mcp.py`) : récupère la méta globale depuis le serveur MCP public d'OP.GG (tier list par lane, builds, runes, sorts, compétences, counters) et écrit `meta.js`. Aucune clé nécessaire.
 - `meta.js` : la méta, chargée seulement à l'ouverture de l'onglet Méta. Données © OP.GG.
+- `compagnon/` (+ `compagnon.zip` à télécharger) : compagnon de partie, à lancer sur le PC de jeu. Lit l'API locale officielle (Live Client Data) et sert une page sur le Wi-Fi : état des lanes, items adaptés, mémo du matchup. Regénérer `compagnon.zip` après modification.
 - `.github/workflows/maj-donnees.yml` : lance les deux scripts chaque jour et publie le résultat.
 
 ## Mettre à jour à la main

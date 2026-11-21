@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compagnon de partie</title>
+<meta name="theme-color" content="#04070c">
+<link rel="icon" href="https://delicedefraise.github.io/lol-dashboard/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #04070c; --panel: rgba(14, 20, 30, 0.72); --panel2: rgba(255, 255, 255, 0.045); --line: rgba(255, 255, 255, 0.08); --line2: rgba(255, 255, 255, 0.14);
+  --gold: #c8aa6e; --gold2: #f0e6d2; --text: #eef0f4; --muted: #939cab; --faint: #5f6878; --win: #0ac8b9; --loss: #e84057;
+  --serif: "Instrument Serif", Georgia, serif; --sans: "Schibsted Grotesk", system-ui, sans-serif; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; -webkit-font-smoothing: antialiased; }
+body { min-height: 100vh; padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  background: radial-gradient(70% 40% at 90% 0%, rgba(10, 200, 185, 0.14), transparent 70%), radial-gradient(60% 40% at 0% 100%, rgba(200, 170, 110, 0.1), transparent 70%), var(--bg); background-attachment: fixed; }
+.top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 10px; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top));
+  background: rgba(4, 7, 12, 0.78); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border-bottom: 1px solid var(--line); }
+.top svg { width: 28px; height: 28px; flex: none; }
+.top h1 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 22px; line-height: 1; }
+.top h1 em { color: var(--gold); }
+.live { margin-left: auto; display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+.live.on i { background: var(--win); box-shadow: 0 0 10px var(--win); animation: pulse 1.6s infinite; }
+.live b { font-family: var(--serif); font-weight: 400; font-size: 20px; color: #fff; }
+@keyframes pulse { 50% { opacity: .35; } }
+main { padding: 14px; display: flex; flex-direction: column; gap: 12px; max-width: 720px; margin: 0 auto; }
+.card { background: var(--panel); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
+h2 { margin: 0 0 4px; font-family: var(--serif); font-weight: 400; font-size: 26px; color: #fff; line-height: 1.1; }
+.sous { margin: 0 0 12px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+.lab { font-size: 12px; color: var(--muted); margin: 14px 0 8px; display: flex; justify-content: space-between; gap: 8px; }
+.lab:first-child { margin-top: 0; }
+img.ch { width: 40px; height: 40px; border-radius: 11px; border: 1px solid var(--line2); display: block; }
+img.it { width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--line2); display: block; }
+.attente { text-align: center; padding: 40px 18px; }
+.attente .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--gold); margin: 0 auto 18px; animation: pulse 1.6s infinite; box-shadow: 0 0 18px var(--gold); }
+.attente p { color: var(--muted); line-height: 1.5; margin: 8px 0 0; }
+/* Lanes */
+.equipes { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; text-align: center; }
+.equipes b { font-family: var(--serif); font-weight: 400; font-size: 30px; display: block; line-height: 1; }
+.equipes span { font-size: 11.5px; color: var(--muted); }
+.lane { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto minmax(0, 1fr) 40px; gap: 8px; align-items: center; padding: 10px 8px; border-radius: 14px; margin: 0 -8px; }
+.lane + .lane { border-top: 1px solid var(--line); border-radius: 0; }
+.lane.moi { background: rgba(200, 170, 110, 0.09); border-radius: 14px; border-top-color: transparent; }
+.lane.moi + .lane { border-top-color: transparent; }
+.lane .p { min-width: 0; font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.lane .p.d { text-align: right; }
+.lane .p b { color: var(--text); font-weight: 600; font-size: 12.5px; }
+.lane .n { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; font-weight: 600; font-size: 13px; }
+.lane .mort { color: var(--loss); font-weight: 600; }
+.ecarts { display: flex; flex-direction: column; gap: 3px; align-items: center; min-width: 78px; }
+.ecart { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 999px; white-space: nowrap; background: rgba(255, 255, 255, 0.06); color: var(--muted); }
+.ecart.plus { color: var(--win); background: rgba(10, 200, 185, 0.12); } .ecart.moins { color: #ff8a9b; background: rgba(232, 64, 87, 0.12); }
+.role { font-size: 10.5px; color: var(--faint); text-align: center; margin-bottom: 2px; }
+.bilan { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.bilan div { padding: 10px 12px; border-radius: 14px; background: var(--panel2); border: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+.bilan b { display: block; color: #fff; font-size: 14px; margin-top: 2px; }
+/* Items */
+.build { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.slot { position: relative; }
+.slot.ok img { opacity: .45; }
+.slot.ok::after { content: "✓"; position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px; border-radius: 50%; background: var(--win); color: #04070c; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+.slot.next img { border: 2px solid var(--gold); box-shadow: 0 0 16px -4px rgba(200, 170, 110, .7); }
+.prochain { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: rgba(200, 170, 110, 0.1); border: 1px solid rgba(200, 170, 110, 0.35); margin-top: 12px; }
+.prochain img { width: 48px; height: 48px; border-radius: 12px; }
+.prochain b { display: block; font-size: 15px; color: #fff; }
+.prochain span { font-size: 12.5px; color: var(--muted); }
+.prochain .or { margin-left: auto; text-align: right; font-family: var(--serif); font-size: 26px; line-height: 1; }
+.reco { padding: 12px; border-radius: 16px; background: var(--panel2); border: 1px solid var(--line); margin-top: 10px; }
+.reco h3 { margin: 0 0 4px; font-size: 15px; color: #fff; }
+.reco p { margin: 0 0 10px; font-size: 12.5px; color: var(--muted); line-height: 1.45; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.reco p img { width: 22px; height: 22px; border-radius: 6px; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.opt b { font-weight: 600; } .opt span { color: var(--muted); font-size: 12px; margin-left: auto; white-space: nowrap; }
+.opt.ok { opacity: .5; }
+/* Mémo */
+.duel { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 0 14px; }
+.duel img { width: 62px; height: 62px; border-radius: 18px; }
+.duel .moi img { border: 2px solid var(--gold); } .duel .eux img { border: 2px solid var(--loss); }
+.duel .vs { font-family: var(--serif); font-style: italic; font-size: 26px; color: var(--gold); }
+.duel .nom { font-size: 13px; text-align: center; margin-top: 5px; font-weight: 600; }
+.chiffres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.chiffres div { padding: 10px; border-radius: 14px; background: var(--panel2); border: 1px solid var(--line); text-align: center; }
+.chiffres b { display: block; font-family: var(--serif); font-weight: 400; font-size: 24px; line-height: 1; }
+.chiffres span { font-size: 11px; color: var(--muted); }
+ul.reperes { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+ul.reperes li { padding: 10px 12px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; line-height: 1.45; }
+ul.reperes li b { color: #fff; }
+.skills { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.skills b { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-family: var(--serif); font-weight: 400; font-size: 20px; color: var(--gold2); background: rgba(200, 170, 110, 0.12); border: 1px solid rgba(200, 170, 110, 0.3); }
+.runes { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.runes img { width: 40px; height: 40px; }
+.vert { color: var(--win); } .rouge { color: var(--loss); }
+/* Navigation */
+nav { position: fixed; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 20; display: flex; gap: 4px; padding: 5px; border-radius: 22px;
+  background: rgba(12, 17, 26, 0.86); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border: 1px solid var(--line2); box-shadow: 0 12px 30px -8px rgba(0, 0, 0, .7); max-width: 520px; margin: 0 auto; }
+nav button { flex: 1; font: inherit; font-size: 12px; font-weight: 500; color: var(--muted); background: none; border: 0; height: 52px; border-radius: 17px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; }
+nav button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+nav button.on { color: #0b0f15; background: linear-gradient(180deg, #f0e6d2, #c8aa6e); }
+.note { font-size: 11.5px; color: var(--faint); text-align: center; line-height: 1.5; padding: 4px 10px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2.5l11.3 6.5v14L16 29.5 4.7 23V9z" stroke="#c8aa6e" stroke-width="1.6" stroke-linejoin="round" fill="rgba(200,170,110,0.08)"/><path d="M10 20.5l6-9 6 9" stroke="#0ac8b9" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16.2l2.6 3.9h-5.2z" fill="#f0e6d2"/></svg>
+  <h1>Compagnon <em>live</em></h1>
+  <div class="live" id="live"><i></i><span id="statut">Connexion…</span></div>
+</header>
+<main id="vue"></main>
+<nav id="nav">
+  <button data-v="memo"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h4"/></svg>Mémo</button>
+  <button data-v="lanes"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="10" cy="17" r="1.5"/></svg>Lanes</button>
+  <button data-v="items"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>Items</button>
+</nav>
+<script src="https://delicedefraise.github.io/lol-dashboard/data.js"></script>
+<script src="https://delicedefraise.github.io/lol-dashboard/meta.js"></script>
+<script>
+(function () {
+  const DDB = 'https://ddragon.leagueoflegends.com';
+  const POS = { TOP: 'top', JUNGLE: 'jungle', MIDDLE: 'mid', BOTTOM: 'adc', UTILITY: 'support' };
+  const ROLE_FR = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'Bot', UTILITY: 'Support' };
+  const ORDRE = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
+  const CLASSE = { Fighter: 'Combattant', Tank: 'Tank', Mage: 'Mage', Marksman: 'Tireur', Assassin: 'Assassin', Support: 'Support' };
+  const SOIGNEURS = new Set(['Soraka', 'Yuumi', 'Sona', 'Nami', 'Milio', 'Aatrox', 'Vladimir', 'Sylas', 'Warwick', 'DrMundo', 'Fiddlesticks', 'Swain', 'Briar', 'Illaoi', 'Senna', 'Renata', 'Volibear', 'Olaf', 'Trundle', 'Seraphine', 'Taric']);
+  const CC = new Set(['Leona', 'Nautilus', 'Amumu', 'Malphite', 'Sejuani', 'Ashe', 'Lissandra', 'Rell', 'Alistar', 'Thresh', 'Blitzcrank', 'Maokai', 'Zac', 'Rakan', 'Annie', 'Lux', 'Vi', 'Skarner', 'Morgana', 'Neeko', 'Galio', 'Ornn', 'Sion', 'Zyra', 'Veigar', 'Taric', 'Braum', 'Poppy', 'Jarvan IV', 'JarvanIV']);
+  // Objets de situation par classe (identifiants vérifiés sur Data Dragon)
+  const REGLES = {
+    antisoin: { Tireur: [3033], Combattant: [6609], Assassin: [6609], Mage: [3165], Tank: [3075], Support: [3011] },
+    vsAP: { Tank: [4401, 2504, 3065], Combattant: [3091, 2504], Assassin: [3156], Mage: [3102], Tireur: [3139, 3156], Support: [8020, 3222] },
+    vsAD: { Tank: [3143, 3110, 3075], Combattant: [3742, 3026], Assassin: [3026, 3814], Mage: [3157], Tireur: [3026], Support: [3110] },
+    vsTanks: { Tireur: [3036], Combattant: [3071], Assassin: [3071], Mage: [3135, 6653], Tank: [], Support: [] },
+  };
+  const DD = { v: null, champ: {}, item: {}, sorts: {}, runes: {} };
+  let ETAT = null, VUE = null, VUE_CHOISIE = false;
+  const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; };
+  const fr = (v, d) => Number(v).toLocaleString('fr-FR', { maximumFractionDigits: d === undefined ? 1 : d });
+  const signe = (v, d) => (v > 0 ? '+' : v < 0 ? '−' : '±') + fr(Math.abs(v), d === undefined ? 0 : d);
+  const mmss = (s) => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+  const cle = (p) => String(p.rawChampionName || '').split('_').pop() || p.championName;
+  const nomCh = (k) => (DD.champ[k] || {}).name || k;
+  const imgCh = (k, cls) => { const i = el('img', cls || 'ch'); i.src = DD.v ? DDB + '/cdn/' + DD.v + '/img/champion/' + ((DD.champ[k] || {}).image || { full: k + '.png' }).full : ''; i.alt = nomCh(k); return i; };
+  const imgIt = (id) => { const i = el('img', 'it'); i.src = DDB + '/cdn/' + DD.v + '/img/item/' + id + '.png'; i.alt = (DD.item[id] || {}).name || ''; i.title = i.alt; return i; };
+  const prix = (id) => ((DD.item[id] || {}).gold || {}).total || 0;
+  const orObjets = (p) => (p.items || []).reduce((t, x) => t + prix(x.itemID) * (x.count || 1), 0);
+  const classeDe = (k) => CLASSE[((DD.champ[k] || {}).tags || ['Fighter'])[0]] || 'Combattant';
+
+  async function chargerDD() {
+    const v = (await fetch(DDB + '/api/versions.json').then((r) => r.json()))[0]; DD.v = v;
+    const [c, it, su, ru] = await Promise.all(['champion', 'item', 'summoner', 'runesReforged'].map((f) => fetch(DDB + '/cdn/' + v + '/data/fr_FR/' + f + '.json').then((r) => r.json())));
+    DD.champ = c.data; DD.item = it.data;
+    for (const k in su.data) DD.sorts[su.data[k].key] = su.data[k];
+    for (const a of ru) { DD.runes[a.id] = a.icon; for (const s of a.slots) for (const x of s.runes) DD.runes[x.id] = x.icon; }
+  }
+
+  function lire(d) {
+    const ap = d.activePlayer || {}, tous = d.allPlayers || [];
+    const idMoi = ap.riotId || ((ap.riotIdGameName || ap.summonerName) + '#' + (ap.riotIdTagLine || ''));
+    const moi = tous.find((p) => p.riotId === idMoi || p.riotIdGameName === ap.riotIdGameName || p.summonerName === ap.summonerName) || tous[0];
+    const allies = tous.filter((p) => p.team === moi.team), ennemis = tous.filter((p) => p.team !== moi.team);
+    const parPos = (l, pos, i) => l.find((p) => p.position === pos) || l[i];
+    const vis = ennemis.find((p) => p.position && p.position === moi.position);
+    return { ap, moi, allies, ennemis, vis, parPos, temps: (d.gameData || {}).gameTime || 0, compte: moi.riotId || idMoi };
+  }
+
+  // ---------------- Lanes
+  function vueLanes(g) {
+    const box = el('div');
+    const c1 = el('section', 'card'); c1.appendChild(el('h2', null, 'État des lanes'));
+    c1.appendChild(el('p', 'sous', 'Les mêmes infos que la touche Tab, comparées lane par lane : niveau, CS, KDA et or investi en objets.'));
+    const kA = g.allies.reduce((t, p) => t + p.scores.kills, 0), kE = g.ennemis.reduce((t, p) => t + p.scores.kills, 0);
+    const oA = g.allies.reduce((t, p) => t + orObjets(p), 0), oE = g.ennemis.reduce((t, p) => t + orObjets(p), 0);
+    const eq = el('div', 'equipes');
+    const a = el('div'); const ba = el('b', 'vert', String(kA)); a.append(ba, el('span', null, 'kills de ton équipe'));
+    const m = el('div'); const bm = el('b', null, signe(oA - oE)); bm.style.color = oA >= oE ? 'var(--win)' : 'var(--loss)'; bm.style.fontSize = '24px'; m.append(bm, el('span', null, 'or en objets'));
+    const e = el('div'); const be = el('b', 'rouge', String(kE)); e.append(be, el('span', null, 'kills en face'));
+    eq.append(a, m, e); c1.appendChild(eq);
+    box.appendChild(c1);
+    const c2 = el('section', 'card');
+    const lignes = [];
+    ORDRE.forEach((pos, i) => {
+      const x = g.parPos(g.allies, pos, i), y = g.parPos(g.ennemis, pos, i);
+      if (!x || !y) return;
+      const dOr = orObjets(x) - orObjets(y), dCs = x.scores.creepScore - y.scores.creepScore, dNiv = x.level - y.level;
+      lignes.push({ pos, dOr });
+      const l = el('div', 'lane' + (x === g.moi ? ' moi' : ''));
+      const info = (p, droite) => {
+        const d = el('div', 'p' + (droite ? ' d' : ''));
+        d.appendChild(el('span', 'n', nomCh(cle(p))));
+        const s = p.scores; d.append('Niv ', el('b', null, String(p.level)), ' · ', el('b', null, s.kills + '/' + s.deaths + '/' + s.assists));
+        d.appendChild(el('br')); d.append(String(s.creepScore) + ' CS');
+        if (p.isDead) { d.append(' · '); d.appendChild(el('span', 'mort', 'mort')); }
+        return d;
+      };
+      const ec = el('div', 'ecarts'); ec.appendChild(el('div', 'role', ROLE_FR[pos]));
+      const pill = (txt, v) => el('span', 'ecart' + (v > 0 ? ' plus' : v < 0 ? ' moins' : ''), txt);
+      ec.append(pill(signe(dOr) + ' po', dOr), pill(signe(dCs) + ' CS', pos === 'UTILITY' ? 0 : dCs), pill('Niv ' + signe(dNiv), dNiv));
+      l.append(imgCh(cle(x)), info(x), ec, info(y, true), imgCh(cle(y)));
+      c2.appendChild(l);
+    });
+    box.appendChild(c2);
+    if (lignes.length) {
+      const tri = lignes.slice().sort((p, q) => q.dOr - p.dOr);
+      const bi = el('div', 'bilan');
+      const d1 = el('div'); d1.append('Lane la plus en avance', el('b', 'vert', ROLE_FR[tri[0].pos] + ' · ' + signe(tri[0].dOr) + ' po'));
+      const d2 = el('div'); const t2 = tri[tri.length - 1]; d2.append('Lane la plus en retard', el('b', 'rouge', ROLE_FR[t2.pos] + ' · ' + signe(t2.dOr) + ' po'));
+      bi.append(d1, d2); c1.appendChild(bi);
+    }
+    box.appendChild(el('p', 'note', 'Or en objets : valeur des objets achetés, sans l’or en poche. Les données viennent de l’API officielle du jeu, comme la touche Tab.'));
+    return box;
+  }
+
+  // ---------------- Items
+  function vueItems(g) {
+    const box = el('div');
+    const k = cle(g.moi), lane = POS[g.moi.position] || 'mid', cl = classeDe(k);
+    const a = (window.META && window.META.analyses[k + '|' + lane]) || null;
+    const poss = new Set((g.moi.items || []).map((x) => x.itemID));
+    const c1 = el('section', 'card');
+    c1.appendChild(el('h2', null, 'Build de ' + nomCh(k)));
+    c1.appendChild(el('p', 'sous', 'Build le plus joué sur OP.GG (' + (ROLE_FR[g.moi.position] || lane) + '), avec ce que tu as déjà.'));
+    if (a && a.core_items) {
+      const ids = [...(a.core_items.ids || [])];
+      if (a.boots && a.boots.ids) ids.splice(1, 0, a.boots.ids[0]);
+      const b = el('div', 'build'); let suivant = null;
+      ids.forEach((id) => { const s = el('div', 'slot'); if (poss.has(id)) s.classList.add('ok'); else if (!suivant) { suivant = id; s.classList.add('next'); } s.appendChild(imgIt(id)); b.appendChild(s); });
+      c1.appendChild(b);
+      if (suivant) {
+        const or = Math.round((g.ap.currentGold || 0)), manque = prix(suivant) - or;
+        const pr = el('div', 'prochain'); const t = el('div');
+        t.append(el('b', null, (DD.item[suivant] || {}).name || ''), el('span', null, 'Prochain objet du build · ' + fr(prix(suivant), 0) + ' po'));
+        const o = el('div', 'or'); o.textContent = manque > 0 ? '−' + fr(manque, 0) : 'OK'; o.style.color = manque > 0 ? 'var(--muted)' : 'var(--win)';
+        const sous = el('div'); sous.style.fontSize = '11px'; sous.style.color = 'var(--muted)'; sous.style.fontFamily = 'var(--sans)'; sous.textContent = manque > 0 ? 'po à réunir (prix complet)' : 'tu peux l’acheter'; o.appendChild(sous);
+        pr.append(imgIt(suivant), t, o); c1.appendChild(pr);
+      }
+    } else c1.appendChild(el('p', 'sous', 'Pas de build OP.GG pour ce champion à ce poste.'));
+    box.appendChild(c1);
+    // Situation de la partie
+    const c2 = el('section', 'card');
+    c2.appendChild(el('h2', null, 'Face à leur équipe'));
+    c2.appendChild(el('p', 'sous', 'Objets de situation selon la composition et les objets ennemis. Tu choisis.'));
+    const ek = g.ennemis.map(cle);
+    const ap = g.ennemis.filter((p) => { const i = (DD.champ[cle(p)] || {}).info || {}; return (i.magic || 0) > (i.attack || 0); });
+    const adv = g.ennemis.filter((p) => !ap.includes(p));
+    const vol = g.ennemis.filter((p) => (p.items || []).some((x) => ((DD.item[x.itemID] || {}).tags || []).some((t) => t === 'LifeSteal' || t === 'SpellVamp')));
+    const soin = g.ennemis.filter((p) => SOIGNEURS.has(cle(p)) || vol.includes(p));
+    const tanks = g.ennemis.filter((p) => ((DD.champ[cle(p)] || {}).tags || []).includes('Tank'));
+    const cc = g.ennemis.filter((p) => CC.has(cle(p)) || CC.has(nomCh(cle(p))));
+    const recos = [];
+    if (soin.length >= 2) recos.push(['Anti-soins', soin, 'champions qui se soignent ou volent de la vie', REGLES.antisoin[cl]]);
+    if (ap.length >= 3) recos.push(['Résistance magique', ap, 'dégâts surtout magiques', REGLES.vsAP[cl].concat(cl === 'Tank' || cl === 'Combattant' || cl === 'Support' ? [3111] : [])]);
+    if (adv.length >= 4) recos.push(['Armure', adv, 'dégâts surtout physiques', REGLES.vsAD[cl].concat(cl === 'Tank' || cl === 'Combattant' || cl === 'Support' ? [3047] : [])]);
+    if (tanks.length >= 2) recos.push(['Contre les tanks', tanks, 'plusieurs tanks', REGLES.vsTanks[cl]]);
+    if (cc.length >= 3) recos.push(['Beaucoup de contrôle', cc, 'beaucoup de contrôles (étourdissements, projections)', [3111].concat(cl === 'Tireur' || cl === 'Mage' || cl === 'Assassin' ? [3140] : [])]);
+    if (!recos.length) c2.appendChild(el('p', 'sous', 'Rien de particulier en face : reste sur le build classique.'));
+    for (const [titre, qui, pourquoi, ids] of recos) {
+      const ok = (ids || []).filter((id) => DD.item[id]); if (!ok.length) continue;
+      const r = el('div', 'reco'); r.appendChild(el('h3', null, titre));
+      const p = el('p'); p.append(qui.length + ' en face : ' + pourquoi + ' '); qui.forEach((x) => { const i = imgCh(cle(x)); i.className = ''; p.appendChild(i); }); r.appendChild(p);
+      const o = el('div', 'opts');
+      for (const id of ok) { const li = el('div', 'opt' + (poss.has(id) ? ' ok' : '')); li.append(imgIt(id), el('b', null, DD.item[id].name), el('span', null, poss.has(id) ? 'déjà acheté' : fr(prix(id), 0) + ' po')); o.appendChild(li); }
+      r.appendChild(o); c2.appendChild(r);
+    }
+    box.appendChild(c2);
+    return box;
+  }
+
+  // ---------------- Mémo
+  function vueMemo(g) {
+    const box = el('div');
+    const k = cle(g.moi), lane = POS[g.moi.position] || 'mid', v = g.vis, kv = v ? cle(v) : null;
+    const c1 = el('section', 'card');
+    const du = el('div', 'duel');
+    const m = el('div', 'moi'); m.append(imgCh(k, ''), el('div', 'nom', nomCh(k)));
+    du.appendChild(m);
+    if (kv) { du.appendChild(el('div', 'vs', 'vs')); const e = el('div', 'eux'); e.append(imgCh(kv, ''), el('div', 'nom', nomCh(kv))); du.appendChild(e); }
+    c1.appendChild(du);
+    const a = window.META && window.META.analyses[k + '|' + lane];
+    const mu = a && kv && (a.matchups || []).find((x) => x[0] === kv);
+    const mes = (window.DATA && window.DATA.parties || []).filter((p) => p.compte === g.compte);
+    const surCh = mes.filter((p) => p.champion === nomCh(k));
+    const contre = mes.filter((p) => kv && p.adv_champion === nomCh(kv));
+    const ch = el('div', 'chiffres');
+    const bloc = (val, lab, col) => { const d = el('div'); const b = el('b', null, val); if (col) b.style.color = col; d.append(b, el('span', null, lab)); ch.appendChild(d); };
+    bloc(mu ? fr(100 * mu[2] / mu[1]) + ' %' : '—', 'matchup mondial', mu ? (mu[2] / mu[1] >= 0.5 ? 'var(--win)' : 'var(--loss)') : null);
+    const vS = surCh.filter((p) => p.resultat === 'V').length;
+    bloc(surCh.length ? fr(100 * vS / surCh.length, 0) + ' %' : '—', 'toi sur ' + nomCh(k) + ' (' + surCh.length + ')', surCh.length ? (vS / surCh.length >= 0.5 ? 'var(--win)' : 'var(--loss)') : null);
+    const vC = contre.filter((p) => p.resultat === 'V').length;
+    bloc(contre.length ? vC + ' V ' + (contre.length - vC) + ' D' : '—', 'toi contre ' + (kv ? nomCh(kv) : '…'));
+    c1.appendChild(ch);
+    if (mu) c1.appendChild(el('p', 'note', 'Matchup sur ' + fr(mu[1], 0) + ' parties OP.GG, toutes divisions.'));
+    box.appendChild(c1);
+    // Tes repères
+    const c2 = el('section', 'card'); c2.appendChild(el('h2', null, 'Tes repères'));
+    const ul = el('ul', 'reperes');
+    const n = (x) => Number(x) || 0, moy = (l, f) => (l.length ? l.reduce((t, p) => t + f(p), 0) / l.length : null);
+    if (surCh.length >= 2) {
+      const mor = moy(surCh, (p) => n(p.deaths)), morA = moy(surCh, (p) => n(p.adv_deaths));
+      const li1 = el('li'); li1.append('Sur ' + nomCh(k) + ', tu meurs ', el('b', null, fr(mor) + ' fois'), ' par partie en moyenne, contre ' + fr(morA) + ' pour ton vis-à-vis.'); ul.appendChild(li1);
+      const or15 = surCh.filter((p) => p.ecart_or_15 !== null && p.ecart_or_15 !== undefined && p.ecart_or_15 !== '');
+      if (or15.length) { const e = moy(or15, (p) => n(p.ecart_or_15)); const li2 = el('li'); li2.append('À 15 min, tu es en moyenne à ', el('b', null, signe(e) + ' po'), ' de ton vis-à-vis.'); ul.appendChild(li2); }
+      if (lane !== 'support') { const c10 = moy(surCh, (p) => n(p.cs_10) - n(p.adv_cs_10)); const li3 = el('li'); li3.append('CS à 10 min : ', el('b', null, signe(c10, 1)), ' en moyenne face à ton vis-à-vis.'); ul.appendChild(li3); }
+      if (lane === 'jungle' && surCh[0].contre_jungle !== undefined) { const cj = moy(surCh, (p) => n(p.contre_jungle) - n(p.adv_contre_jungle)); const li4 = el('li'); li4.append('Contre-jungle : ', el('b', null, signe(cj, 1) + ' camps'), ' par partie face au jungler adverse.'); ul.appendChild(li4); }
+    } else ul.appendChild(el('li', null, 'Pas encore assez de parties sur ' + nomCh(k) + ' pour tirer des repères (' + surCh.length + ').'));
+    if (contre.length) { const li = el('li'); li.append('Contre ' + nomCh(kv) + ' : ', el('b', null, vC + ' victoire' + (vC > 1 ? 's' : '') + ' sur ' + contre.length), ' cette saison.'); ul.appendChild(li); }
+    c2.appendChild(ul); box.appendChild(c2);
+    // Rappel du build
+    if (a) {
+      const c3 = el('section', 'card'); c3.appendChild(el('h2', null, 'Plan de jeu OP.GG'));
+      const rn = a.runes || {};
+      if (rn.primary_rune_ids) {
+        c3.appendChild(el('div', 'lab', 'Rune principale'));
+        const r = el('div', 'runes'); const i = el('img'); const ic = DD.runes[rn.primary_rune_ids[0]]; if (ic) i.src = DDB + '/cdn/img/' + ic; r.append(i, el('b', null, (rn.primary_rune_names || [])[0] || ''), ' · ' + (rn.secondary_page_name || '')); c3.appendChild(r);
+      }
+      const ma = a.skill_masteries || {};
+      if (ma.ids) { c3.appendChild(el('div', 'lab', 'Ordre de max des compétences')); const s = el('div', 'skills'); ma.ids.forEach((x, j) => { if (j) s.append('›'); s.appendChild(el('b', null, x)); }); c3.appendChild(s); }
+      const sp = a.summoner_spells || {};
+      if (sp.ids) { c3.appendChild(el('div', 'lab', 'Sorts')); const s = el('div', 'build'); for (const id of sp.ids) { const so = DD.sorts[String(id)]; const i = el('img', 'it'); if (so) { i.src = DDB + '/cdn/' + DD.v + '/img/spell/' + so.image.full; i.title = so.name; } s.appendChild(i); } c3.appendChild(s); }
+      box.appendChild(c3);
+    }
+    return box;
+  }
+
+  function attente(chargement) {
+    const c = el('section', 'card attente'); c.appendChild(el('div', 'dot'));
+    c.appendChild(el('h2', null, chargement ? 'Chargement de la partie…' : 'En attente d’une partie'));
+    c.appendChild(el('p', null, chargement ? 'La partie démarre, les infos arrivent dans quelques secondes.' : 'Lance une partie sur ton PC : cette page se met à jour toute seule. Garde la fenêtre du compagnon ouverte sur le PC.'));
+    return c;
+  }
+
+  function rendre() {
+    const vue = document.getElementById('vue'), live = document.getElementById('live'), st = document.getElementById('statut');
+    const y = window.scrollY, ouverts = vue.style.minHeight;
+    vue.style.minHeight = vue.offsetHeight + 'px'; // évite que la page « saute » pendant le rafraîchissement
+    requestAnimationFrame(() => { vue.style.minHeight = ouverts; window.scrollTo(0, y); });
+    vue.replaceChildren();
+    if (!ETAT || !ETAT.enJeu || !DD.v) {
+      live.classList.remove('on'); st.textContent = !DD.v ? 'Chargement…' : 'Hors partie';
+      vue.appendChild(attente(ETAT && ETAT.chargement)); return;
+    }
+    const g = lire(ETAT.data);
+    live.classList.add('on'); st.replaceChildren(el('b', null, mmss(g.temps)), ETAT.demo ? ' démo' : '');
+    if (!VUE_CHOISIE) VUE = g.temps < 150 ? 'memo' : 'lanes';
+    document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('on', b.dataset.v === VUE));
+    try { vue.appendChild(VUE === 'items' ? vueItems(g) : VUE === 'memo' ? vueMemo(g) : vueLanes(g)); }
+    catch (e) { console.error(e); vue.appendChild(el('p', 'note', 'Erreur d’affichage : ' + e.message)); }
+  }
+
+  async function sonder() {
+    try { ETAT = await fetch('/etat', { cache: 'no-store' }).then((r) => r.json()); } catch (e) { ETAT = null; }
+    rendre();
+  }
+  document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => { VUE = b.dataset.v; VUE_CHOISIE = true; rendre(); window.scrollTo(0, 0); }));
+  chargerDD().then(rendre).catch(() => { document.getElementById('statut').textContent = 'Pas d’internet ?'; });
+  sonder(); setInterval(sonder, 3000);
+})();
+</script>
+</body>
+</html>
