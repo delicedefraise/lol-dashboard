@@ -1,37 +1,39 @@
 {
- "maj": "2026-11-21T17:10:58.214224+00:00",
+ "maj": "2026-11-21T19:36:25.040329+00:00",
  "statut": "ok",
  "compte": "Caps75#EUW",
  "partie": {
-  "id": 8053176722,
-  "debut": 1795281033194,
+  "id": 8053347742,
+  "debut": 1795289758178,
   "file": 420
  },
- "champion": "Dr. Mundo",
- "cle_champion": "DrMundo",
+ "champion": "Rengar",
+ "cle_champion": "Rengar",
  "rang": {
   "tier": "Or",
-  "division": "I",
-  "lp": 39,
-  "winrate": 51,
-  "parties": 533
+  "division": "IV",
+  "lp": 43,
+  "winrate": 49,
+  "parties": 261
  },
- "sur_champion": {
-  "parties": 12,
+ "sur_champion": null,
+ "parties_sur_champion": 0,
+ "general": {
+  "parties": 10,
   "depart": {
    "valeur": "top",
-   "fois": 12,
-   "sur": 12
+   "fois": 8,
+   "sur": 10
   },
   "buff": {
-   "valeur": "bleu",
-   "fois": 8,
-   "sur": 12
+   "valeur": "rouge",
+   "fois": 5,
+   "sur": 10
   },
   "premier_gank": {
    "valeur": "mid",
    "fois": 7,
-   "sur": 12
+   "sur": 10
   },
   "premier_gank_min": 2,
   "lanes_gankees": [
@@ -40,79 +42,47 @@
    "bot"
   ],
   "invade_tot": {
-   "fois": 0,
-   "sur": 12
+   "fois": 2,
+   "sur": 10
   },
-  "minutes_chez_eux": 0.2,
-  "premier_retour": 6,
+  "minutes_chez_eux": 0.4,
+  "premier_retour": 11,
   "premier_objectif": {
-   "valeur": "dragon",
-   "fois": 5,
-   "sur": 12
+   "valeur": "larves",
+   "fois": 7,
+   "sur": 10
   },
-  "premier_objectif_min": 6.3,
+  "premier_objectif_min": 9.4,
   "crabes": 4.0,
-  "contre_jungle": 5.8,
-  "ka_avant_10": 1.8,
-  "camps_10": 70.2,
-  "winrate": 42
- },
- "parties_sur_champion": 12,
- "general": {
-  "parties": 20,
-  "depart": {
-   "valeur": "top",
-   "fois": 20,
-   "sur": 20
-  },
-  "buff": {
-   "valeur": "bleu",
-   "fois": 13,
-   "sur": 20
-  },
-  "premier_gank": {
-   "valeur": "mid",
-   "fois": 14,
-   "sur": 20
-  },
-  "premier_gank_min": 2.0,
-  "lanes_gankees": [
-   "mid",
-   "bot",
-   "top"
-  ],
-  "invade_tot": {
-   "fois": 0,
-   "sur": 20
-  },
-  "minutes_chez_eux": 0.2,
-  "premier_retour": 6,
-  "premier_objectif": {
-   "valeur": "dragon",
-   "fois": 11,
-   "sur": 20
-  },
-  "premier_objectif_min": 6.3,
-  "crabes": 3.8,
-  "contre_jungle": 6.5,
-  "ka_avant_10": 2.7,
-  "camps_10": 70.5,
-  "winrate": 50
+  "contre_jungle": 10.0,
+  "ka_avant_10": 2.0,
+  "camps_10": 71.4,
+  "winrate": 90
  },
  "pool": [
   {
-   "champion": "Dr. Mundo",
-   "parties": 12,
-   "winrate": 42
+   "champion": "Talon",
+   "parties": 4,
+   "winrate": 100
   },
   {
-   "champion": "Nunu et Willump",
-   "parties": 8,
-   "winrate": 62
+   "champion": "Jarvan IV",
+   "parties": 2,
+   "winrate": 100
+  },
+  {
+   "champion": "Kha'Zix",
+   "parties": 1,
+   "winrate": 100
+  },
+  {
+   "champion": "Diana",
+   "parties": 1,
+   "winrate": 100
   }
  ],
  "serie": {
-  "victoires": false,
-  "nombre": 2
+  "victoires": true,
+  "nombre": 7
  }
 }
