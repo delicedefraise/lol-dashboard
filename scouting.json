@@ -1,88 +1,118 @@
 {
- "maj": "2026-11-21T20:30:01.521960+00:00",
+ "maj": "2026-11-21T21:10:00.599656+00:00",
  "statut": "ok",
  "compte": "Caps75#EUW",
  "partie": {
-  "id": 8053414864,
-  "debut": 1795292961226,
+  "id": 8053469818,
+  "debut": 1795295362342,
   "file": 420
  },
  "champion": "Viego",
  "cle_champion": "Viego",
  "rang": {
   "tier": "Or",
-  "division": "IV",
-  "lp": 23,
-  "winrate": 25,
-  "parties": 53
+  "division": "I",
+  "lp": 3,
+  "winrate": 49,
+  "parties": 133
  },
- "sur_champion": null,
- "parties_sur_champion": 1,
- "general": {
-  "parties": 13,
+ "sur_champion": {
+  "parties": 18,
   "depart": {
    "valeur": "top",
-   "fois": 9,
-   "sur": 13
+   "fois": 10,
+   "sur": 18
   },
   "buff": {
    "valeur": "bleu",
-   "fois": 10,
-   "sur": 13
+   "fois": 18,
+   "sur": 18
   },
   "premier_gank": {
-   "valeur": "bot",
-   "fois": 6,
-   "sur": 13
+   "valeur": "mid",
+   "fois": 12,
+   "sur": 18
   },
-  "premier_gank_min": 3.0,
+  "premier_gank_min": 2.0,
   "lanes_gankees": [
-   "bot",
    "mid",
+   "bot",
    "top"
   ],
   "invade_tot": {
    "fois": 2,
-   "sur": 13
+   "sur": 18
   },
-  "minutes_chez_eux": 0.6,
-  "premier_retour": 8,
+  "minutes_chez_eux": 0.2,
+  "premier_retour": 7.5,
   "premier_objectif": {
    "valeur": "dragon",
-   "fois": 7,
-   "sur": 13
+   "fois": 12,
+   "sur": 18
   },
-  "premier_objectif_min": 8.9,
-  "crabes": 2.2,
-  "contre_jungle": 6.5,
-  "ka_avant_10": 2.3,
-  "camps_10": 56.2,
-  "winrate": 54
+  "premier_objectif_min": 7.0,
+  "crabes": 3.7,
+  "contre_jungle": 10.1,
+  "ka_avant_10": 2.8,
+  "camps_10": 65.0,
+  "winrate": 56
+ },
+ "parties_sur_champion": 18,
+ "general": {
+  "parties": 20,
+  "depart": {
+   "valeur": "top",
+   "fois": 11,
+   "sur": 20
+  },
+  "buff": {
+   "valeur": "bleu",
+   "fois": 19,
+   "sur": 20
+  },
+  "premier_gank": {
+   "valeur": "mid",
+   "fois": 13,
+   "sur": 20
+  },
+  "premier_gank_min": 2,
+  "lanes_gankees": [
+   "mid",
+   "bot",
+   "top"
+  ],
+  "invade_tot": {
+   "fois": 3,
+   "sur": 20
+  },
+  "minutes_chez_eux": 0.2,
+  "premier_retour": 7,
+  "premier_objectif": {
+   "valeur": "dragon",
+   "fois": 13,
+   "sur": 20
+  },
+  "premier_objectif_min": 6.9,
+  "crabes": 3.7,
+  "contre_jungle": 9.8,
+  "ka_avant_10": 2.6,
+  "camps_10": 64.3,
+  "winrate": 60
  },
  "pool": [
   {
-   "champion": "Diana",
-   "parties": 2,
-   "winrate": 50
-  },
-  {
-   "champion": "Lillia",
-   "parties": 2,
-   "winrate": 100
-  },
-  {
-   "champion": "Kindred",
-   "parties": 2,
-   "winrate": 50
-  },
-  {
    "champion": "Viego",
-   "parties": 1,
+   "parties": 18,
+   "winrate": 56
+  },
+  {
+   "champion": "Kayn",
+   "parties": 2,
    "winrate": 100
   }
  ],
  "serie": {
   "victoires": true,
-  "nombre": 4
+  "nombre": 2
  }
 }
