@@ -1,88 +1,88 @@
 {
- "maj": "2026-11-21T19:36:25.040329+00:00",
+ "maj": "2026-11-21T20:30:01.521960+00:00",
  "statut": "ok",
  "compte": "Caps75#EUW",
  "partie": {
-  "id": 8053347742,
-  "debut": 1795289758178,
+  "id": 8053414864,
+  "debut": 1795292961226,
   "file": 420
  },
- "champion": "Rengar",
- "cle_champion": "Rengar",
+ "champion": "Viego",
+ "cle_champion": "Viego",
  "rang": {
   "tier": "Or",
   "division": "IV",
-  "lp": 43,
-  "winrate": 49,
-  "parties": 261
+  "lp": 23,
+  "winrate": 25,
+  "parties": 53
  },
  "sur_champion": null,
- "parties_sur_champion": 0,
+ "parties_sur_champion": 1,
  "general": {
-  "parties": 10,
+  "parties": 13,
   "depart": {
    "valeur": "top",
-   "fois": 8,
-   "sur": 10
+   "fois": 9,
+   "sur": 13
   },
   "buff": {
-   "valeur": "rouge",
-   "fois": 5,
-   "sur": 10
+   "valeur": "bleu",
+   "fois": 10,
+   "sur": 13
   },
   "premier_gank": {
-   "valeur": "mid",
-   "fois": 7,
-   "sur": 10
+   "valeur": "bot",
+   "fois": 6,
+   "sur": 13
   },
-  "premier_gank_min": 2,
+  "premier_gank_min": 3.0,
   "lanes_gankees": [
+   "bot",
    "mid",
-   "top",
-   "bot"
+   "top"
   ],
   "invade_tot": {
    "fois": 2,
-   "sur": 10
+   "sur": 13
   },
-  "minutes_chez_eux": 0.4,
-  "premier_retour": 11,
+  "minutes_chez_eux": 0.6,
+  "premier_retour": 8,
   "premier_objectif": {
-   "valeur": "larves",
+   "valeur": "dragon",
    "fois": 7,
-   "sur": 10
+   "sur": 13
   },
-  "premier_objectif_min": 9.4,
-  "crabes": 4.0,
-  "contre_jungle": 10.0,
-  "ka_avant_10": 2.0,
-  "camps_10": 71.4,
-  "winrate": 90
+  "premier_objectif_min": 8.9,
+  "crabes": 2.2,
+  "contre_jungle": 6.5,
+  "ka_avant_10": 2.3,
+  "camps_10": 56.2,
+  "winrate": 54
  },
  "pool": [
   {
-   "champion": "Talon",
-   "parties": 4,
-   "winrate": 100
+   "champion": "Diana",
+   "parties": 2,
+   "winrate": 50
   },
   {
-   "champion": "Jarvan IV",
+   "champion": "Lillia",
    "parties": 2,
    "winrate": 100
   },
   {
-   "champion": "Kha'Zix",
-   "parties": 1,
-   "winrate": 100
+   "champion": "Kindred",
+   "parties": 2,
+   "winrate": 50
   },
   {
-   "champion": "Diana",
+   "champion": "Viego",
    "parties": 1,
    "winrate": 100
   }
  ],
  "serie": {
   "victoires": true,
-  "nombre": 7
+  "nombre": 4
  }
 }
